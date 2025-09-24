@@ -126,4 +126,4 @@ O sistema tem **3 estratégias de salvamento**:
 
 ---
 
-*Sistema de Gestão Pedacinho do Céu - v1.2.3*
+*Sistema de Gestão Pedacinho do Céu - v1.0.0*

@@ -1,4 +1,4 @@
-# 🏪 GestãoZé System - Sistema Completo de Gestão de Estoque
+# 🏪 GestãoZe System - Sistema Completo de Gestão de Estoque
 
 <div align="center">
 
@@ -38,7 +38,7 @@
 
 ## 📖 Sobre o Projeto
 
-O **GestãoZé System** é uma solução completa e moderna para gestão de estoque, especialmente desenvolvida para restaurantes e estabelecimentos gastronômicos. O sistema integra tecnologias de ponta como **Vue.js 3**, **TypeScript**, **Supabase** e **Inteligência Artificial do Google Gemini** para oferecer uma experiência única e inteligente na gestão de produtos, estoque e análises estratégicas.
+O **GestãoZe System** é uma solução completa e moderna para gestão de estoque, especialmente desenvolvida para restaurantes e estabelecimentos gastronômicos. O sistema integra tecnologias de ponta como **Vue.js 3**, **TypeScript**, **Supabase** e **Inteligência Artificial do Google Gemini** para oferecer uma experiência única e inteligente na gestão de produtos, estoque e análises estratégicas.
 
 ### 🎯 Objetivos
 
@@ -337,7 +337,7 @@ VITE_GEMINI_API_KEY=sua-chave-gemini-ai-aqui
 VITE_GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 
 # === APP CONFIGURATION ===
-VITE_APP_NAME=GestãoZé System
+VITE_APP_NAME=GestãoZe System
 VITE_APP_VERSION=1.0.0
 VITE_APP_DESCRIPTION=Sistema Completo de Gestão de Estoque
 VITE_APP_URL=https://gestao.restpedacinhodoceu.com.br
@@ -1086,7 +1086,7 @@ Agradecimentos especiais às tecnologias que tornaram este projeto possível:
 
 <div align="center">
 
-## 💫 **GestãoZé System - Gestão Inteligente para o Futuro**
+## 💫 **GestãoZe System - Gestão Inteligente para o Futuro**
 
 **Desenvolvido com ❤️ para revolucionar a gestão gastronômica**
 
@@ -1098,6 +1098,6 @@ Agradecimentos especiais às tecnologias que tornaram este projeto possível:
 
 ---
 
-**© 2024 GestãoZé System. Todos os direitos reservados.**
+**© 2025 GestãoZe System. Todos os direitos reservados.**
 
 </div>

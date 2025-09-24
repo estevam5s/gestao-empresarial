@@ -1,4 +1,4 @@
-# 📸 Screenshots do GestãoZé System
+# 📸 Screenshots do GestãoZe System
 
 Esta pasta contém as capturas de tela do sistema para documentação no README principal.
 

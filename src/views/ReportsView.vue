@@ -4,13 +4,24 @@
       <div class="header-content">
         <h1>
           <BarChart3 :size="28" />
-          Relatórios - Análises e Gráficos
+          Relatórios Avançados com IA
         </h1>
         <div class="header-actions">
+          <div class="ai-analysis-btn">
+            <button @click="generateAIAnalysis" class="btn-ai" :disabled="aiLoading">
+              <svg v-if="!aiLoading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+              <RefreshCw v-else :size="18" class="animate-spin" />
+              Análise IA
+            </button>
+          </div>
           <div class="export-dropdown" ref="exportDropdown">
             <button @click="toggleExportMenu" class="btn-secondary">
               <Download :size="18" />
-              Exportar
+              Exportar Avançado
               <svg :class="{ 'rotate-180': showExportMenu }" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="m6 9 6 6 6-6"/>
               </svg>
@@ -21,28 +32,28 @@
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14,2 14,8 20,8"/>
                 </svg>
-                PDF com Gráficos
+                PDF com Análise IA
               </button>
               <button @click="exportToExcel" class="export-option">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
                   <path d="M9 9h6v6H9z"/>
                 </svg>
-                Excel (.xlsx)
+                Excel com Insights
               </button>
               <button @click="exportToCSV" class="export-option">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14,2 14,8 20,8"/>
                 </svg>
-                CSV (.csv)
+                CSV Detalhado
               </button>
               <button @click="exportToJSON" class="export-option">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                   <polyline points="14,2 14,8 20,8"/>
                 </svg>
-                JSON (.json)
+                JSON com IA
               </button>
               <button @click="exportToImage" class="export-option">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -50,7 +61,17 @@
                   <circle cx="8.5" cy="8.5" r="1.5"/>
                   <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
                 </svg>
-                Imagem (.png)
+                Dashboard Completo
+              </button>
+              <button @click="exportToPowerBI" class="export-option">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <path d="M7 7h.01"/>
+                  <path d="M7 17h.01"/>
+                  <path d="M17 7h.01"/>
+                  <path d="M17 17h.01"/>
+                </svg>
+                Power BI Format
               </button>
             </div>
           </div>
@@ -61,6 +82,60 @@
         </div>
       </div>
     </header>
+
+    <!-- Análise da IA -->
+    <div v-if="aiAnalysis" class="ai-analysis-section">
+      <div class="ai-panel">
+        <div class="panel-header">
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+            Análise Inteligente
+          </h2>
+          <div class="performance-score">
+            <span class="score-label">Score de Performance:</span>
+            <div class="score-value" :class="getScoreClass(aiAnalysis.performanceScore)">
+              {{ aiAnalysis.performanceScore }}/100
+            </div>
+          </div>
+        </div>
+        <div class="ai-content">
+          <div class="executive-summary">
+            <h3>Resumo Executivo</h3>
+            <p>{{ aiAnalysis.executiveSummary }}</p>
+          </div>
+          <div class="insights-grid">
+            <div class="insight-card" v-if="aiAnalysis.insights?.length">
+              <h4>📊 Insights Estratégicos</h4>
+              <ul>
+                <li v-for="insight in aiAnalysis.insights.slice(0, 3)" :key="insight">{{ insight }}</li>
+              </ul>
+            </div>
+            <div class="insight-card" v-if="aiAnalysis.predictions?.length">
+              <h4>🔮 Previsões</h4>
+              <ul>
+                <li v-for="prediction in aiAnalysis.predictions.slice(0, 3)" :key="prediction">{{ prediction }}</li>
+              </ul>
+            </div>
+            <div class="insight-card" v-if="aiAnalysis.recommendations?.length">
+              <h4>💡 Recomendações</h4>
+              <ul>
+                <li v-for="recommendation in aiAnalysis.recommendations.slice(0, 3)" :key="recommendation">{{ recommendation }}</li>
+              </ul>
+            </div>
+            <div class="insight-card alerts" v-if="aiAnalysis.alerts?.length">
+              <h4>⚠️ Alertas Críticos</h4>
+              <ul>
+                <li v-for="alert in aiAnalysis.alerts.slice(0, 3)" :key="alert">{{ alert }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Filtros de período -->
     <div class="filters-section">
@@ -75,6 +150,21 @@
             class="period-btn"
           >
             {{ period.label }}
+          </button>
+        </div>
+      </div>
+      <div class="chart-type-selector">
+        <label>Tipo de visualização:</label>
+        <div class="chart-type-buttons">
+          <button
+            v-for="type in chartTypes"
+            :key="type.value"
+            @click="selectedChartType = type.value"
+            :class="{ active: selectedChartType === type.value }"
+            class="chart-type-btn"
+          >
+            <component :is="type.icon" :size="16" />
+            {{ type.label }}
           </button>
         </div>
       </div>
@@ -139,80 +229,205 @@
       </div>
     </div>
 
-    <!-- Gráficos -->
+    <!-- Gráficos Avançados -->
     <div class="charts-grid">
-      <!-- Gráfico de Vendas -->
-      <section class="chart-panel">
+      <!-- Gráfico Principal de Performance -->
+      <section class="chart-panel primary-chart">
         <div class="panel-header">
           <h2>
             <TrendingUp :size="20" />
-            Evolução das Vendas
+            Performance de Vendas Avançada
           </h2>
           <div class="chart-controls">
             <button @click="chartType = 'line'" :class="{ active: chartType === 'line' }" class="chart-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22,6 12,11 2,6"/>
+              </svg>
               Linha
             </button>
             <button @click="chartType = 'bar'" :class="{ active: chartType === 'bar' }" class="chart-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="20" x2="12" y2="10"/>
+                <line x1="18" y1="20" x2="18" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="16"/>
+              </svg>
               Barra
+            </button>
+            <button @click="chartType = 'area'" :class="{ active: chartType === 'area' }" class="chart-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 18v-6a9 9 0 0 1 18 0v6"/>
+              </svg>
+              Área
             </button>
           </div>
         </div>
         <div class="chart-container">
-          <Line
-            v-if="salesChartData.datasets.length > 0 && chartType === 'line'"
+          <component
+            v-if="salesChartData.datasets.length > 0"
+            :is="getChartComponent(chartType)"
             :data="salesChartData"
-            :options="chartOptions.line"
-          />
-          <Bar
-            v-else-if="salesChartData.datasets.length > 0 && chartType === 'bar'"
-            :data="salesChartData"
-            :options="chartOptions.bar"
+            :options="getChartOptions(chartType)"
           />
           <div v-else class="chart-loading">
             <Loader2 :size="32" class="animate-spin" />
-            <p>Carregando dados de vendas...</p>
+            <p>Carregando análise avançada...</p>
           </div>
         </div>
       </section>
 
-      <!-- Gráfico de Categorias -->
+      <!-- Gráfico Radar de Categorias -->
       <section class="chart-panel">
         <div class="panel-header">
           <h2>
-            <PieChart :size="20" />
-            Distribuição por Categoria
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/>
+              <line x1="12" y1="8" x2="12" y2="16"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Análise Radar por Categoria
           </h2>
         </div>
         <div class="chart-container">
-          <Doughnut
-            v-if="categoryChartData.datasets.length > 0"
-            :data="categoryChartData"
-            :options="chartOptions.doughnut"
+          <Radar
+            v-if="categoryRadarData.datasets.length > 0"
+            :data="categoryRadarData"
+            :options="chartOptions.radar"
           />
           <div v-else class="chart-loading">
             <Loader2 :size="32" class="animate-spin" />
-            <p>Carregando dados de categorias...</p>
+            <p>Processando análise radar...</p>
           </div>
         </div>
       </section>
 
-      <!-- Gráfico de Movimentações -->
-      <section class="chart-panel full-width">
+      <!-- Gráfico Bubble de Produtos -->
+      <section class="chart-panel">
         <div class="panel-header">
           <h2>
-            <BarChart3 :size="20" />
-            Movimentações de Estoque
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            Análise de Portfolio
           </h2>
         </div>
         <div class="chart-container">
-          <Bar
-            v-if="movementsChartData.datasets.length > 0"
-            :data="movementsChartData"
-            :options="chartOptions.movements"
+          <Scatter
+            v-if="productBubbleData.datasets.length > 0"
+            :data="productBubbleData"
+            :options="chartOptions.bubble"
           />
           <div v-else class="chart-loading">
             <Loader2 :size="32" class="animate-spin" />
-            <p>Carregando dados de movimentações...</p>
+            <p>Analisando portfolio...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gráfico Polar de Estoque -->
+      <section class="chart-panel">
+        <div class="panel-header">
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 6v6l4 2"/>
+            </svg>
+            Distribuição Polar de Valor
+          </h2>
+        </div>
+        <div class="chart-container">
+          <PolarArea
+            v-if="stockPolarData.datasets.length > 0"
+            :data="stockPolarData"
+            :options="chartOptions.polar"
+          />
+          <div v-else class="chart-loading">
+            <Loader2 :size="32" class="animate-spin" />
+            <p>Calculando distribuição...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Gráfico de Movimentações Stack -->
+      <section class="chart-panel full-width">
+        <div class="panel-header">
+          <h2>
+            <Activity :size="20" />
+            Fluxo de Movimentações Avançado
+          </h2>
+          <div class="chart-metrics">
+            <div class="metric">
+              <span class="metric-label">Taxa de Entrada:</span>
+              <span class="metric-value positive">{{ movementMetrics.entryRate }}%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Taxa de Saída:</span>
+              <span class="metric-value negative">{{ movementMetrics.exitRate }}%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Balanceamento:</span>
+              <span class="metric-value" :class="movementMetrics.balance >= 0 ? 'positive' : 'negative'">
+                {{ movementMetrics.balance }}%
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container">
+          <Bar
+            v-if="stackedMovementsData.datasets.length > 0"
+            :data="stackedMovementsData"
+            :options="chartOptions.stackedMovements"
+          />
+          <div v-else class="chart-loading">
+            <Loader2 :size="32" class="animate-spin" />
+            <p>Processando fluxos...</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Performance Score Gauge -->
+      <section class="chart-panel gauge-panel">
+        <div class="panel-header">
+          <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <path d="M12 17h.01"/>
+            </svg>
+            Score de Performance
+          </h2>
+        </div>
+        <div class="gauge-container">
+          <div class="gauge-chart">
+            <Doughnut
+              v-if="performanceGaugeData.datasets.length > 0"
+              :data="performanceGaugeData"
+              :options="chartOptions.gauge"
+            />
+            <div class="gauge-center">
+              <div class="gauge-score">{{ aiAnalysis?.performanceScore || 0 }}</div>
+              <div class="gauge-label">Score</div>
+            </div>
+          </div>
+          <div class="performance-indicators">
+            <div class="indicator" :class="getPerformanceClass('sales')">
+              <span>Vendas</span>
+              <div class="indicator-bar">
+                <div class="indicator-fill" :style="{ width: salesPerformance + '%' }"></div>
+              </div>
+            </div>
+            <div class="indicator" :class="getPerformanceClass('stock')">
+              <span>Estoque</span>
+              <div class="indicator-bar">
+                <div class="indicator-fill" :style="{ width: stockPerformance + '%' }"></div>
+              </div>
+            </div>
+            <div class="indicator" :class="getPerformanceClass('efficiency')">
+              <span>Eficiência</span>
+              <div class="indicator-bar">
+                <div class="indicator-fill" :style="{ width: efficiencyPerformance + '%' }"></div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -308,9 +523,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, onUnmounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted, computed } from 'vue'
 import { reportsService } from '@/services/reportsService'
-import { Line, Bar, Doughnut } from 'vue-chartjs'
+import { aiAnalyticsService } from '@/services/aiAnalyticsService'
+import { advancedChartsService } from '@/services/advancedChartsService'
+import { Line, Bar, Doughnut, Radar, Scatter, PolarArea } from 'vue-chartjs'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import jsPDF from 'jspdf'
@@ -321,7 +538,7 @@ import * as XLSX from 'xlsx'
 import {
   BarChart3, Download, RefreshCw, TrendingUp, Package, AlertTriangle,
   DollarSign, Minus, PieChart, Loader2, CheckCircle, Activity,
-  ExternalLink, ArrowUp, ArrowDown
+  ExternalLink, ArrowUp, ArrowDown, Target, Zap, TrendingDown
 } from 'lucide-vue-next'
 
 // Chart.js configuration
@@ -335,7 +552,9 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  RadialLinearScale,
+  Filler
 } from 'chart.js'
 
 ChartJS.register(
@@ -347,20 +566,36 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  RadialLinearScale,
+  Filler
 )
 
 // State
 const loading = ref(false)
+const aiLoading = ref(false)
 const selectedPeriod = ref<'7d' | '30d' | '90d'>('30d')
-const chartType = ref<'line' | 'bar'>('line')
+const chartType = ref<'line' | 'bar' | 'area'>('line')
+const selectedChartType = ref<'standard' | 'advanced' | 'predictive'>('advanced')
 const showExportMenu = ref(false)
 const exportDropdown = ref<HTMLElement | null>(null)
+
+// IA Analysis State
+const aiAnalysis = ref<any>(null)
+const salesPrediction = ref<any>(null)
+const inventoryOptimization = ref<any>(null)
+const marketInsights = ref<string[]>([])
 
 const periods = [
   { label: '7 dias', value: '7d' as const },
   { label: '30 dias', value: '30d' as const },
   { label: '90 dias', value: '90d' as const }
+]
+
+const chartTypes = [
+  { label: 'Padrão', value: 'standard', icon: BarChart3 },
+  { label: 'Avançado', value: 'advanced', icon: Target },
+  { label: 'Preditivo', value: 'predictive', icon: Zap }
 ]
 
 interface AnalyticsData {
@@ -395,37 +630,219 @@ const salesChartData = ref<any>({ labels: [], datasets: [] })
 const categoryChartData = ref<any>({ labels: [], datasets: [] })
 const movementsChartData = ref<any>({ labels: [], datasets: [] })
 
+// Advanced Chart Data
+const categoryRadarData = ref<any>({ labels: [], datasets: [] })
+const productBubbleData = ref<any>({ labels: [], datasets: [] })
+const stockPolarData = ref<any>({ labels: [], datasets: [] })
+const stackedMovementsData = ref<any>({ labels: [], datasets: [] })
+const performanceGaugeData = ref<any>({ labels: [], datasets: [] })
+
+// Metrics
+const movementMetrics = ref({
+  entryRate: 0,
+  exitRate: 0,
+  balance: 0
+})
+
+const salesPerformance = ref(75)
+const stockPerformance = ref(82)
+const efficiencyPerformance = ref(68)
+
 // Chart options
 const chartOptions = {
   line: {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false },
+      legend: {
+        display: true,
+        position: 'top' as const,
+        labels: {
+          color: '#64748b',
+          font: { size: 12, weight: 'bold' },
+          usePointStyle: true
+        }
+      },
       tooltip: {
         mode: 'index' as const,
         intersect: false,
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: '#667eea',
+        borderWidth: 1
       }
     },
     scales: {
-      x: { display: true, grid: { display: false } },
-      y: { display: true, grid: { color: 'rgba(0,0,0,0.1)' } }
+      x: {
+        display: true,
+        grid: { display: false },
+        ticks: { color: '#64748b' }
+      },
+      y: {
+        display: true,
+        grid: { color: 'rgba(100, 116, 139, 0.2)' },
+        ticks: { color: '#64748b' }
+      }
     },
     elements: {
       line: { tension: 0.4 },
-      point: { radius: 4, hoverRadius: 6 }
+      point: { radius: 4, hoverRadius: 8 }
+    },
+    interaction: {
+      intersect: false,
+      mode: 'index' as const
     }
   },
   bar: {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { display: false }
+      legend: {
+        display: true,
+        position: 'top' as const,
+        labels: {
+          color: '#64748b',
+          font: { size: 12, weight: 'bold' }
+        }
+      }
     },
     scales: {
-      x: { display: true, grid: { display: false } },
-      y: { display: true, grid: { color: 'rgba(0,0,0,0.1)' } }
+      x: {
+        display: true,
+        grid: { display: false },
+        ticks: { color: '#64748b' }
+      },
+      y: {
+        display: true,
+        grid: { color: 'rgba(100, 116, 139, 0.2)' },
+        ticks: { color: '#64748b' }
+      }
     }
+  },
+  radar: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+        labels: {
+          color: '#64748b',
+          font: { size: 12, weight: 'bold' }
+        }
+      }
+    },
+    scales: {
+      r: {
+        beginAtZero: true,
+        max: 100,
+        ticks: {
+          color: '#64748b',
+          backdropColor: 'transparent'
+        },
+        grid: {
+          color: 'rgba(100, 116, 139, 0.3)'
+        },
+        angleLines: {
+          color: 'rgba(100, 116, 139, 0.3)'
+        }
+      }
+    }
+  },
+  bubble: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const data = context.raw
+            return [
+              `Produto: ${data.label}`,
+              `Estoque: ${data.x}`,
+              `Preço: R$ ${data.y.toFixed(2)}`,
+              `Volume: ${Math.round(data.r ** 2 / 2)}`
+            ]
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Estoque Atual',
+          color: '#64748b',
+          font: { weight: 'bold' }
+        },
+        grid: { color: 'rgba(100, 116, 139, 0.2)' },
+        ticks: { color: '#64748b' }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Preço (R$)',
+          color: '#64748b',
+          font: { weight: 'bold' }
+        },
+        grid: { color: 'rgba(100, 116, 139, 0.2)' },
+        ticks: { color: '#64748b' }
+      }
+    }
+  },
+  polar: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'right' as const,
+        labels: {
+          color: '#64748b',
+          font: { size: 12 },
+          padding: 20
+        }
+      }
+    },
+    scales: {
+      r: {
+        beginAtZero: true,
+        ticks: { display: false },
+        grid: { color: 'rgba(100, 116, 139, 0.3)' }
+      }
+    }
+  },
+  stackedMovements: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top' as const }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        display: true,
+        grid: { display: false },
+        ticks: { color: '#64748b' }
+      },
+      y: {
+        stacked: true,
+        display: true,
+        grid: { color: 'rgba(100, 116, 139, 0.2)' },
+        ticks: { color: '#64748b' }
+      }
+    }
+  },
+  gauge: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false }
+    },
+    cutout: '75%',
+    circumference: 180,
+    rotation: 270
   },
   doughnut: {
     responsive: true,
@@ -433,19 +850,13 @@ const chartOptions = {
     plugins: {
       legend: {
         position: 'bottom' as const,
-        labels: { padding: 20, usePointStyle: true }
+        labels: {
+          padding: 20,
+          usePointStyle: true,
+          color: '#64748b',
+          font: { size: 12 }
+        }
       }
-    }
-  },
-  movements: {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'top' as const }
-    },
-    scales: {
-      x: { display: true, grid: { display: false } },
-      y: { display: true, grid: { color: 'rgba(0,0,0,0.1)' } }
     }
   }
 }
@@ -470,6 +881,11 @@ async function loadAnalytics() {
 
     // Load chart data
     await loadChartData()
+    await loadAdvancedCharts()
+
+    // Calculate performance metrics
+    calculatePerformanceMetrics()
+
   } catch (error) {
     console.error('Erro ao carregar analytics:', error)
   } finally {
@@ -493,12 +909,181 @@ async function loadChartData() {
   }
 }
 
+async function loadAdvancedCharts() {
+  try {
+    if (analytics.value.sales?.dailySales) {
+      const performanceChart = advancedChartsService.generateSalesPerformanceChart(
+        analytics.value.sales.dailySales,
+        selectedPeriod.value
+      )
+      salesChartData.value = performanceChart.data
+    }
+
+    if (analytics.value.stock?.categoryBreakdown) {
+      const radarChart = advancedChartsService.generateCategoryRadarChart(
+        analytics.value.stock.categoryBreakdown
+      )
+      categoryRadarData.value = radarChart.data
+
+      const polarChart = advancedChartsService.generatePolarAreaChart(
+        analytics.value.stock.categoryBreakdown.map(cat => ({
+          category: cat.category,
+          totalValue: cat.count * 100 // Estimativa
+        }))
+      )
+      stockPolarData.value = polarChart.data
+    }
+
+    if (analytics.value.movements?.dailyMovements) {
+      const stackedChart = advancedChartsService.generateStackedAreaChart(
+        analytics.value.movements.dailyMovements
+      )
+      stackedMovementsData.value = stackedChart.data
+    }
+
+    // Simular dados de produtos para bubble chart
+    const mockProductData = [
+      { nome: 'Produto A', current_stock: 50, preco: 29.99, sales_volume: 120, performance_score: 85 },
+      { nome: 'Produto B', current_stock: 20, preco: 49.99, sales_volume: 80, performance_score: 70 },
+      { nome: 'Produto C', current_stock: 100, preco: 15.99, sales_volume: 200, performance_score: 90 }
+    ]
+
+    const bubbleChart = advancedChartsService.generateProductBubbleChart(mockProductData)
+    productBubbleData.value = bubbleChart.data
+
+    // Performance Gauge
+    const gaugeChart = advancedChartsService.generateGaugeChart(
+      aiAnalysis.value?.performanceScore || 75,
+      'Performance Geral'
+    )
+    performanceGaugeData.value = gaugeChart.data
+
+  } catch (error) {
+    console.error('Erro ao carregar gráficos avançados:', error)
+  }
+}
+
+function calculatePerformanceMetrics() {
+  if (analytics.value.movements?.dailyMovements) {
+    const movements = analytics.value.movements.dailyMovements
+    const totalIn = movements.reduce((acc: number, mov: any) => acc + (mov.in || 0), 0)
+    const totalOut = movements.reduce((acc: number, mov: any) => acc + (mov.out || 0), 0)
+    const total = totalIn + totalOut
+
+    if (total > 0) {
+      movementMetrics.value = {
+        entryRate: Math.round((totalIn / total) * 100),
+        exitRate: Math.round((totalOut / total) * 100),
+        balance: Math.round(((totalIn - totalOut) / total) * 100)
+      }
+    }
+  }
+
+  // Calcular performance scores
+  salesPerformance.value = Math.min(95, Math.max(30,
+    (analytics.value.sales?.totalSales || 0) / 10000 * 100
+  ))
+
+  stockPerformance.value = Math.min(95, Math.max(30,
+    100 - (analytics.value.stock?.lowStockCount || 0) / (analytics.value.stock?.totalProducts || 1) * 100
+  ))
+
+  efficiencyPerformance.value = Math.min(95, Math.max(30,
+    (movementMetrics.value.entryRate + (100 - movementMetrics.value.exitRate)) / 2
+  ))
+}
+
+async function generateAIAnalysis() {
+  aiLoading.value = true
+  try {
+    // Gerar análise completa com IA
+    const [businessAnalysis, executiveSummary, salesPred, inventoryOpt, insights] = await Promise.all([
+      aiAnalyticsService.analyzeBusinessData(analytics.value),
+      aiAnalyticsService.generateExecutiveSummary(analytics.value),
+      aiAnalyticsService.predictSalesTrends(analytics.value.sales?.dailySales || []),
+      aiAnalyticsService.analyzeInventoryOptimization(analytics.value.stock),
+      aiAnalyticsService.generateMarketInsights(analytics.value.sales, selectedPeriod.value)
+    ])
+
+    aiAnalysis.value = {
+      ...businessAnalysis,
+      executiveSummary
+    }
+    salesPrediction.value = salesPred
+    inventoryOptimization.value = inventoryOpt
+    marketInsights.value = insights
+
+    // Recarregar gráficos com dados da IA
+    await loadAdvancedCharts()
+
+  } catch (error) {
+    console.error('Erro na análise de IA:', error)
+    alert('Erro ao gerar análise com IA. Verifique sua conexão.')
+  } finally {
+    aiLoading.value = false
+  }
+}
+
 async function refreshData() {
   await loadAnalytics()
+  if (aiAnalysis.value) {
+    await generateAIAnalysis()
+  }
 }
 
 function toggleExportMenu() {
   showExportMenu.value = !showExportMenu.value
+}
+
+// Helper functions
+function getChartComponent(type: string) {
+  switch (type) {
+    case 'line':
+      return Line
+    case 'bar':
+      return Bar
+    case 'area':
+      return Line // With fill: true
+    default:
+      return Line
+  }
+}
+
+function getChartOptions(type: string) {
+  const baseOptions = chartOptions.line
+  if (type === 'area') {
+    return {
+      ...baseOptions,
+      elements: {
+        ...baseOptions.elements,
+        line: { ...baseOptions.elements.line, fill: true }
+      }
+    }
+  }
+  return chartOptions[type as keyof typeof chartOptions] || baseOptions
+}
+
+function getScoreClass(score: number): string {
+  if (score >= 80) return 'excellent'
+  if (score >= 60) return 'good'
+  if (score >= 40) return 'fair'
+  return 'poor'
+}
+
+function getPerformanceClass(type: string): string {
+  let score = 0
+  switch (type) {
+    case 'sales':
+      score = salesPerformance.value
+      break
+    case 'stock':
+      score = stockPerformance.value
+      break
+    case 'efficiency':
+      score = efficiencyPerformance.value
+      break
+  }
+  return getScoreClass(score)
 }
 
 async function exportToPDF() {
@@ -512,48 +1097,96 @@ async function exportToPDF() {
     let currentY = 20
 
     // Header do relatório
-    pdf.setFontSize(20)
+    pdf.setFontSize(24)
     pdf.setTextColor(102, 126, 234)
-    pdf.text('Relatório de Análises - GestãoZe', 20, currentY)
+    pdf.text('Relatório Avançado com IA - GestãoZe', 20, currentY)
 
-    currentY += 10
+    currentY += 15
     pdf.setFontSize(12)
     pdf.setTextColor(100, 100, 100)
     pdf.text(`Período: ${periods.find(p => p.value === selectedPeriod.value)?.label}`, 20, currentY)
     pdf.text(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 20, currentY + 5)
 
+    // Performance Score
+    if (aiAnalysis.value) {
+      currentY += 15
+      pdf.setFontSize(14)
+      pdf.setTextColor(26, 32, 44)
+      pdf.text(`Score de Performance: ${aiAnalysis.value.performanceScore}/100`, 20, currentY)
+    }
+
     currentY += 20
 
-    // Estatísticas resumo
-    pdf.setFontSize(16)
+    // Análise da IA - Resumo Executivo
+    if (aiAnalysis.value?.executiveSummary) {
+      pdf.setFontSize(16)
+      pdf.setTextColor(26, 32, 44)
+      pdf.text('Resumo Executivo (IA)', 20, currentY)
+      currentY += 10
+
+      pdf.setFontSize(10)
+      pdf.setTextColor(77, 85, 104)
+      const summaryLines = pdf.splitTextToSize(aiAnalysis.value.executiveSummary, pageWidth - 40)
+      summaryLines.forEach((line: string, index: number) => {
+        pdf.text(line, 20, currentY + (index * 5))
+      })
+      currentY += summaryLines.length * 5 + 10
+    }
+
+    // Insights da IA
+    if (aiAnalysis.value?.insights?.length) {
+      pdf.setFontSize(14)
+      pdf.setTextColor(26, 32, 44)
+      pdf.text('Insights Estratégicos (IA)', 20, currentY)
+      currentY += 8
+
+      pdf.setFontSize(9)
+      pdf.setTextColor(77, 85, 104)
+      aiAnalysis.value.insights.slice(0, 5).forEach((insight: string, index: number) => {
+        const insightLines = pdf.splitTextToSize(`• ${insight}`, pageWidth - 45)
+        insightLines.forEach((line: string, lineIndex: number) => {
+          pdf.text(line, 25, currentY + (index * 10) + (lineIndex * 4))
+        })
+        currentY += insightLines.length * 4
+      })
+      currentY += 10
+    }
+
+    // Estatísticas avançadas
+    pdf.setFontSize(14)
     pdf.setTextColor(26, 32, 44)
-    pdf.text('Resumo Executivo', 20, currentY)
+    pdf.text('Métricas de Performance', 20, currentY)
     currentY += 10
 
-    pdf.setFontSize(10)
-    pdf.setTextColor(77, 85, 104)
-    const stats = [
+    const advancedStats = [
       `Total de Vendas: R$ ${formatCurrency(analytics.value.sales.totalSales || 0)}`,
-      `Total de Produtos: ${analytics.value.stock.totalProducts || 0}`,
-      `Produtos em Falta: ${analytics.value.stock.outOfStockCount || 0}`,
+      `Performance de Vendas: ${salesPerformance.value}%`,
+      `Performance de Estoque: ${stockPerformance.value}%`,
+      `Eficiência Operacional: ${efficiencyPerformance.value}%`,
+      `Taxa de Entrada: ${movementMetrics.value.entryRate}%`,
+      `Taxa de Saída: ${movementMetrics.value.exitRate}%`,
+      `Balanço de Movimentações: ${movementMetrics.value.balance}%`,
       `Valor do Estoque: R$ ${formatCurrency(analytics.value.stock.totalValue || 0)}`
     ]
 
-    stats.forEach((stat, index) => {
+    pdf.setFontSize(10)
+    pdf.setTextColor(77, 85, 104)
+    advancedStats.forEach((stat, index) => {
       pdf.text(stat, 20, currentY + (index * 5))
     })
+    currentY += advancedStats.length * 5 + 15
 
-    currentY += 30
-
-    // Capturar gráficos
+    // Capturar gráficos avançados
     const chartsContainer = document.querySelector('.charts-grid') as HTMLElement
     if (chartsContainer) {
       const canvas = await html2canvas(chartsContainer, {
         background: '#ffffff',
-        logging: false
+        logging: false,
+        scale: 2,
+        useCORS: true
       })
 
-      const imgData = canvas.toDataURL('image/png')
+      const imgData = canvas.toDataURL('image/png', 1.0)
       const imgWidth = pageWidth - 40
       const imgHeight = (canvas.height * imgWidth) / canvas.width
 
@@ -562,64 +1195,105 @@ async function exportToPDF() {
         currentY = 20
       }
 
-      pdf.text('Gráficos de Análise', 20, currentY)
+      pdf.setFontSize(14)
+      pdf.setTextColor(26, 32, 44)
+      pdf.text('Gráficos Avançados de Análise', 20, currentY)
       currentY += 10
-      pdf.addImage(imgData, 'PNG', 20, currentY, imgWidth, imgHeight)
+      pdf.addImage(imgData, 'PNG', 20, currentY, imgWidth, Math.min(imgHeight, pageHeight - currentY - 20))
     }
 
-    // Nova página para tabelas
-    pdf.addPage()
-    currentY = 20
+    // Nova página para recomendações da IA
+    if (aiAnalysis.value?.recommendations?.length) {
+      pdf.addPage()
+      currentY = 20
 
-    pdf.setFontSize(16)
-    pdf.setTextColor(26, 32, 44)
-    pdf.text('Dados Detalhados', 20, currentY)
-    currentY += 15
+      pdf.setFontSize(16)
+      pdf.setTextColor(26, 32, 44)
+      pdf.text('Recomendações Estratégicas (IA)', 20, currentY)
+      currentY += 15
 
-    // Tabela de produtos com estoque baixo
-    if (analytics.value.stock.lowStockProducts?.length > 0) {
-      pdf.setFontSize(12)
-      pdf.text('Produtos com Estoque Baixo', 20, currentY)
-      currentY += 10
-
-      // Cabeçalhos da tabela
-      pdf.setFontSize(9)
+      pdf.setFontSize(10)
       pdf.setTextColor(77, 85, 104)
-      pdf.text('Produto', 20, currentY)
-      pdf.text('Estoque Atual', 80, currentY)
-      pdf.text('Estoque Mínimo', 130, currentY)
-      pdf.text('Status', 170, currentY)
-      currentY += 5
+      aiAnalysis.value.recommendations.forEach((rec: string, index: number) => {
+        const recLines = pdf.splitTextToSize(`${index + 1}. ${rec}`, pageWidth - 40)
+        recLines.forEach((line: string, lineIndex: number) => {
+          pdf.text(line, 20, currentY + (lineIndex * 5))
+        })
+        currentY += recLines.length * 5 + 5
 
-      // Linha separadora
-      pdf.line(20, currentY, pageWidth - 20, currentY)
-      currentY += 5
-
-      // Dados da tabela
-      analytics.value.stock.lowStockProducts.slice(0, 15).forEach((product: any) => {
-        pdf.setTextColor(26, 32, 44)
-        pdf.text(product.nome.substring(0, 25), 20, currentY)
-        pdf.text(`${product.current_stock} ${product.unidade}`, 80, currentY)
-        pdf.text(`${product.min_stock} ${product.unidade}`, 130, currentY)
-        pdf.setTextColor(220, 38, 38)
-        pdf.text('Baixo', 170, currentY)
-        currentY += 5
-
-        if (currentY > pageHeight - 20) {
+        if (currentY > pageHeight - 30) {
           pdf.addPage()
           currentY = 20
         }
       })
     }
 
-    // Salvar PDF
-    pdf.save(`relatorio-gestao-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.pdf`)
+    // Salvar PDF avançado
+    pdf.save(`relatorio-avancado-ia-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.pdf`)
 
   } catch (error) {
     console.error('Erro ao exportar PDF:', error)
-    alert('Erro ao exportar relatório em PDF')
+    alert('Erro ao exportar relatório avançado em PDF')
   } finally {
     loading.value = false
+  }
+}
+
+async function exportToPowerBI() {
+  try {
+    showExportMenu.value = false
+
+    const powerBIData = {
+      metadata: {
+        title: 'GestãoZe Business Intelligence Dataset',
+        description: 'Dados avançados para análise no Power BI',
+        period: selectedPeriod.value,
+        generatedAt: new Date().toISOString(),
+        aiAnalysisIncluded: !!aiAnalysis.value
+      },
+      businessMetrics: {
+        totalSales: analytics.value.sales?.totalSales || 0,
+        totalProducts: analytics.value.stock?.totalProducts || 0,
+        stockValue: analytics.value.stock?.totalValue || 0,
+        performanceScore: aiAnalysis.value?.performanceScore || 0,
+        salesPerformance: salesPerformance.value,
+        stockPerformance: stockPerformance.value,
+        efficiencyPerformance: efficiencyPerformance.value
+      },
+      salesData: analytics.value.sales?.dailySales || [],
+      stockData: analytics.value.stock?.categoryBreakdown || [],
+      movementsData: analytics.value.movements?.dailyMovements || [],
+      aiInsights: {
+        executiveSummary: aiAnalysis.value?.executiveSummary || '',
+        insights: aiAnalysis.value?.insights || [],
+        recommendations: aiAnalysis.value?.recommendations || [],
+        predictions: aiAnalysis.value?.predictions || [],
+        alerts: aiAnalysis.value?.alerts || []
+      },
+      kpis: {
+        movementBalance: movementMetrics.value.balance,
+        entryRate: movementMetrics.value.entryRate,
+        exitRate: movementMetrics.value.exitRate,
+        lowStockCount: analytics.value.stock?.lowStockCount || 0,
+        outOfStockCount: analytics.value.stock?.outOfStockCount || 0
+      }
+    }
+
+    const jsonString = JSON.stringify(powerBIData, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `powerbi-dataset-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+
+  } catch (error) {
+    console.error('Erro ao exportar para Power BI:', error)
+    alert('Erro ao exportar dataset para Power BI')
   }
 }
 
@@ -629,62 +1303,104 @@ async function exportToExcel() {
 
     const workbook = XLSX.utils.book_new()
 
-    // Planilha de Resumo
+    // Planilha de Resumo Avançado
     const summaryData = [
-      ['Relatório de Análises - GestãoZe'],
+      ['Relatório Avançado com IA - GestãoZe'],
       [''],
       [`Período: ${periods.find(p => p.value === selectedPeriod.value)?.label}`],
       [`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`],
       [''],
-      ['RESUMO EXECUTIVO'],
+      ['MÉTRICAS DE PERFORMANCE'],
       ['Total de Vendas', `R$ ${formatCurrency(analytics.value.sales.totalSales || 0)}`],
+      ['Performance de Vendas', `${salesPerformance.value}%`],
+      ['Performance de Estoque', `${stockPerformance.value}%`],
+      ['Eficiência Operacional', `${efficiencyPerformance.value}%`],
+      ['Score Geral IA', aiAnalysis.value?.performanceScore || 0],
+      ['Taxa de Entrada', `${movementMetrics.value.entryRate}%`],
+      ['Taxa de Saída', `${movementMetrics.value.exitRate}%`],
+      ['Balanço', `${movementMetrics.value.balance}%`],
       ['Total de Produtos', analytics.value.stock.totalProducts || 0],
       ['Produtos em Falta', analytics.value.stock.outOfStockCount || 0],
       ['Valor do Estoque', `R$ ${formatCurrency(analytics.value.stock.totalValue || 0)}`]
     ]
 
     const summarySheet = XLSX.utils.aoa_to_sheet(summaryData)
-    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumo')
+    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumo Avançado')
 
-    // Planilha de Produtos com Estoque Baixo
-    if (analytics.value.stock.lowStockProducts?.length > 0) {
-      const lowStockData = [
-        ['Produto', 'Estoque Atual', 'Unidade', 'Estoque Mínimo', 'Status'],
-        ...analytics.value.stock.lowStockProducts.map((product: any) => [
-          product.nome,
-          product.current_stock,
-          product.unidade,
-          product.min_stock,
-          'Baixo'
-        ])
+    // Planilha de Análise da IA
+    if (aiAnalysis.value) {
+      const aiData = [
+        ['ANÁLISE DA INTELIGÊNCIA ARTIFICIAL'],
+        [''],
+        ['RESUMO EXECUTIVO'],
+        [aiAnalysis.value.executiveSummary || 'Não disponível'],
+        [''],
+        ['INSIGHTS ESTRATÉGICOS'],
+        ...(aiAnalysis.value.insights || []).map((insight: string) => [insight]),
+        [''],
+        ['RECOMENDAÇÕES'],
+        ...(aiAnalysis.value.recommendations || []).map((rec: string) => [rec]),
+        [''],
+        ['PREVISÕES'],
+        ...(aiAnalysis.value.predictions || []).map((pred: string) => [pred]),
+        [''],
+        ['ALERTAS'],
+        ...(aiAnalysis.value.alerts || []).map((alert: string) => [alert])
       ]
 
-      const lowStockSheet = XLSX.utils.aoa_to_sheet(lowStockData)
-      XLSX.utils.book_append_sheet(workbook, lowStockSheet, 'Estoque Baixo')
+      const aiSheet = XLSX.utils.aoa_to_sheet(aiData)
+      XLSX.utils.book_append_sheet(workbook, aiSheet, 'Análise IA')
     }
 
-    // Planilha de Movimentações
-    if (analytics.value.movements.recentMovements?.length > 0) {
-      const movementsData = [
-        ['Produto', 'Tipo', 'Quantidade', 'Data'],
-        ...analytics.value.movements.recentMovements.map((movement: any) => [
-          movement.produtos?.nome || 'N/A',
-          movement.type === 'in' ? 'Entrada' : 'Saída',
-          movement.quantity,
-          format(new Date(movement.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })
-        ])
+    // Planilha de Vendas Detalhadas
+    if (analytics.value.sales?.dailySales?.length > 0) {
+      const salesData = [
+        ['Data', 'Vendas (R$)', 'Média Móvel', 'Crescimento (%)'],
+        ...analytics.value.sales.dailySales.map((sale: any, index: number) => {
+          const prevSale = index > 0 ? analytics.value.sales.dailySales[index - 1] : null
+          const growth = prevSale ? ((sale.total - prevSale.total) / prevSale.total * 100).toFixed(2) : '0.00'
+
+          return [
+            format(new Date(sale.date), 'dd/MM/yyyy'),
+            sale.total?.toFixed(2) || '0.00',
+            '', // Média móvel seria calculada aqui
+            growth + '%'
+          ]
+        })
       ]
 
-      const movementsSheet = XLSX.utils.aoa_to_sheet(movementsData)
-      XLSX.utils.book_append_sheet(workbook, movementsSheet, 'Movimentações')
+      const salesSheet = XLSX.utils.aoa_to_sheet(salesData)
+      XLSX.utils.book_append_sheet(workbook, salesSheet, 'Vendas Detalhadas')
     }
 
-    // Salvar arquivo
-    XLSX.writeFile(workbook, `relatorio-gestao-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.xlsx`)
+    // Planilha de Performance por Categoria
+    if (analytics.value.stock?.categoryBreakdown?.length > 0) {
+      const categoryData = [
+        ['Categoria', 'Produtos', 'Percentual', 'Performance'],
+        ...analytics.value.stock.categoryBreakdown.map((cat: any) => {
+          const total = analytics.value.stock.categoryBreakdown.reduce((sum: number, c: any) => sum + c.count, 0)
+          const percentage = total > 0 ? ((cat.count / total) * 100).toFixed(2) : '0.00'
+          const performance = cat.count > 5 ? 'Excelente' : cat.count > 2 ? 'Boa' : 'Regular'
+
+          return [
+            cat.category,
+            cat.count,
+            percentage + '%',
+            performance
+          ]
+        })
+      ]
+
+      const categorySheet = XLSX.utils.aoa_to_sheet(categoryData)
+      XLSX.utils.book_append_sheet(workbook, categorySheet, 'Performance Categorias')
+    }
+
+    // Salvar arquivo avançado
+    XLSX.writeFile(workbook, `relatorio-avancado-ia-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.xlsx`)
 
   } catch (error) {
-    console.error('Erro ao exportar Excel:', error)
-    alert('Erro ao exportar relatório em Excel')
+    console.error('Erro ao exportar Excel avançado:', error)
+    alert('Erro ao exportar relatório avançado em Excel')
   }
 }
 

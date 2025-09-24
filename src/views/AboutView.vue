@@ -25,7 +25,7 @@
             <div class="system-stats">
               <div class="stat">
                 <Calendar :size="16" />
-                <span>Desenvolvido em 2024</span>
+                <span>Desenvolvido em 2025</span>
               </div>
               <div class="stat">
                 <Users :size="16" />
@@ -33,7 +33,7 @@
               </div>
               <div class="stat">
                 <Shield :size="16" />
-                <span>Licença MIT</span>
+                <span>Licença Proprietária</span>
               </div>
             </div>
           </div>
@@ -273,10 +273,10 @@
             </div>
             <h4>Documentação</h4>
             <p>Acesse nossa documentação completa com guias e tutoriais</p>
-            <button class="btn-outline">
+            <a href="https://github.com/Gestao-de-estoque/gestao-estoque-vue" target="_blank" rel="noopener noreferrer" class="btn-outline">
               <ExternalLink :size="16" />
               Ver Documentação
-            </button>
+            </a>
           </div>
 
           <div class="support-card">
@@ -285,10 +285,10 @@
             </div>
             <h4>Suporte Técnico</h4>
             <p>Entre em contato conosco para suporte técnico especializado</p>
-            <button class="btn-outline">
+            <a href="mailto:suporte@pedacinhodoceu.com" class="btn-outline">
               <Mail :size="16" />
               Contatar Suporte
-            </button>
+            </a>
           </div>
 
           <div class="support-card">
@@ -297,10 +297,10 @@
             </div>
             <h4>Código Fonte</h4>
             <p>Projeto open source disponível no GitHub</p>
-            <button class="btn-outline">
+            <a href="https://github.com/Gestao-de-estoque/gestao-estoque-vue" target="_blank" rel="noopener noreferrer" class="btn-outline">
               <Github :size="16" />
               Ver no GitHub
-            </button>
+            </a>
           </div>
         </div>
       </div>
@@ -341,8 +341,8 @@ import {
 
 // System Information
 const systemInfo = reactive({
-  version: '1.2.3',
-  build: 'build-20240923',
+  version: '1.0.0',
+  build: 'build-20250923',
   environment: 'production',
   lastUpdate: format(new Date(), 'dd/MM/yyyy', { locale: ptBR })
 })
@@ -355,8 +355,8 @@ const performance = reactive({
 
 const changelog = ref([
   {
-    version: '1.2.3',
-    date: '23/09/2024',
+    version: '1.0.0',
+    date: '23/09/2025',
     type: 'Atualização de Funcionalidades',
     changes: [
       'Novo sistema de relatórios com gráficos interativos',
@@ -366,8 +366,8 @@ const changelog = ref([
     ]
   },
   {
-    version: '1.2.2',
-    date: '15/09/2024',
+    version: '1.0.1',
+    date: '15/09/2025',
     type: 'Correções e Melhorias',
     changes: [
       'Correção no cálculo de margem de lucro',
@@ -377,8 +377,8 @@ const changelog = ref([
     ]
   },
   {
-    version: '1.2.1',
-    date: '08/09/2024',
+    version: '1.0.2',
+    date: '08/09/2025',
     type: 'Atualização de Segurança',
     changes: [
       'Melhorias na autenticação de usuários',
