@@ -395,8 +395,9 @@ const changelog = ref([
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  background: #f8fafc;
+  background: var(--theme-background-solid);
   min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
 .page-header {
@@ -407,29 +408,35 @@ const changelog = ref([
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: var(--theme-surface);
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
+  backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
 }
 
 .header-content h1 {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #1a202c;
+  gap: 16px;
+  color: var(--theme-text-primary);
   margin: 0;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .version-badge {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
-  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 15px;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
 }
 
 .about-content {
@@ -439,10 +446,13 @@ const changelog = ref([
 }
 
 .main-info {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: var(--theme-surface);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 12px 40px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
+  backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
 }
 
 .logo-section {
@@ -453,28 +463,34 @@ const changelog = ref([
 }
 
 .system-logo {
-  width: 96px;
-  height: 96px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 24px;
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  border-radius: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
   flex-shrink: 0;
+  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s ease;
 }
 
 .system-details h2 {
-  color: #1a202c;
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 8px 0;
+  color: var(--theme-text-primary);
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 }
 
 .tagline {
-  color: #64748b;
-  font-size: 16px;
-  margin: 0 0 20px 0;
+  color: var(--theme-text-secondary);
+  font-size: 18px;
+  margin: 0 0 24px 0;
+  font-weight: 500;
+  line-height: 1.4;
 }
 
 .system-stats {
@@ -486,26 +502,31 @@ const changelog = ref([
 .stat {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #4a5568;
-  font-size: 14px;
+  gap: 12px;
+  color: var(--theme-text-secondary);
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .stat svg {
-  color: #667eea;
+  color: var(--theme-primary);
+  transition: color 0.3s ease;
 }
 
 .description h3 {
-  color: #1a202c;
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0 0 16px 0;
+  color: var(--theme-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.01em;
 }
 
 .description p {
-  color: #4a5568;
-  line-height: 1.6;
-  margin-bottom: 16px;
+  color: var(--theme-text-secondary);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-size: 16px;
 }
 
 .features-section,
@@ -513,10 +534,13 @@ const changelog = ref([
 .status-section,
 .support-section,
 .changelog-section {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: var(--theme-surface);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 12px 40px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
+  backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
 }
 
 .features-section h3,
@@ -524,12 +548,29 @@ const changelog = ref([
 .status-section h3,
 .support-section h3,
 .changelog-section h3 {
-  color: #1a202c;
-  font-size: 22px;
-  font-weight: 700;
-  margin: 0 0 24px 0;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #f1f5f9;
+  color: var(--theme-text-primary);
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0 0 32px 0;
+  padding-bottom: 16px;
+  border-bottom: 3px solid var(--theme-border);
+  letter-spacing: -0.02em;
+  position: relative;
+}
+
+.features-section h3::after,
+.technical-section h3::after,
+.status-section h3::after,
+.support-section h3::after,
+.changelog-section h3::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  border-radius: 2px;
 }
 
 .features-grid {
@@ -539,27 +580,52 @@ const changelog = ref([
 }
 
 .feature-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 24px;
-  border: 2px solid #e2e8f0;
-  transition: all 0.3s ease;
+  background: var(--theme-background-solid);
+  border-radius: 20px;
+  padding: 32px;
+  border: 2px solid var(--theme-border);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
 }
 
 .feature-card:hover {
-  border-color: #667eea;
-  transform: translateY(-2px);
+  border-color: var(--theme-primary);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px var(--theme-shadow);
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
 }
 
 .feature-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 12px;
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .feature-icon.inventory { background: linear-gradient(135deg, #667eea, #764ba2); }
@@ -568,22 +634,25 @@ const changelog = ref([
 .feature-icon.ai { background: linear-gradient(135deg, #43e97b, #38f9d7); }
 
 .feature-content h4 {
-  color: #1a202c;
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
+  color: var(--theme-text-primary);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.01em;
 }
 
 .feature-content p {
-  color: #64748b;
-  line-height: 1.5;
-  margin-bottom: 16px;
+  color: var(--theme-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 20px;
+  font-size: 16px;
 }
 
 .feature-content ul {
-  color: #4a5568;
-  font-size: 14px;
-  margin-left: 20px;
+  color: var(--theme-text-secondary);
+  font-size: 15px;
+  margin-left: 24px;
+  line-height: 1.6;
 }
 
 .feature-content li {
@@ -599,21 +668,31 @@ const changelog = ref([
 
 .tech-card,
 .status-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #e2e8f0;
+  background: var(--theme-background-solid);
+  border-radius: 20px;
+  padding: 28px;
+  border: 2px solid var(--theme-border);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tech-card:hover,
+.status-card:hover {
+  border-color: var(--theme-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px var(--theme-shadow);
 }
 
 .tech-card h4,
 .status-card h4 {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #1a202c;
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 16px 0;
+  gap: 12px;
+  color: var(--theme-text-primary);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.01em;
 }
 
 .tech-list {
@@ -629,15 +708,15 @@ const changelog = ref([
 }
 
 .tech-name {
-  color: #64748b;
-  font-weight: 500;
-  font-size: 14px;
+  color: var(--theme-text-secondary);
+  font-weight: 600;
+  font-size: 15px;
 }
 
 .tech-value {
-  color: #1a202c;
-  font-weight: 600;
-  font-size: 14px;
+  color: var(--theme-text-primary);
+  font-weight: 700;
+  font-size: 15px;
 }
 
 .status-header {
@@ -659,13 +738,15 @@ const changelog = ref([
 }
 
 .status-indicator.online {
-  background: #c6f6d5;
-  color: #2f855a;
+  background: rgba(80, 250, 123, 0.2);
+  color: var(--theme-accent-success);
+  border: 1px solid rgba(80, 250, 123, 0.3);
 }
 
 .status-indicator.good {
-  background: #bee3f8;
-  color: #2b6cb0;
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--theme-accent-info);
+  border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
 .status-dot {
@@ -695,8 +776,8 @@ const changelog = ref([
 }
 
 .service-status.online {
-  color: #38a169;
-  font-weight: 600;
+  color: var(--theme-accent-success);
+  font-weight: 700;
 }
 
 .performance-metrics {
@@ -712,14 +793,15 @@ const changelog = ref([
 }
 
 .metric-label {
-  color: #64748b;
-  font-size: 14px;
+  color: var(--theme-text-secondary);
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .metric-value {
-  color: #1a202c;
-  font-weight: 700;
-  font-size: 16px;
+  color: var(--theme-text-primary);
+  font-weight: 800;
+  font-size: 18px;
 }
 
 .support-grid {
@@ -729,61 +811,109 @@ const changelog = ref([
 }
 
 .support-card {
-  background: #f8fafc;
-  border-radius: 12px;
-  padding: 24px;
+  background: var(--theme-background-solid);
+  border-radius: 20px;
+  padding: 32px;
   text-align: center;
-  border: 2px solid #e2e8f0;
-  transition: all 0.3s ease;
+  border: 2px solid var(--theme-border);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.support-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  transform: scaleX(0);
+  transition: transform 0.4s ease;
 }
 
 .support-card:hover {
-  border-color: #667eea;
-  transform: translateY(-2px);
+  border-color: var(--theme-primary);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px var(--theme-shadow);
+}
+
+.support-card:hover::before {
+  transform: scaleX(1);
+}
+
+.support-card:hover .support-icon {
+  transform: scale(1.1) rotate(5deg);
 }
 
 .support-icon {
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  border-radius: 12px;
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  margin: 0 auto 16px;
+  margin: 0 auto 24px;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
 }
 
 .support-card h4 {
-  color: #1a202c;
-  font-size: 18px;
-  font-weight: 600;
-  margin: 0 0 8px 0;
+  color: var(--theme-text-primary);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  letter-spacing: -0.01em;
 }
 
 .support-card p {
-  color: #64748b;
-  line-height: 1.5;
-  margin-bottom: 20px;
+  color: var(--theme-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 24px;
+  font-size: 16px;
 }
 
 .btn-outline {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 10px;
+  padding: 14px 24px;
   background: transparent;
-  border: 2px solid #667eea;
-  color: #667eea;
-  border-radius: 8px;
-  font-weight: 500;
+  border: 2px solid var(--theme-primary);
+  color: var(--theme-primary);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
   cursor: pointer;
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-outline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  transition: left 0.3s ease;
+  z-index: -1;
 }
 
 .btn-outline:hover {
-  background: #667eea;
   color: white;
+  border-color: var(--theme-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.btn-outline:hover::before {
+  left: 0;
 }
 
 .changelog-list {
@@ -793,20 +923,33 @@ const changelog = ref([
 }
 
 .changelog-item {
-  border-left: 4px solid #667eea;
-  padding-left: 20px;
+  border-left: 4px solid var(--theme-primary);
+  padding-left: 24px;
   position: relative;
+  transition: all 0.3s ease;
+}
+
+.changelog-item:hover {
+  border-left-color: var(--theme-secondary);
+  transform: translateX(4px);
 }
 
 .changelog-item::before {
   content: '';
   position: absolute;
-  left: -6px;
-  top: 8px;
-  width: 8px;
-  height: 8px;
-  background: #667eea;
+  left: -8px;
+  top: 12px;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--theme-background-solid);
+  transition: all 0.3s ease;
+}
+
+.changelog-item:hover::before {
+  transform: scale(1.3);
+  box-shadow: 0 0 0 6px var(--theme-background-solid), 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 .changelog-header {
@@ -817,30 +960,33 @@ const changelog = ref([
 }
 
 .changelog-version {
-  background: #667eea;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   color: white;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-weight: 600;
-  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .changelog-date {
-  color: #64748b;
-  font-size: 12px;
-  font-weight: 500;
+  color: var(--theme-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .changelog-type {
-  color: #4a5568;
-  font-weight: 600;
-  margin-bottom: 8px;
+  color: var(--theme-text-primary);
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-size: 16px;
 }
 
 .changelog-content ul {
-  color: #4a5568;
-  font-size: 14px;
-  margin-left: 16px;
+  color: var(--theme-text-secondary);
+  font-size: 15px;
+  margin-left: 20px;
+  line-height: 1.6;
 }
 
 .changelog-content li {

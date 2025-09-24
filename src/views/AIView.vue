@@ -1,111 +1,205 @@
 <template>
-  <div class="ai-view">
-    <!-- Header -->
-    <header class="ai-header">
-      <div class="header-content">
-        <div class="header-info">
-          <h1>
-            <Brain :size="32" />
-            Análise com Inteligência Artificial
-          </h1>
-          <p>Insights inteligentes e análises avançadas para otimizar sua gestão</p>
-        </div>
-        <div class="header-stats">
-          <div class="stat-item">
-            <Zap :size="20" />
-            <span>{{ analysisCount }} análises realizadas</span>
+  <div class="ai-container">
+    <!-- Header Principal -->
+    <div class="ai-header">
+      <div class="header-main">
+        <div class="header-left">
+          <div class="title-section">
+            <h1 class="page-title">
+              <Brain :size="32" />
+              Inteligência Artificial Avançada
+            </h1>
+            <p class="page-subtitle">Insights poderosos e análises profissionais para maximizar seus resultados</p>
           </div>
-          <div class="stat-item">
-            <Clock :size="20" />
-            <span>Última atualização: {{ formatTime(lastUpdate) }}</span>
+        </div>
+        <div class="header-actions">
+          <div class="stat-card primary">
+            <div class="stat-icon">
+              <Zap :size="20" />
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ analysisCount }}</div>
+              <div class="stat-label">Análises</div>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-icon">
+              <Clock :size="20" />
+            </div>
+            <div class="stat-content">
+              <div class="stat-value">{{ formatTime(lastUpdate) }}</div>
+              <div class="stat-label">Última Análise</div>
+            </div>
           </div>
         </div>
       </div>
-    </header>
+    </div>
 
     <!-- Main Content -->
     <div class="ai-content">
-      <!-- Quick Analysis Cards -->
-      <section class="quick-analysis-section">
-        <h2>
-          <Sparkles :size="24" />
-          Análises Rápidas
-        </h2>
+      <!-- Análises Inteligentes -->
+      <section class="intelligent-analysis-section">
+        <div class="section-header">
+          <div class="section-title">
+            <h2>
+              <Sparkles :size="24" />
+              Análises Inteligentes
+            </h2>
+            <p>Insights baseados em IA para otimizar sua operação</p>
+          </div>
+          <div class="section-actions">
+            <button @click="runAllAnalysis" :disabled="isAnyLoading" class="btn-primary">
+              <Zap :size="16" />
+              Executar Todas
+            </button>
+          </div>
+        </div>
+
         <div class="analysis-grid">
-          <div class="analysis-card inventory" @click="runInventoryAnalysis">
-            <div class="card-header">
-              <div class="card-icon">
-                <Package :size="32" />
-              </div>
-              <div class="card-actions">
-                <button
-                  :disabled="loading.inventory"
-                  class="action-btn primary"
-                >
-                  <Loader2 v-if="loading.inventory" :size="16" class="animate-spin" />
-                  <PlayCircle v-else :size="16" />
-                </button>
-              </div>
+          <div
+            class="analysis-card inventory"
+            @click="runInventoryAnalysis"
+            :class="{ 'loading': loading.inventory, 'completed': analyses.inventory }"
+          >
+            <div class="card-status">
+              <div class="status-indicator"></div>
+            </div>
+            <div class="card-icon">
+              <Package :size="28" />
             </div>
             <div class="card-content">
-              <h3>Análise de Estoque</h3>
-              <p>Avaliação completa do inventário atual com recomendações estratégicas</p>
-              <div class="card-features">
-                <span>• Produtos críticos</span>
-                <span>• Otimização de custos</span>
-                <span>• Ações prioritárias</span>
+              <div class="card-title">
+                <h3>Análise de Estoque</h3>
+                <button :disabled="loading.inventory" class="run-btn">
+                  <Loader2 v-if="loading.inventory" :size="18" class="animate-spin" />
+                  <PlayCircle v-else :size="18" />
+                </button>
+              </div>
+              <p>Avaliação completa do inventário com insights estratégicos</p>
+              <div class="card-metrics">
+                <div class="metric">
+                  <AlertTriangle :size="14" />
+                  <span>Produtos críticos</span>
+                </div>
+                <div class="metric">
+                  <DollarSign :size="14" />
+                  <span>Otimização de custos</span>
+                </div>
+                <div class="metric">
+                  <TrendingUp :size="14" />
+                  <span>Ações prioritárias</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="analysis-card purchase" @click="runPurchaseSuggestions">
-            <div class="card-header">
-              <div class="card-icon">
-                <ShoppingCart :size="32" />
-              </div>
-              <div class="card-actions">
-                <button
-                  :disabled="loading.purchase"
-                  class="action-btn primary"
-                >
-                  <Loader2 v-if="loading.purchase" :size="16" class="animate-spin" />
-                  <PlayCircle v-else :size="16" />
-                </button>
-              </div>
+          <div
+            class="analysis-card purchase"
+            @click="runPurchaseSuggestions"
+            :class="{ 'loading': loading.purchase, 'completed': analyses.purchase }"
+          >
+            <div class="card-status">
+              <div class="status-indicator"></div>
+            </div>
+            <div class="card-icon">
+              <ShoppingCart :size="28" />
             </div>
             <div class="card-content">
-              <h3>Sugestões de Compra</h3>
-              <p>Recomendações inteligentes baseadas no consumo e tendências</p>
-              <div class="card-features">
-                <span>• Lista prioritária</span>
-                <span>• Planejamento semanal</span>
-                <span>• Otimização de custos</span>
+              <div class="card-title">
+                <h3>Sugestões de Compra</h3>
+                <button :disabled="loading.purchase" class="run-btn">
+                  <Loader2 v-if="loading.purchase" :size="18" class="animate-spin" />
+                  <PlayCircle v-else :size="18" />
+                </button>
+              </div>
+              <p>Recomendações inteligentes baseadas em padrões de consumo</p>
+              <div class="card-metrics">
+                <div class="metric">
+                  <ListChecks :size="14" />
+                  <span>Lista prioritária</span>
+                </div>
+                <div class="metric">
+                  <Calendar :size="14" />
+                  <span>Planejamento semanal</span>
+                </div>
+                <div class="metric">
+                  <Target :size="14" />
+                  <span>Oportunidades</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="analysis-card menu" @click="runMenuOptimization">
-            <div class="card-header">
-              <div class="card-icon">
-                <ChefHat :size="32" />
-              </div>
-              <div class="card-actions">
-                <button
-                  :disabled="loading.menu"
-                  class="action-btn primary"
-                >
-                  <Loader2 v-if="loading.menu" :size="16" class="animate-spin" />
-                  <PlayCircle v-else :size="16" />
-                </button>
-              </div>
+          <div
+            class="analysis-card menu"
+            @click="runMenuOptimization"
+            :class="{ 'loading': loading.menu, 'completed': analyses.menu }"
+          >
+            <div class="card-status">
+              <div class="status-indicator"></div>
+            </div>
+            <div class="card-icon">
+              <ChefHat :size="28" />
             </div>
             <div class="card-content">
-              <h3>Otimização do Cardápio</h3>
-              <p>Análise e sugestões para maximizar lucros e reduzir desperdícios</p>
-              <div class="card-features">
-                <span>• Pratos rentáveis</span>
-                <span>• Aproveitamento de estoque</span>
-                <span>• Combos sugeridos</span>
+              <div class="card-title">
+                <h3>Otimização do Cardápio</h3>
+                <button :disabled="loading.menu" class="run-btn">
+                  <Loader2 v-if="loading.menu" :size="18" class="animate-spin" />
+                  <PlayCircle v-else :size="18" />
+                </button>
+              </div>
+              <p>Análise profunda para maximizar lucros e reduzir desperdícios</p>
+              <div class="card-metrics">
+                <div class="metric">
+                  <PieChart :size="14" />
+                  <span>Pratos rentáveis</span>
+                </div>
+                <div class="metric">
+                  <Recycle :size="14" />
+                  <span>Aproveitamento</span>
+                </div>
+                <div class="metric">
+                  <Lightbulb :size="14" />
+                  <span>Recomendações</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="analysis-card performance"
+            @click="runPerformanceAnalysis"
+            :class="{ 'loading': loading.performance, 'completed': analyses.performance }"
+          >
+            <div class="card-status">
+              <div class="status-indicator"></div>
+            </div>
+            <div class="card-icon">
+              <BarChart3 :size="28" />
+            </div>
+            <div class="card-content">
+              <div class="card-title">
+                <h3>Análise de Performance</h3>
+                <button :disabled="loading.performance" class="run-btn">
+                  <Loader2 v-if="loading.performance" :size="18" class="animate-spin" />
+                  <PlayCircle v-else :size="18" />
+                </button>
+              </div>
+              <p>Métricas detalhadas de desempenho operacional</p>
+              <div class="card-metrics">
+                <div class="metric">
+                  <Activity :size="14" />
+                  <span>KPIs principais</span>
+                </div>
+                <div class="metric">
+                  <TrendingDown :size="14" />
+                  <span>Pontos de melhoria</span>
+                </div>
+                <div class="metric">
+                  <Star :size="14" />
+                  <span>Benchmarks</span>
+                </div>
               </div>
             </div>
           </div>
@@ -305,7 +399,9 @@ import { productService } from '@/services/productService'
 import {
   Brain, Sparkles, Package, ShoppingCart, ChefHat, PlayCircle, Loader2,
   BarChart3, Download, Share2, MessageCircle, Bot, User, Copy, Trash2,
-  Send, AlertCircle, X, Zap, Clock, TrendingUp, Calculator
+  Send, AlertCircle, X, Zap, Clock, TrendingUp, Calculator, AlertTriangle,
+  DollarSign, ListChecks, Calendar, Target, PieChart, Recycle, Lightbulb,
+  Activity, TrendingDown, Star
 } from 'lucide-vue-next'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -332,6 +428,7 @@ const loading = ref({
   inventory: false,
   purchase: false,
   menu: false,
+  performance: false,
   chat: false
 })
 
@@ -343,18 +440,25 @@ const errorMessage = ref('')
 const analysisCount = ref(0)
 const lastUpdate = ref(new Date())
 
-// Quick suggestions
+// Quick suggestions expandidas e profissionais
 const quickSuggestions = [
-  { icon: '📦', text: 'Quais produtos estão com estoque baixo?' },
-  { icon: '💰', text: 'Como posso reduzir custos operacionais?' },
-  { icon: '🎯', text: 'Qual a melhor estratégia de compras para esta semana?' },
-  { icon: '📊', text: 'Analise o desempenho do meu estoque' },
-  { icon: '🍽️', text: 'Sugestões para otimizar o cardápio atual' },
-  { icon: '⚡', text: 'Quais ações urgentes devo tomar hoje?' }
+  { icon: '📦', text: 'Quais produtos estão com estoque crítico e precisam de reposição imediata?' },
+  { icon: '💰', text: 'Analise o ROI dos meus produtos e identifique oportunidades de melhoria' },
+  { icon: '🎯', text: 'Crie um plano estratégico de compras baseado em previsão de demanda' },
+  { icon: '📊', text: 'Gere um dashboard executivo com KPIs de performance do negócio' },
+  { icon: '🍽️', text: 'Otimize meu cardápio para maximizar lucro e reduzir desperdícios' },
+  { icon: '⚡', text: 'Liste ações prioritárias para otimizar a operação hoje mesmo' },
+  { icon: '📈', text: 'Identifique tendências de consumo e padrões de compra dos clientes' },
+  { icon: '🔍', text: 'Analise produtos com baixa rotatividade e sugira estratégias' },
+  { icon: '⚖️', text: 'Compare custos vs preços de venda e otimize margens de lucro' },
+  { icon: '🎨', text: 'Sugira combinações de produtos para aumentar ticket médio' },
+  { icon: '📅', text: 'Crie um cronograma inteligente de compras para o próximo mês' },
+  { icon: '💡', text: 'Identifique oportunidades de inovação no meu mix de produtos' }
 ]
 
 // Computed
 const hasResults = computed(() => Object.keys(analyses.value).length > 0)
+const isAnyLoading = computed(() => Object.values(loading.value).some(Boolean))
 
 const availableTabs = computed(() => {
   const tabs = []
@@ -366,6 +470,9 @@ const availableTabs = computed(() => {
   }
   if (analyses.value.menu) {
     tabs.push({ id: 'menu', label: 'Cardápio', icon: ChefHat })
+  }
+  if (analyses.value.performance) {
+    tabs.push({ id: 'performance', label: 'Performance', icon: BarChart3 })
   }
   return tabs
 })
@@ -491,6 +598,61 @@ async function runMenuOptimization() {
   } finally {
     loading.value.menu = false
   }
+}
+
+async function runPerformanceAnalysis() {
+  if (loading.value.performance) return
+
+  loading.value.performance = true
+  errorMessage.value = ''
+
+  try {
+    const products = await productService.getProducts()
+    const categories = await productService.getCategories()
+
+    const performanceData = {
+      totalProducts: products.length,
+      activeProducts: products.filter(p => p.current_stock > 0).length,
+      totalValue: products.reduce((acc, p) => acc + (p.preco * p.current_stock), 0),
+      averageProductValue: products.reduce((acc, p) => acc + p.preco, 0) / products.length,
+      categoriesCount: categories.length,
+      stockTurnover: products.filter(p => p.current_stock <= p.min_stock).length / products.length,
+      profitabilityIndex: products.reduce((acc, p) => acc + ((p.preco - (p.custo || 0)) * p.current_stock), 0),
+      criticalProducts: products.filter(p => p.current_stock === 0).length,
+      products: products.slice(0, 15) // Limit for API
+    }
+
+    const analysis = await aiService.analyzePerformance(performanceData)
+
+    analyses.value.performance = {
+      id: 'performance',
+      title: 'Análise de Performance',
+      content: analysis,
+      timestamp: new Date()
+    }
+
+    analysisCount.value++
+    lastUpdate.value = new Date()
+    activeTab.value = 'performance'
+  } catch (error: any) {
+    console.error('Erro na análise de performance:', error)
+    errorMessage.value = error.message || 'Erro ao analisar performance'
+  } finally {
+    loading.value.performance = false
+  }
+}
+
+async function runAllAnalysis() {
+  if (isAnyLoading.value) return
+
+  // Run all analyses in sequence to avoid overwhelming the API
+  await runInventoryAnalysis()
+  await new Promise(resolve => setTimeout(resolve, 2000)) // 2s delay
+  await runPurchaseSuggestions()
+  await new Promise(resolve => setTimeout(resolve, 2000)) // 2s delay
+  await runMenuOptimization()
+  await new Promise(resolve => setTimeout(resolve, 2000)) // 2s delay
+  await runPerformanceAnalysis()
 }
 
 async function sendMessage() {
@@ -648,319 +810,483 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.ai-view {
+/* ===== AI VIEW - PROFESSIONAL STYLES ===== */
+
+/* Container Principal */
+.ai-container {
+  width: 100vw;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 2rem;
+  background: var(--theme-background);
+  overflow-x: hidden;
 }
 
+/* ===== HEADER PRINCIPAL ===== */
 .ai-header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--theme-surface);
+  border-bottom: 1px solid var(--theme-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 10px var(--theme-shadow);
 }
 
-.header-content {
+.header-main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 2rem;
+  padding: 24px 32px;
+  max-width: none;
 }
 
-.header-info h1 {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.header-info p {
-  margin: 0;
-  color: #666;
-  font-size: 1.125rem;
-  font-weight: 500;
-}
-
-.header-stats {
+.header-left .title-section {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 4px;
 }
 
-.stat-item {
+.page-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #667eea;
-  font-weight: 600;
-  font-size: 0.875rem;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+  margin: 0;
 }
 
+.page-subtitle {
+  color: var(--theme-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.stat-card {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px var(--theme-shadow);
+  min-width: 120px;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--theme-shadow);
+}
+
+.stat-card.primary .stat-icon {
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+}
+
+.stat-card.success .stat-icon {
+  background: linear-gradient(135deg, var(--theme-accent-success), #059669);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--theme-text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ===== CONTEÚDO PRINCIPAL ===== */
 .ai-content {
+  padding: 32px;
   max-width: 1400px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 32px;
 }
 
-.quick-analysis-section h2,
-.results-section h2,
-.chat-section h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 0 0 1.5rem 0;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+/* ===== SEÇÃO DE ANÁLISES INTELIGENTES ===== */
+.intelligent-analysis-section {
+  background: var(--theme-surface);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 12px var(--theme-shadow);
 }
 
-.analysis-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 1.5rem;
-}
-
-.analysis-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 2rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
-}
-
-.analysis-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
-}
-
-.card-header {
+.section-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 32px;
 }
 
-.card-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
+.section-title h2 {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
+  color: var(--theme-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+}
+
+.section-title p {
+  color: var(--theme-text-secondary);
+  font-size: 14px;
+  margin: 0;
+}
+
+.section-actions .btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   color: white;
-}
-
-.analysis-card.inventory .card-icon {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.analysis-card.purchase .card-icon {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.analysis-card.menu .card-icon {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.action-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  border-radius: 12px;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-.action-btn:hover:not(:disabled) {
-  transform: scale(1.1);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+.section-actions .btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--theme-shadow);
 }
 
-.action-btn:disabled {
+.section-actions .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.card-content h3 {
-  margin: 0 0 0.75rem 0;
-  font-size: 1.25rem;
+/* ===== GRID DE ANÁLISES ===== */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.analysis-card {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px var(--theme-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.analysis-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px var(--theme-shadow);
+}
+
+.analysis-card.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.analysis-card.completed .card-status .status-indicator {
+  background: var(--theme-accent-success);
+}
+
+.analysis-card.loading .card-status .status-indicator {
+  background: var(--theme-accent-warning);
+  animation: pulse 2s infinite;
+}
+
+.card-status {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--theme-border);
+  transition: all 0.3s ease;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.analysis-card.inventory .card-icon {
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+}
+
+.analysis-card.purchase .card-icon {
+  background: linear-gradient(135deg, var(--theme-accent-warning), #d97706);
+}
+
+.analysis-card.menu .card-icon {
+  background: linear-gradient(135deg, var(--theme-accent-success), #059669);
+}
+
+.analysis-card.performance .card-icon {
+  background: linear-gradient(135deg, var(--theme-accent-info), #0ea5e9);
+}
+
+.card-content {
+  flex: 1;
+}
+
+.card-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.card-title h3 {
+  margin: 0;
+  font-size: 18px;
   font-weight: 700;
-  color: #333;
+  color: var(--theme-text-primary);
+}
+
+.run-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(var(--theme-primary-rgb, 102, 126, 234), 0.1);
+  color: var(--theme-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.run-btn:hover:not(:disabled) {
+  background: var(--theme-primary);
+  color: white;
+  transform: scale(1.05);
+}
+
+.run-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .card-content p {
-  margin: 0 0 1rem 0;
-  color: #666;
+  margin: 0 0 16px 0;
+  color: var(--theme-text-secondary);
+  font-size: 14px;
   line-height: 1.5;
 }
 
-.card-features {
+.card-metrics {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 8px;
 }
 
-.card-features span {
-  font-size: 0.875rem;
-  color: #667eea;
+.metric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--theme-text-muted);
   font-weight: 500;
 }
 
+.metric svg {
+  color: var(--theme-primary);
+}
+
+/* ===== SEÇÃO DE RESULTADOS ===== */
 .results-section {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  background: var(--theme-surface);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 12px var(--theme-shadow);
 }
 
 .results-section h2 {
-  color: #333;
-  text-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--theme-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 24px 0;
 }
 
 .results-tabs {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid rgba(102, 126, 234, 0.1);
-  padding-bottom: 1rem;
+  gap: 8px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--theme-border);
+  padding-bottom: 16px;
 }
 
 .tab-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: transparent;
-  border: 1px solid rgba(102, 126, 234, 0.2);
-  border-radius: 12px;
-  color: #667eea;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--theme-surface);
+  border: 2px solid var(--theme-border);
+  border-radius: 8px;
+  color: var(--theme-text-secondary);
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 600;
+  font-size: 14px;
 }
 
 .tab-button:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--theme-border);
 }
 
 .tab-button.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--theme-primary);
   color: white;
-  border-color: transparent;
+  border-color: var(--theme-primary);
 }
 
 .result-content {
-  max-height: 500px;
+  max-height: 600px;
   overflow-y: auto;
+  padding-right: 8px;
 }
 
 .result-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 20px;
 }
 
 .result-header h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 20px;
   font-weight: 700;
-  color: #333;
+  color: var(--theme-text-primary);
 }
 
 .result-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 8px;
 }
 
-.export-btn,
-.share-btn {
+.export-btn, .share-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(102, 126, 234, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(var(--theme-primary-rgb, 102, 126, 234), 0.1);
+  border: 1px solid rgba(var(--theme-primary-rgb, 102, 126, 234), 0.3);
   border-radius: 8px;
-  color: #667eea;
+  color: var(--theme-primary);
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-.export-btn:hover,
-.share-btn:hover {
-  background: rgba(102, 126, 234, 0.2);
+.export-btn:hover, .share-btn:hover {
+  background: rgba(var(--theme-primary-rgb, 102, 126, 234), 0.2);
 }
 
 .result-body {
   line-height: 1.6;
-  color: #333;
+  color: var(--theme-text-primary);
 }
 
+/* ===== SEÇÃO DE CHAT ===== */
 .chat-section {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  background: var(--theme-surface);
+  border-radius: 16px;
+  padding: 32px;
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 12px var(--theme-shadow);
 }
 
 .chat-section h2 {
-  color: #333;
-  text-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--theme-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 24px 0;
 }
 
 .chat-container {
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  border: 2px solid var(--theme-border);
   border-radius: 16px;
   overflow: hidden;
-  background: #f8fafc;
+  background: var(--theme-background-solid);
 }
 
 .chat-messages {
   height: 400px;
   overflow-y: auto;
-  padding: 1.5rem;
+  padding: 24px;
+  background: var(--theme-surface);
 }
 
 .welcome-message {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 16px;
   text-align: left;
 }
 
 .welcome-avatar {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -970,40 +1296,42 @@ onMounted(() => {
 }
 
 .welcome-content h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
-  font-size: 1.125rem;
+  margin: 0 0 16px 0;
+  color: var(--theme-text-primary);
+  font-size: 18px;
   font-weight: 700;
 }
 
 .welcome-content p {
-  margin: 0 0 1.5rem 0;
-  color: #666;
+  margin: 0 0 20px 0;
+  color: var(--theme-text-secondary);
+  line-height: 1.5;
 }
 
 .capabilities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
 }
 
 .capability-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: white;
+  gap: 8px;
+  padding: 12px;
+  background: var(--theme-surface);
   border-radius: 8px;
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  border: 1px solid var(--theme-border);
   font-weight: 500;
-  color: #333;
+  color: var(--theme-text-primary);
+  font-size: 14px;
 }
 
 .chat-message {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .chat-message.user-message {
@@ -1011,8 +1339,8 @@ onMounted(() => {
 }
 
 .message-avatar {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1022,37 +1350,38 @@ onMounted(() => {
 }
 
 .user-message .message-avatar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
 }
 
 .ai-message .message-avatar {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, var(--theme-accent-success), #059669);
 }
 
 .message-content {
   max-width: 75%;
-  background: white;
+  background: var(--theme-surface);
   border-radius: 16px;
-  padding: 1rem 1.25rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(102, 126, 234, 0.1);
+  padding: 16px;
+  box-shadow: 0 2px 8px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
 }
 
 .user-message .message-content {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   color: white;
 }
 
 .message-text {
   line-height: 1.5;
+  font-size: 14px;
 }
 
 .message-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 0.5rem;
-  font-size: 0.75rem;
+  margin-top: 8px;
+  font-size: 12px;
   opacity: 0.7;
 }
 
@@ -1060,26 +1389,26 @@ onMounted(() => {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: 4px;
   border-radius: 4px;
   transition: all 0.3s ease;
 }
 
 .copy-btn:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(var(--theme-primary-rgb, 102, 126, 234), 0.1);
 }
 
 .typing-indicator {
   display: flex;
-  gap: 0.25rem;
-  margin-bottom: 0.5rem;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .typing-indicator span {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #667eea;
+  background: var(--theme-primary);
   animation: typing 1.4s infinite ease-in-out;
 }
 
@@ -1087,60 +1416,55 @@ onMounted(() => {
 .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
 
 @keyframes typing {
-  0%, 80%, 100% {
-    transform: scale(0);
-    opacity: 0.5;
-  }
-  40% {
-    transform: scale(1);
-    opacity: 1;
-  }
+  0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+  40% { transform: scale(1); opacity: 1; }
 }
 
 .typing-text {
   font-style: italic;
-  color: #666;
-  font-size: 0.875rem;
+  color: var(--theme-text-secondary);
+  font-size: 14px;
 }
 
 .quick-suggestions {
-  padding: 1.5rem;
-  border-top: 1px solid rgba(102, 126, 234, 0.1);
-  background: white;
+  padding: 24px;
+  border-top: 1px solid var(--theme-border);
+  background: var(--theme-surface);
 }
 
 .quick-suggestions h4 {
-  margin: 0 0 1rem 0;
-  color: #333;
-  font-size: 1rem;
+  margin: 0 0 16px 0;
+  color: var(--theme-text-primary);
+  font-size: 16px;
   font-weight: 700;
 }
 
 .suggestions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 .suggestion-chip {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: rgba(102, 126, 234, 0.05);
-  border: 1px solid rgba(102, 126, 234, 0.2);
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(var(--theme-primary-rgb, 102, 126, 234), 0.05);
+  border: 1px solid rgba(var(--theme-primary-rgb, 102, 126, 234), 0.2);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: left;
   font-weight: 500;
-  color: #333;
+  color: var(--theme-text-primary);
+  font-size: 14px;
 }
 
 .suggestion-chip:hover:not(:disabled) {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(var(--theme-primary-rgb, 102, 126, 234), 0.1);
   transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+  box-shadow: 0 4px 12px var(--theme-shadow);
 }
 
 .suggestion-chip:disabled {
@@ -1149,36 +1473,30 @@ onMounted(() => {
 }
 
 .suggestion-icon {
-  font-size: 1.25rem;
+  font-size: 18px;
   flex-shrink: 0;
 }
 
 .chat-input-container {
-  border-top: 1px solid rgba(102, 126, 234, 0.1);
-  background: white;
-  padding: 1rem;
-}
-
-.input-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+  border-top: 1px solid var(--theme-border);
+  background: var(--theme-surface);
+  padding: 20px;
 }
 
 .input-area {
   display: flex;
   align-items: flex-end;
-  gap: 0.75rem;
-  background: rgba(102, 126, 234, 0.05);
-  border: 2px solid rgba(102, 126, 234, 0.2);
+  gap: 12px;
+  background: var(--theme-background-solid);
+  border: 2px solid var(--theme-border);
   border-radius: 12px;
-  padding: 0.75rem;
+  padding: 12px;
   transition: all 0.3s ease;
 }
 
 .input-area:focus-within {
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb, 102, 126, 234), 0.1);
 }
 
 .chat-input {
@@ -1187,25 +1505,24 @@ onMounted(() => {
   background: none;
   outline: none;
   resize: none;
-  font-size: 1rem;
+  font-size: 16px;
   line-height: 1.5;
-  color: #333;
+  color: var(--theme-text-primary);
   font-family: inherit;
   min-height: 20px;
-  max-height: 100px;
+  max-height: 120px;
 }
 
 .chat-input::placeholder {
-  color: #94a3b8;
+  color: var(--theme-text-muted);
 }
 
 .input-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
-.clear-btn,
-.send-btn {
+.clear-btn, .send-btn {
   width: 36px;
   height: 36px;
   border-radius: 8px;
@@ -1218,22 +1535,22 @@ onMounted(() => {
 }
 
 .clear-btn {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: rgba(var(--theme-accent-error-rgb, 239, 68, 68), 0.1);
+  color: var(--theme-accent-error);
 }
 
 .clear-btn:hover {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(var(--theme-accent-error-rgb, 239, 68, 68), 0.2);
 }
 
 .send-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   color: white;
 }
 
 .send-btn:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 12px var(--theme-shadow);
 }
 
 .send-btn:disabled {
@@ -1241,20 +1558,22 @@ onMounted(() => {
   cursor: not-allowed;
 }
 
+/* ===== TOAST DE ERRO ===== */
 .error-toast {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: #ef4444;
+  bottom: 32px;
+  right: 32px;
+  background: var(--theme-accent-error);
   color: white;
-  padding: 1rem 1.25rem;
+  padding: 16px 20px;
   border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 8px 32px rgba(var(--theme-accent-error-rgb, 239, 68, 68), 0.3);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 12px;
   max-width: 400px;
   z-index: 1000;
+  font-weight: 500;
 }
 
 .close-btn {
@@ -1262,7 +1581,7 @@ onMounted(() => {
   border: none;
   color: white;
   cursor: pointer;
-  padding: 0.25rem;
+  padding: 4px;
   border-radius: 4px;
   transition: all 0.3s ease;
 }
@@ -1271,6 +1590,7 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.2);
 }
 
+/* ===== ANIMAÇÕES ===== */
 .animate-spin {
   animation: spin 1s linear infinite;
 }
@@ -1280,24 +1600,16 @@ onMounted(() => {
   to { transform: rotate(360deg); }
 }
 
-.toast-enter-active,
-.toast-leave-active {
+.toast-enter-active, .toast-leave-active {
   transition: all 0.3s ease;
 }
 
-.toast-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
-}
+.toast-enter-from { opacity: 0; transform: translateX(100%); }
+.toast-leave-to { opacity: 0; transform: translateX(100%); }
 
-.toast-leave-to {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-/* Markdown Styles */
+/* ===== MARKDOWN STYLES ===== */
 .md-h1, .md-h2, .md-h3 {
-  color: #333;
+  color: var(--theme-text-primary);
   margin: 1rem 0 0.5rem 0;
   font-weight: 700;
 }
@@ -1308,7 +1620,7 @@ onMounted(() => {
 
 .md-bold {
   font-weight: 700;
-  color: #667eea;
+  color: var(--theme-primary);
 }
 
 .md-ul {
@@ -1318,19 +1630,51 @@ onMounted(() => {
 
 .md-li {
   margin: 0.25rem 0;
-  color: #555;
+  color: var(--theme-text-primary);
 }
 
-/* Responsividade */
-@media (max-width: 768px) {
-  .ai-view {
-    padding: 1rem;
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 1200px) {
+  .header-main {
+    padding: 20px 24px;
   }
 
-  .header-content {
+  .ai-content {
+    padding: 24px;
+  }
+
+  .analysis-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .header-main {
     flex-direction: column;
-    text-align: center;
-    gap: 1rem;
+    gap: 16px;
+    align-items: stretch;
+    padding: 20px;
+  }
+
+  .header-actions {
+    justify-content: center;
+  }
+
+  .ai-content {
+    padding: 20px;
+    gap: 24px;
+  }
+
+  .intelligent-analysis-section,
+  .results-section,
+  .chat-section {
+    padding: 24px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
   }
 
   .analysis-grid {
@@ -1355,22 +1699,44 @@ onMounted(() => {
 }
 
 @media (max-width: 480px) {
-  .ai-view {
-    padding: 0.5rem;
+  .header-main {
+    padding: 16px;
   }
 
-  .ai-header,
+  .ai-content {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .intelligent-analysis-section,
   .results-section,
   .chat-section {
-    padding: 1.5rem;
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 24px;
+  }
+
+  .stat-card {
+    min-width: 100px;
+    padding: 12px;
+  }
+
+  .stat-value {
+    font-size: 16px;
   }
 
   .analysis-card {
-    padding: 1.5rem;
+    padding: 20px;
   }
 
-  .header-info h1 {
-    font-size: 1.5rem;
+  .chat-messages {
+    padding: 16px;
+  }
+
+  .chat-input-container {
+    padding: 16px;
   }
 }
 </style>

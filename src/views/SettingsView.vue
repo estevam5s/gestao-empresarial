@@ -6,10 +6,16 @@
           <Settings :size="28" />
           Configurações do App
         </h1>
-        <button @click="saveAllSettings" :disabled="saving" class="btn-primary">
-          <Save :size="18" />
-          {{ saving ? 'Salvando...' : 'Salvar Tudo' }}
-        </button>
+        <div class="header-actions">
+          <button @click="testDatabaseConnection" class="btn-secondary" title="Testar Conexão">
+            <RefreshCw :size="18" />
+            Testar DB
+          </button>
+          <button @click="saveAllSettings" :disabled="saving || loading" class="btn-primary">
+            <Save :size="18" />
+            {{ saving ? 'Salvando...' : loading ? 'Carregando...' : 'Salvar Tudo' }}
+          </button>
+        </div>
       </div>
     </header>
 
@@ -30,6 +36,10 @@
 
       <!-- Conteúdo das Configurações -->
       <div class="settings-panel">
+        <div v-if="loading" class="loading-state">
+          <RefreshCw :size="24" class="loading-spinner" />
+          <p>Carregando configurações...</p>
+        </div>
 
         <!-- Configurações Gerais -->
         <div v-if="activeSection === 'general'" class="section">
@@ -396,10 +406,10 @@
               <div class="form-row">
                 <div class="form-group">
                   <label>Tema:</label>
-                  <select v-model="settings.interface.theme">
+                  <select v-model="settings.interface.theme" @change="saveSectionSettings('interface')">
                     <option value="light">Claro</option>
                     <option value="dark">Escuro</option>
-                    <option value="auto">Automático</option>
+                    <option value="auto">Automático (Sistema)</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -572,6 +582,14 @@
       </div>
     </div>
 
+    <!-- Loading Overlay -->
+    <div v-if="loading" class="loading-overlay">
+      <div class="loading-content">
+        <RefreshCw :size="32" class="loading-spinner" />
+        <p>Carregando configurações do banco de dados...</p>
+      </div>
+    </div>
+
     <!-- Status de Salvamento -->
     <div v-if="saveStatus" :class="`save-status ${saveStatus.type}`">
       <CheckCircle v-if="saveStatus.type === 'success'" :size="16" />
@@ -582,7 +600,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useThemeStore } from '@/stores/theme'
+import { settingsService, type AppSettings } from '@/services/settingsService'
 
 // Icons
 import {
@@ -598,9 +618,11 @@ interface SaveStatus {
 
 // State
 const saving = ref(false)
+const loading = ref(true)
 const activeSection = ref('general')
 const showApiKey = ref(false)
 const saveStatus = ref<SaveStatus | null>(null)
+const themeStore = useThemeStore()
 
 const settingSections = [
   { id: 'general', title: 'Geral', icon: Globe },
@@ -611,7 +633,7 @@ const settingSections = [
   { id: 'advanced', title: 'Avançado', icon: Code }
 ]
 
-const settings = reactive({
+const settings = reactive<AppSettings>({
   general: {
     companyName: 'Pedacinho do Céu',
     cnpj: '',
@@ -669,19 +691,36 @@ const settings = reactive({
 async function saveAllSettings() {
   saving.value = true
   try {
-    // Simular salvamento
-    await new Promise(resolve => setTimeout(resolve, 1500))
-
-    // Salvar no localStorage (temporário)
-    localStorage.setItem('appSettings', JSON.stringify(settings))
-
+    await settingsService.saveSettings(settings)
     showSaveStatus('success', 'Configurações salvas com sucesso!')
-  } catch (error) {
+  } catch (error: any) {
     console.error('Erro ao salvar configurações:', error)
-    showSaveStatus('error', 'Erro ao salvar configurações')
+    showSaveStatus('error', error.message || 'Erro ao salvar configurações')
   } finally {
     saving.value = false
   }
+}
+
+async function saveSectionSettings(section: keyof AppSettings) {
+  try {
+    await settingsService.saveSection(section, settings[section])
+    showSaveStatus('success', `Configurações de ${getSectionTitle(section)} salvas!`)
+  } catch (error: any) {
+    console.error(`Erro ao salvar seção ${section}:`, error)
+    showSaveStatus('error', error.message || `Erro ao salvar ${getSectionTitle(section)}`)
+  }
+}
+
+function getSectionTitle(section: keyof AppSettings): string {
+  const titles = {
+    general: 'Configurações Gerais',
+    inventory: 'Gestão de Estoque',
+    notifications: 'Notificações',
+    security: 'Segurança',
+    interface: 'Interface',
+    advanced: 'Configurações Avançadas'
+  }
+  return titles[section] || section
 }
 
 function generateApiKey() {
@@ -692,6 +731,8 @@ function generateApiKey() {
   }
   settings.advanced.apiKey = result
   showSaveStatus('success', 'Nova chave API gerada!')
+  // Auto-save após gerar nova chave
+  saveSectionSettings('advanced')
 }
 
 function showSaveStatus(type: 'success' | 'error', message: string) {
@@ -701,21 +742,56 @@ function showSaveStatus(type: 'success' | 'error', message: string) {
   }, 3000)
 }
 
-function loadSettings() {
-  const saved = localStorage.getItem('appSettings')
-  if (saved) {
-    try {
-      const parsedSettings = JSON.parse(saved)
-      Object.assign(settings, parsedSettings)
-    } catch (error) {
-      console.error('Erro ao carregar configurações:', error)
-    }
+async function loadSettings() {
+  loading.value = true
+  try {
+    const loadedSettings = await settingsService.loadSettings()
+    Object.assign(settings, loadedSettings)
+    console.log('✅ Configurações carregadas do banco de dados')
+  } catch (error) {
+    console.error('❌ Erro ao carregar configurações:', error)
+    showSaveStatus('error', 'Erro ao carregar configurações do banco')
+  } finally {
+    loading.value = false
   }
 }
 
+async function testDatabaseConnection() {
+  try {
+    const isConnected = await settingsService.testConnection()
+    if (isConnected) {
+      showSaveStatus('success', 'Conexão com banco de dados OK!')
+    } else {
+      showSaveStatus('error', 'Problema na conexão com banco de dados')
+      console.log('🔧 Executando SQL para criar tabela...')
+      await settingsService.createSettingsTable()
+    }
+  } catch (error) {
+    console.error('Erro ao testar conexão:', error)
+    showSaveStatus('error', 'Erro ao verificar banco de dados')
+  }
+}
+
+// Watchers para aplicar configurações em tempo real
+watch(() => settings.interface.theme, (newTheme) => {
+  if (newTheme === 'auto') {
+    // Detecta preferência do sistema
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    themeStore.setTheme(systemPrefersDark ? 'dark' : 'light')
+  } else {
+    themeStore.setTheme(newTheme as 'light' | 'dark')
+  }
+})
+
+// Auto-save para algumas configurações críticas
+watch(() => settings.interface, () => {
+  saveSectionSettings('interface')
+}, { deep: true })
+
 // Lifecycle
-onMounted(() => {
-  loadSettings()
+onMounted(async () => {
+  await loadSettings()
+  await testDatabaseConnection()
 })
 </script>
 
@@ -724,8 +800,9 @@ onMounted(() => {
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-  background: #f8fafc;
+  background: var(--theme-background-solid);
   min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
 .page-header {
@@ -736,17 +813,25 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
+  background: var(--theme-surface);
   padding: 24px;
   border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
+  transition: all 0.3s ease;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .header-content h1 {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #1a202c;
+  color: var(--theme-text-primary);
   margin: 0;
   font-size: 28px;
   font-weight: 700;
@@ -766,12 +851,13 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background: #667eea;
+  background: var(--theme-primary);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #5a67d8;
+  background: var(--theme-secondary);
+  transform: translateY(-1px);
 }
 
 .btn-primary:disabled {
@@ -780,14 +866,15 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background: #f7fafc;
-  color: #2d3748;
-  border: 2px solid #e2e8f0;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  border: 2px solid var(--theme-border);
   padding: 8px 12px;
 }
 
 .btn-secondary:hover {
-  background: #e2e8f0;
+  background: var(--theme-background-solid);
+  border-color: var(--theme-primary);
 }
 
 .btn-icon {
@@ -809,13 +896,15 @@ onMounted(() => {
 }
 
 .settings-nav {
-  background: white;
+  background: var(--theme-surface);
   border-radius: 16px;
   padding: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
   height: fit-content;
   position: sticky;
   top: 24px;
+  transition: all 0.3s ease;
 }
 
 .nav-item {

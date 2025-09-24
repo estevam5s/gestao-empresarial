@@ -127,38 +127,48 @@ export class AIService {
 
   async analyzeInventory(inventoryData: any): Promise<string> {
     const prompt = `
-Você é um especialista em gestão de estoque para restaurantes. Analise os dados de estoque fornecidos e forneça insights valiosos.
+Você é um consultor sênior especializado em otimização de estoque para estabelecimentos alimentícios, com 15+ anos de experiência em análise de dados e gestão estratégica.
 
-Dados do estoque:
+DADOS DO INVENTÁRIO:
 ${JSON.stringify(inventoryData, null, 2)}
 
-Por favor, forneça uma análise detalhada incluindo:
+ANÁLISE EXECUTIVA SOLICITADA:
 
-1. **Situação Geral do Estoque**
-   - Produtos com estoque crítico (abaixo do mínimo)
-   - Produtos com sobra de estoque
-   - Valor total do estoque
+## 1. 🎯 SITUAÇÃO ESTRATÉGICA DO ESTOQUE
+- **Status atual**: Análise crítica dos níveis de estoque vs demanda
+- **Valor imobilizado**: R$ ${inventoryData.totalValue?.toFixed(2)} - análise de eficiência do capital
+- **Produtos críticos**: Identificação de riscos operacionais iminentes
+- **Oportunidades**: Produtos subutilizados com potencial de crescimento
 
-2. **Recomendações de Compra**
-   - Quais produtos devem ser comprados urgentemente
-   - Quantidades sugeridas
-   - Priorização por categoria
+## 2. 🚨 ALERTAS PRIORITÁRIOS & AÇÕES IMEDIATAS
+- **URGENTE (Próximas 24h)**: Lista específica de produtos para compra imediata
+- **IMPORTANTE (Próximos 7 dias)**: Planejamento de reposição semanal
+- **ATENÇÃO (Próximos 30 dias)**: Ajustes estratégicos de longo prazo
 
-3. **Análise de Custos**
-   - Produtos com melhor custo-benefício
-   - Sugestões para otimização de custos
-   - Alertas sobre produtos com preço desproporcional
+## 3. 💰 ANÁLISE FINANCEIRA AVANÇADA
+- **ROI por produto**: Identificação dos produtos mais rentáveis
+- **Custo de oportunidade**: Produtos com capital parado
+- **Margem de contribuição**: Análise de lucratividade real
+- **Otimização de capital**: Sugestões para melhor alocação de recursos
 
-4. **Planejamento Estratégico**
-   - Tendências observadas no estoque
-   - Sugestões para melhorar a gestão
-   - Alertas importantes
+## 4. 📊 INSIGHTS BASEADOS EM DADOS
+- **Padrões identificados**: Tendências de consumo observadas
+- **Sazonalidade**: Produtos com comportamento sazonal
+- **Benchmarks**: Comparação com padrões da indústria
+- **Previsões**: Projeções baseadas nos dados atuais
 
-5. **Ações Imediatas**
-   - Lista de ações prioritárias para hoje
-   - Produtos que precisam de atenção especial
+## 5. 🎲 ESTRATÉGIAS DE OTIMIZAÇÃO
+- **Mix de produtos**: Sugestões para equilibrar o portfólio
+- **Política de estoque**: Ajustes nos níveis mínimos e máximos
+- **Parcerias estratégicas**: Oportunidades com fornecedores
+- **Tecnologia**: Ferramentas para automatizar a gestão
 
-Formate a resposta de forma clara e organizada, usando markdown para melhor visualização.
+## 6. 📋 PLANO DE AÇÃO 30-60-90 DIAS
+- **30 dias**: Correções operacionais imediatas
+- **60 dias**: Implementação de melhorias estruturais
+- **90 dias**: Otimizações avançadas e automações
+
+**FORMATO**: Resposta executiva, dados quantitativos, recomendações acionáveis e cronograma específico.
 `
 
     return await this.makeGeminiRequest(prompt)
@@ -204,42 +214,105 @@ Formate a resposta de forma clara e prática para implementação imediata.
 
   async generatePurchaseSuggestions(inventoryData: any, salesHistory?: any): Promise<string> {
     const prompt = `
-Você é um especialista em gestão de compras para restaurantes. Com base nos dados de estoque ${salesHistory ? 'e histórico de vendas' : ''}, gere sugestões inteligentes de compras.
+Você é um especialista sênior em Supply Chain e Procurement para estabelecimentos alimentícios, com expertise em análise preditiva e otimização de compras.
 
-Dados do estoque atual:
+DADOS PARA ANÁLISE:
 ${JSON.stringify(inventoryData, null, 2)}
 
-${salesHistory ? `Histórico de vendas:
+${salesHistory ? `HISTÓRICO DE VENDAS:
 ${JSON.stringify(salesHistory, null, 2)}` : ''}
 
-Por favor, forneça:
+ANÁLISE ESTRATÉGICA DE COMPRAS SOLICITADA:
 
-1. **Lista de Compras Prioritárias**
-   - Produtos críticos que devem ser comprados HOJE
-   - Quantidades sugeridas baseadas no consumo
-   - Fornecedores recomendados (se aplicável)
+## 🚨 URGÊNCIAS OPERACIONAIS (24-48h)
+**COMPRAR IMEDIATAMENTE:**
+- Lista específica com quantidades exatas
+- Fornecedores preferenciais ou alternativos
+- Impacto na operação se não comprados
+- Budget estimado necessário
 
-2. **Planejamento de Compras Semanal**
-   - Cronograma de compras para a semana
-   - Produtos que podem esperar alguns dias
-   - Considerações de prazo de validade
+## 📅 CRONOGRAMA INTELIGENTE (7-30 dias)
+**PLANEJAMENTO OTIMIZADO:**
+- **Semana 1**: Produtos com prazo crítico
+- **Semana 2**: Reposição estratégica
+- **Semana 3-4**: Compras de oportunidade
+- **Fluxo de caixa**: Distribuição do investimento
 
-3. **Otimização de Custos**
-   - Sugestões para compras em volume
-   - Produtos que podem ser substituídos por alternativas mais baratas
-   - Oportunidades de economia
+## 💰 OTIMIZAÇÃO FINANCEIRA
+**ESTRATÉGIAS DE ECONOMIA:**
+- Compras em volume: oportunidades identificadas
+- Substituições inteligentes: produtos similares mais baratos
+- Negociação com fornecedores: produtos para renegociar preços
+- ROI de compras: produtos com melhor retorno
 
-4. **Análise Preditiva**
-   - Previsão de necessidades futuras
-   - Produtos que podem ter alta demanda
-   - Alertas sobre possíveis faltas
+## 🔮 ANÁLISE PREDITIVA AVANÇADA
+**PREVISÕES BASEADAS EM DADOS:**
+- Tendências de consumo identificadas
+- Sazonalidade: produtos com demanda cíclica
+- Crescimento projetado: itens em alta
+- Riscos de mercado: produtos com possível escassez
 
-5. **Recomendações Estratégicas**
-   - Diversificação de fornecedores
-   - Produtos sazonais a considerar
-   - Tendências do mercado
+## 🎯 ESTRATÉGIAS COMPETITIVAS
+**VANTAGENS OPERACIONAIS:**
+- Diversificação de fornecedores: redução de riscos
+- Produtos premium: oportunidades de diferenciação
+- Inovações de mercado: novos produtos para testar
+- Parcerias estratégicas: acordos de longo prazo
 
-Organize as informações de forma prática e acionável.
+## 📊 MÉTRICAS E KPIs
+**INDICADORES DE PERFORMANCE:**
+- Giro de estoque por categoria
+- Custo médio de aquisição
+- Prazo médio de pagamento otimizado
+- Redução de desperdício projetada
+
+**FORMATO**: Relatório executivo com dados quantitativos, cronograma específico e recomendações imediatamente implementáveis.
+`
+
+    return await this.makeGeminiRequest(prompt)
+  }
+
+  async analyzePerformance(performanceData: any): Promise<string> {
+    const prompt = `
+Você é um consultor especialista em análise de performance e KPIs para restaurantes. Analise os dados de performance fornecidos e forneça insights estratégicos.
+
+Dados de Performance:
+${JSON.stringify(performanceData, null, 2)}
+
+Por favor, forneça uma análise detalhada incluindo:
+
+1. **KPIs Principais**
+   - Análise do valor total do inventário
+   - Taxa de giro de estoque
+   - Índice de rentabilidade
+   - Performance por categoria
+
+2. **Benchmarks e Comparações**
+   - Como os números se comparam com padrões da indústria
+   - Produtos com melhor performance
+   - Produtos com performance abaixo do esperado
+
+3. **Pontos de Melhoria**
+   - Gargalos operacionais identificados
+   - Oportunidades de otimização
+   - Produtos subutilizados
+
+4. **Recomendações Estratégicas**
+   - Ações para melhorar a rentabilidade
+   - Estratégias de precificação
+   - Otimização do mix de produtos
+
+5. **Análise Preditiva**
+   - Tendências observadas
+   - Riscos potenciais
+   - Oportunidades de crescimento
+
+6. **Plano de Ação**
+   - Prioridades para os próximos 30 dias
+   - Métricas a acompanhar
+   - Objetivos mensuráveis
+
+Formate a resposta de forma executiva e acionável, usando markdown para melhor visualização.
 `
 
     return await this.makeGeminiRequest(prompt)
