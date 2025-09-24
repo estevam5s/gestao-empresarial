@@ -1,6 +1,9 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import { resolve } from 'path'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   plugins: [vue()],
@@ -11,12 +14,19 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    host: true
+    host: true,
+    hmr: {
+      overlay: true
+    }
   },
   define: {
     global: 'globalThis'
   },
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'pinia']
+  },
   build: {
+    target: 'esnext',
     commonjsOptions: {
       transformMixedEsModules: true
     }

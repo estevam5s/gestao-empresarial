@@ -91,6 +91,17 @@
               <ArrowRight :size="16" class="action-arrow" />
             </router-link>
 
+            <router-link to="/reports" class="quick-action-card reports">
+              <div class="action-icon">
+                <BarChart3 :size="24" />
+              </div>
+              <div class="action-content">
+                <h3>Relatórios - Análises</h3>
+                <p>Gráficos e relatórios completos</p>
+              </div>
+              <ArrowRight :size="16" class="action-arrow" />
+            </router-link>
+
             <router-link to="/ai" class="quick-action-card ai">
               <div class="action-icon">
                 <Brain :size="24" />
@@ -102,27 +113,49 @@
               <ArrowRight :size="16" class="action-arrow" />
             </router-link>
 
-            <button @click="showReports = true" class="quick-action-card reports">
+            <router-link to="/suppliers" class="quick-action-card suppliers">
               <div class="action-icon">
-                <BarChart3 :size="24" />
+                <Users :size="24" />
               </div>
               <div class="action-content">
-                <h3>Relatórios</h3>
-                <p>Análises e gráficos</p>
+                <h3>Fornecedores</h3>
+                <p>Gerenciar fornecedores</p>
               </div>
               <ArrowRight :size="16" class="action-arrow" />
-            </button>
+            </router-link>
 
-            <button @click="showAddProduct = true" class="quick-action-card add-product">
+            <router-link to="/menu" class="quick-action-card menu">
               <div class="action-icon">
-                <Plus :size="24" />
+                <ChefHat :size="24" />
               </div>
               <div class="action-content">
-                <h3>Adicionar Produto</h3>
-                <p>Novo item no estoque</p>
+                <h3>Cardápio</h3>
+                <p>Menu e planejamento</p>
               </div>
               <ArrowRight :size="16" class="action-arrow" />
-            </button>
+            </router-link>
+
+            <router-link to="/settings" class="quick-action-card settings">
+              <div class="action-icon">
+                <Settings :size="24" />
+              </div>
+              <div class="action-content">
+                <h3>Configurações</h3>
+                <p>Configurações do app</p>
+              </div>
+              <ArrowRight :size="16" class="action-arrow" />
+            </router-link>
+
+            <router-link to="/about" class="quick-action-card about">
+              <div class="action-icon">
+                <Info :size="24" />
+              </div>
+              <div class="action-content">
+                <h3>Sobre</h3>
+                <p>Informações do sistema</p>
+              </div>
+              <ArrowRight :size="16" class="action-arrow" />
+            </router-link>
           </div>
         </section>
 
@@ -335,7 +368,7 @@ import {
   Search, User, ChevronDown, LogOut, Zap, Package, Brain,
   BarChart3, Plus, ArrowRight, TrendingUp, TrendingDown, AlertTriangle,
   RefreshCw, CheckCircle, X, PieChart, Activity, ExternalLink,
-  Gauge, Loader2, Settings, Sliders
+  Gauge, Loader2, Settings, Sliders, Users, ChefHat, Info
 } from 'lucide-vue-next'
 
 // Importar configurações do Chart.js
@@ -1105,16 +1138,28 @@ onUnmounted(() => {
   background: linear-gradient(135deg, #667eea10, #764ba210);
 }
 
-.quick-action-card.ai:hover {
-  background: linear-gradient(135deg, #f093fb10, #f5576c10);
-}
-
 .quick-action-card.reports:hover {
   background: linear-gradient(135deg, #4facfe10, #00f2fe10);
 }
 
-.quick-action-card.add-product:hover {
-  background: linear-gradient(135deg, #10b98110, #05966910);
+.quick-action-card.ai:hover {
+  background: linear-gradient(135deg, #f093fb10, #f5576c10);
+}
+
+.quick-action-card.suppliers:hover {
+  background: linear-gradient(135deg, #8b5cf610, #a855f710);
+}
+
+.quick-action-card.menu:hover {
+  background: linear-gradient(135deg, #f59e0b10, #d9770610);
+}
+
+.quick-action-card.settings:hover {
+  background: linear-gradient(135deg, #64748b10, #47556910);
+}
+
+.quick-action-card.about:hover {
+  background: linear-gradient(135deg, #06b6d410, #0891b210);
 }
 
 .action-icon {

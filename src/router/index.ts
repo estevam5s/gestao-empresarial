@@ -5,6 +5,11 @@ import DashboardView from '@/views/DashboardView.vue'
 import InventoryView from '@/views/InventoryView.vue'
 import AIView from '@/views/AIView.vue'
 import ProfileView from '@/views/ProfileView.vue'
+import ReportsView from '@/views/ReportsView.vue'
+import SuppliersView from '@/views/SuppliersView.vue'
+import MenuView from '@/views/MenuView.vue'
+import SettingsView from '@/views/SettingsView.vue'
+import AboutView from '@/views/AboutView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -41,6 +46,36 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/reports',
+      name: 'reports',
+      component: ReportsView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/suppliers',
+      name: 'suppliers',
+      component: SuppliersView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/menu',
+      name: 'menu',
+      component: MenuView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: AboutView,
       meta: { requiresAuth: true }
     }
   ]
