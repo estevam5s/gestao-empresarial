@@ -12,8 +12,8 @@ import HamburgerMenu from '@/components/HamburgerMenu.vue'
 
 const route = useRoute()
 
-const shouldShowMenu = computed(() => {
-  return route.meta.requiresAuth
+const shouldShowMenu = computed((): boolean => {
+  return Boolean(route.meta?.requiresAuth)
 })
 </script>
 

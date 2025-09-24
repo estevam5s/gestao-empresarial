@@ -320,7 +320,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { productService } from '@/services/productService'
@@ -574,17 +574,7 @@ async function loadDashboardData() {
     }
 
     // Gerar dados de vendas (reais do Supabase)
-    const salesData = await generateSalesData()
-    salesChartData.value = {
-      labels: salesData.labels,
-      datasets: [{
-        label: 'Vendas (R$)',
-        data: salesData.values,
-        borderColor: '#667eea',
-        backgroundColor: 'rgba(102, 126, 234, 0.1)',
-        fill: true
-      }]
-    }
+    await updateSalesChart()
 
     // Gerar dados de categorias
     const categoryData = generateCategoryData(categories, products)
@@ -610,12 +600,12 @@ async function loadDashboardData() {
 
 async function generateSalesData() {
   try {
-    console.log('🔄 Buscando dados reais de vendas...')
+    console.log(`🔄 Buscando dados reais de vendas para ${selectedPeriod.value}...`)
 
-    const salesData = await salesService.getSalesByPeriod(selectedPeriod.value)
+    const salesData = await salesService.getSalesByPeriod(selectedPeriod.value as '7d' | '30d' | '90d')
 
-    const labels = []
-    const values = []
+    const labels: string[] = []
+    const values: number[] = []
 
     salesData.forEach(dayData => {
       const date = new Date(dayData.date)
@@ -630,8 +620,8 @@ async function generateSalesData() {
     console.error('❌ Erro ao buscar dados de vendas, usando dados simulados:', error)
 
     // Fallback para dados simulados
-    const labels = []
-    const values = []
+    const labels: string[] = []
+    const values: number[] = []
 
     const days = selectedPeriod.value === '7d' ? 7 : selectedPeriod.value === '30d' ? 30 : 90
 
@@ -643,6 +633,20 @@ async function generateSalesData() {
     }
 
     return { labels, values }
+  }
+}
+
+async function updateSalesChart() {
+  const salesData = await generateSalesData()
+  salesChartData.value = {
+    labels: salesData.labels,
+    datasets: [{
+      label: 'Vendas (R$)',
+      data: salesData.values,
+      borderColor: '#667eea',
+      backgroundColor: 'rgba(102, 126, 234, 0.1)',
+      fill: true
+    }]
   }
 }
 
@@ -704,6 +708,11 @@ function updateSystemMetrics() {
 }
 
 let metricsInterval: NodeJS.Timeout
+
+// Watcher para atualizar gráfico quando mudar o período
+watch(selectedPeriod, () => {
+  updateSalesChart()
+})
 
 onMounted(() => {
   loadDashboardData()

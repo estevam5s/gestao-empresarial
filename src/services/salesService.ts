@@ -9,28 +9,36 @@ export interface SalesData {
 
 export interface MovementData {
   id: string
-  product_id: string
+  product_id?: string
   type: string
   quantity: number
   total_cost: number
   created_at: string
-  produto: {
+  produto?: {
     nome: string
     preco: number
   }
+  produtos?: {
+    nome: string
+    preco: number
+  }[]
 }
 
 export interface MenuSalesData {
   id: string
-  menu_item_id: string
+  menu_item_id?: string
   data_planejada: string
   quantidade_estimada: number
   receita_estimada: number
   status: string
-  menu_item: {
+  menu_item?: {
     nome: string
     preco_venda: number
   }
+  menu_items?: {
+    nome: string
+    preco_venda: number
+  }[]
 }
 
 class SalesService {
@@ -198,7 +206,9 @@ class SalesService {
         }
       }
 
-      salesByDate[date].total_sales += movement.total_cost || (movement.quantity * movement.produto.preco)
+      const produto = movement.produto || (movement.produtos && movement.produtos[0])
+      const preco = produto?.preco || 0
+      salesByDate[date].total_sales += movement.total_cost || (movement.quantity * preco)
       salesByDate[date].orders_count += 1
     })
 
@@ -228,7 +238,9 @@ class SalesService {
         }
       }
 
-      salesByDate[date].total_sales += sale.receita_estimada || (sale.quantidade_estimada * sale.menu_item.preco_venda)
+      const menuItem = sale.menu_item || (sale.menu_items && sale.menu_items[0])
+      const precoVenda = menuItem?.preco_venda || 0
+      salesByDate[date].total_sales += sale.receita_estimada || (sale.quantidade_estimada * precoVenda)
       salesByDate[date].orders_count += sale.quantidade_estimada
     })
 

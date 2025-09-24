@@ -311,8 +311,8 @@
             Conta Criada
           </h3>
           <div class="account-info">
-            <p>{{ formatDate(new Date(user?.created_at || Date.now())) }}</p>
-            <small>{{ formatTimeAgo(new Date(user?.created_at || Date.now())) }}</small>
+            <p>{{ formatDate(new Date()) }}</p>
+            <small>{{ formatTimeAgo(new Date()) }}</small>
           </div>
         </div>
 
@@ -354,7 +354,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import {
   User, UserCheck, Mail, Lock, Shield, Settings, Activity, Calendar,
   Save, RotateCcw, Camera, Clock, AtSign, Eye, EyeOff,
@@ -364,7 +363,6 @@ import { useAuthStore } from '@/stores/auth'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
-const router = useRouter()
 const authStore = useAuthStore()
 const { user } = authStore
 
@@ -421,7 +419,6 @@ const passwordStrength = computed(() => {
   if (!password) return { level: '', percentage: 0, text: '' }
 
   let score = 0
-  let checks = []
 
   // Verificações de força
   if (password.length >= 8) score += 25
