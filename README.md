@@ -1,182 +1,372 @@
-# GestaoZe System - Sistema Web de Gestão de Estoque
+# 🏪 GestãoZé System - Sistema Completo de Gestão de Estoque
 
-[![Vue.js](https://img.shields.io/badge/Vue.js-3.x-4FC08D.svg)](https://vuejs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Backend-green.svg)](https://supabase.com/)
-[![Google Gemini](https://img.shields.io/badge/Google%20Gemini-AI-orange.svg)](https://ai.google.dev/)
+<div align="center">
 
-Sistema web completo de gestão de estoque desenvolvido em Vue.js 3 com TypeScript, baseado na estrutura do app mobile existente.
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.5.21-4FC08D.svg?style=flat-square&logo=vue.js)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-green.svg?style=flat-square&logo=supabase)](https://supabase.com/)
+[![Google Gemini](https://img.shields.io/badge/Google%20Gemini-AI-orange.svg?style=flat-square&logo=google)](https://ai.google.dev/)
+[![Vite](https://img.shields.io/badge/Vite-Latest-646CFF.svg?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000.svg?style=flat-square&logo=vercel)](https://vercel.com/)
 
-## 🚀 Instalação e Execução
+**Sistema web profissional de gestão de estoque desenvolvido com Vue.js 3, TypeScript e integração avançada de IA**
 
-### Opção 1: Usando o Script de Setup (Recomendado)
+[🚀 Demo Live](https://gestao.restpedacinhodoceu.com.br) • [📖 Documentação](#-documentação) • [🛠️ Instalação](#-instalação-e-execução) • [🤝 Contribuir](#-contribuição)
 
-```bash
-# Execute o script de setup automatizado
-node setup-sistema-web-simple.js
+</div>
 
-# Entre no diretório do projeto
-cd gestaozesystem-web
+---
 
-# Execute o sistema
-npm run dev
-```
+## 📋 Índice
 
-### Opção 2: Instalação Manual
+- [📖 Sobre o Projeto](#-sobre-o-projeto)
+- [✨ Funcionalidades](#-funcionalidades)
+- [🎯 Capturas de Tela](#-capturas-de-tela)
+- [🛠️ Tecnologias](#-tecnologias-utilizadas)
+- [🚀 Instalação e Execução](#-instalação-e-execução)
+- [🌐 Rotas do Sistema](#-rotas-do-sistema)
+- [🔧 Configuração](#-configuração-de-ambiente)
+- [📊 Estrutura do Projeto](#-estrutura-do-projeto)
+- [🤖 Integração com IA](#-integração-com-google-gemini-ai)
+- [📱 Responsividade](#-responsividade)
+- [🚀 Deploy](#-deploy)
+- [🔧 Desenvolvimento](#-desenvolvimento)
+- [🤝 Contribuição](#-contribuição)
+- [📄 Licença](#-licença)
 
-```bash
-# Clone o projeto
-git clone [url-do-repositorio]
-cd gestaozesystem-web
+---
 
-# Instale as dependências
-npm install
+## 📖 Sobre o Projeto
 
-# Configure as variáveis de ambiente
-cp .env.example .env
+O **GestãoZé System** é uma solução completa e moderna para gestão de estoque, especialmente desenvolvida para restaurantes e estabelecimentos gastronômicos. O sistema integra tecnologias de ponta como **Vue.js 3**, **TypeScript**, **Supabase** e **Inteligência Artificial do Google Gemini** para oferecer uma experiência única e inteligente na gestão de produtos, estoque e análises estratégicas.
 
-# Execute o projeto
-npm run dev
-```
+### 🎯 Objetivos
 
-## 🌐 Acesso ao Sistema
+- **Simplicidade**: Interface intuitiva e fácil de usar
+- **Inteligência**: Análises automáticas com IA para decisões estratégicas
+- **Eficiência**: Controle total do estoque em tempo real
+- **Escalabilidade**: Arquitetura moderna e preparada para crescimento
+- **Mobilidade**: Totalmente responsivo e compatível com dispositivos móveis
 
-- **URL Local:** http://localhost:5173
-- **URL de Rede:** http://172.16.0.46:5173
+---
 
-### 🔐 Credenciais de Demonstração
+## ✨ Funcionalidades
 
-- **Usuário:** rebecaluize@gmail.com
-- **Senha:** Restpedacinhodoceu@2025
+### 🏠 Dashboard Inteligente
+- **Visão geral em tempo real** do estoque e vendas
+- **Indicadores visuais** de produtos em falta ou estoque baixo
+- **Estatísticas dinâmicas** com gráficos interativos
+- **Navegação rápida** para as principais funcionalidades
+- **Alertas automáticos** para estoque crítico
 
-## ✨ Funcionalidades Implementadas
-
-### 🏠 Dashboard
-- ✅ Visão geral do sistema
-- ✅ Estatísticas em tempo real
-- ✅ Navegação rápida
-- ✅ Indicadores de estoque baixo
-
-### 📦 Gestão de Estoque
-- ✅ Lista completa de produtos
-- ✅ Filtros por categoria e estoque
-- ✅ Busca inteligente
-- ✅ Adicionar/editar produtos
-- ✅ Controle de estoque mínimo
-- ✅ Indicadores visuais de status
+### 📦 Gestão Completa de Estoque
+- **Cadastro e edição** de produtos com informações detalhadas
+- **Controle de estoque mínimo** com alertas automáticos
+- **Sistema de categorização** para melhor organização
+- **Busca inteligente** com filtros avançados
+- **Histórico completo** de movimentações
+- **Códigos de barras** para identificação rápida
+- **Controle de custos** e precificação
 
 ### 🤖 Análise com IA (Google Gemini)
-- ✅ Análise automática do estoque
-- ✅ Sugestões inteligentes de compra
-- ✅ Chat interativo com assistente IA
-- ✅ Perguntas rápidas personalizadas
-- ✅ Insights estratégicos
+- **Análise automática do estoque** com insights estratégicos
+- **Sugestões inteligentes de compra** baseadas em padrões
+- **Chat interativo** com assistente IA especializado
+- **Perguntas rápidas personalizadas** para seu negócio
+- **Previsões de demanda** baseadas em dados históricos
+- **Otimização de custos** com recomendações precisas
 
-### 🔐 Sistema de Autenticação
-- ✅ Login seguro com Supabase
-- ✅ Gerenciamento de sessão
-- ✅ Proteção de rotas
-- ✅ Hash de senhas
+### 📊 Relatórios e Analytics
+- **Relatórios detalhados** de vendas e estoque
+- **Gráficos interativos** com Chart.js
+- **Exportação múltipla** (PDF, Excel, CSV, JSON)
+- **Análise de tendências** de consumo
+- **Relatórios de movimentação** completos
+- **Dashboard de performance** em tempo real
+
+### 👤 Gestão de Usuários e Perfil
+- **Sistema de autenticação** seguro com Supabase
+- **Perfis personalizáveis** com avatares
+- **Controle de acesso** baseado em roles
+- **Histórico de atividades** do usuário
+- **Configurações personalizadas** por usuário
+
+### ⚙️ Sistema de Configurações
+- **Tema claro/escuro** com transições suaves
+- **Configurações de sistema** personalizáveis
+- **Backup e restauração** de dados
+- **Configurações de notificações** avançadas
+- **Manutenção de banco de dados** integrada
+
+### 🍽️ Gestão de Cardápio (Em desenvolvimento)
+- **Criação de pratos** vinculados ao estoque
+- **Controle de ingredientes** automático
+- **Precificação inteligente** baseada nos custos
+- **Menu digital** responsivo
+
+### 🏪 Gestão de Fornecedores
+- **Cadastro completo** de fornecedores
+- **Histórico de compras** detalhado
+- **Avaliação de fornecedores** baseada em performance
+- **Controle de pagamentos** e prazos
+
+---
+
+## 🎯 Capturas de Tela
+
+### 🏠 Dashboard Principal
+![Dashboard](./screenshots/dashboard.png)
+*Visão geral do sistema com indicadores em tempo real e navegação intuitiva*
+
+### 🔐 Tela de Login
+![Login](./screenshots/login.png)
+*Interface de autenticação moderna e segura*
+
+### 📦 Gestão de Estoque
+![Estoque](./screenshots/inventory.png)
+*Controle completo de produtos com filtros avançados e indicadores visuais*
+
+### 🤖 Análise com IA
+![IA](./screenshots/ai-analysis.png)
+*Chat interativo com assistente IA e análises automáticas do estoque*
+
+### 📊 Relatórios e Analytics
+![Relatórios](./screenshots/reports.png)
+*Relatórios detalhados com gráficos interativos e múltiplas opções de exportação*
+
+### 👤 Perfil do Usuário
+![Perfil](./screenshots/profile.png)
+*Gestão de perfil com configurações personalizadas e upload de avatar*
+
+### ⚙️ Configurações do Sistema
+![Configurações](./screenshots/settings.png)
+*Painel de configurações com opções avançadas e manutenção do sistema*
+
+### 📱 Interface Mobile
+![Mobile](./screenshots/mobile.png)
+*Design responsivo otimizado para dispositivos móveis*
+
+> **📸 Como adicionar screenshots:**
+> 1. Acesse o sistema em funcionamento
+> 2. Navegue para cada tela principal
+> 3. Capture screenshots em alta qualidade (1920x1080 recomendado)
+> 4. Salve as imagens na pasta `screenshots/` com os nomes indicados acima
+> 5. Para mobile, use dimensões 375x812 ou similares
+
+---
 
 ## 🛠️ Tecnologias Utilizadas
 
 ### Frontend
-- **Vue.js 3** - Framework progressivo
-- **TypeScript** - Tipagem estática
-- **Vue Router** - Roteamento SPA
-- **Pinia** - Gerenciamento de estado
-- **Vite** - Build tool moderno
+- **[Vue.js 3.5.21](https://vuejs.org/)** - Framework progressivo com Composition API
+- **[TypeScript 5.x](https://www.typescriptlang.org/)** - Tipagem estática para maior robustez
+- **[Vite](https://vitejs.dev/)** - Build tool moderno e super rápido
+- **[Vue Router 4](https://router.vuejs.org/)** - Roteamento SPA oficial do Vue
+- **[Pinia](https://pinia.vuejs.org/)** - Gerenciamento de estado moderno
+- **[Lucide Vue Next](https://lucide.dev/)** - Ícones SVG modernos e consistentes
 
 ### Backend & Serviços
-- **Supabase** - Backend as a Service
-- **PostgreSQL** - Banco de dados
-- **Google Gemini AI** - Inteligência artificial
-- **Axios** - Cliente HTTP
+- **[Supabase](https://supabase.com/)** - Backend as a Service com PostgreSQL
+- **[PostgreSQL](https://postgresql.org/)** - Banco de dados relacional robusto
+- **[Google Gemini AI](https://ai.google.dev/)** - Inteligência artificial avançada
+- **[Axios](https://axios-http.com/)** - Cliente HTTP para requisições API
 
-### Estilização
-- **CSS3** - Estilos customizados
-- **CSS Grid & Flexbox** - Layout responsivo
-- **CSS Animations** - Micro-interações
+### Visualização de Dados
+- **[Chart.js 4.5.0](https://www.chartjs.org/)** - Gráficos interativos e responsivos
+- **[Vue Chart.js](https://vue-chartjs.org/)** - Integração Chart.js com Vue
+- **[Date-fns](https://date-fns.org/)** - Manipulação de datas moderna
 
-## 📊 Estrutura do Banco de Dados
+### Exportação e Relatórios
+- **[jsPDF](https://github.com/parallax/jsPDF)** - Geração de PDFs no cliente
+- **[html2canvas](https://html2canvas.hertzen.com/)** - Captura de elementos HTML
+- **[XLSX](https://sheetjs.com/)** - Manipulação de planilhas Excel
 
-O sistema utiliza as seguintes tabelas principais:
+### Estilização e UI
+- **CSS3 moderno** - Grid, Flexbox, Custom Properties
+- **CSS Animations** - Transições suaves e micro-interações
+- **Design System** - Cores consistentes e tipografia moderna
+- **Responsivo** - Mobile-first approach
 
-- `admin_users` - Usuários do sistema
-- `produtos` - Catálogo de produtos
-- `categorias` - Categorias de produtos
-- `movements` - Movimentações de estoque
-- `logs` - Sistema de auditoria
-- `suppliers` - Fornecedores
-- `menu_items` - Itens do cardápio
-- `reports` - Relatórios gerados
+---
 
-## 🗂️ Estrutura do Projeto
+## 🚀 Instalação e Execução
 
-```
-src/
-├── components/          # Componentes reutilizáveis
-│   ├── common/         # Componentes genéricos
-│   ├── forms/          # Formulários
-│   └── layout/         # Layout e navegação
-├── views/              # Páginas do sistema
-│   ├── auth/           # Autenticação
-│   ├── dashboard/      # Dashboard principal
-│   ├── inventory/      # Gestão de estoque
-│   └── ai/             # Análise com IA
-├── services/           # Serviços de API
-│   ├── authService.ts  # Autenticação
-│   ├── productService.ts # Produtos
-│   └── aiService.ts    # Integração IA
-├── stores/             # Estado global (Pinia)
-│   └── auth.ts         # Store de autenticação
-├── types/              # Tipos TypeScript
-│   ├── auth.ts         # Tipos de autenticação
-│   └── product.ts      # Tipos de produtos
-├── config/             # Configurações
-│   └── supabase.ts     # Config Supabase
-└── router/             # Configuração de rotas
-    └── index.ts        # Rotas principais
-```
+### 📋 Pré-requisitos
 
-## 🔧 Scripts Disponíveis
+- **Node.js** (versão 18.x ou superior)
+- **npm** ou **yarn**
+- **Git** para versionamento
+- Conta no **Supabase** para backend
+- Chave da **API do Google Gemini** para IA
+
+### ⚡ Instalação Rápida
 
 ```bash
-# Desenvolvimento
-npm run dev           # Inicia servidor de desenvolvimento
+# Clone o repositório
+git clone https://github.com/Gestao-de-estoque/gestao-estoque-vue.git
 
-# Build de Produção
-npm run build         # Gera build otimizado
-npm run preview       # Visualiza build de produção
+# Entre no diretório
+cd gestao-estoque-vue
 
-# Verificação de Código
-npm run type-check    # Verifica tipos TypeScript
+# Instale as dependências
+npm install
+
+# Configure o ambiente (copie e edite o .env)
+cp .env.example .env
+
+# Execute o projeto em desenvolvimento
+npm run dev
 ```
 
-## 🌍 Configuração de Ambiente
+### 🔧 Instalação Detalhada
 
-### Variáveis de Ambiente (.env)
+1. **Clone e configuração inicial**
+```bash
+git clone https://github.com/Gestao-de-estoque/gestao-estoque-vue.git
+cd gestao-estoque-vue
+npm install
+```
 
-```env
-# Supabase Configuration
-VITE_SUPABASE_URL=https://cxusoclwtixtjwghjlcj.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+2. **Configuração das variáveis de ambiente**
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env
 
-# Google Gemini AI Configuration
-VITE_GEMINI_API_KEY=AIzaSyD-Ie2bmSXQwDU5wTX3zDDhAoC0sq7ur88
+# Edite o arquivo .env com suas configurações
+nano .env
+```
+
+3. **Configuração do Supabase**
+   - Crie um projeto no [Supabase](https://supabase.com/)
+   - Execute os scripts SQL fornecidos na pasta `database/`
+   - Copie a URL e chave anônima para o `.env`
+
+4. **Configuração da IA Google Gemini**
+   - Obtenha uma chave da API no [Google AI Studio](https://aistudio.google.com/)
+   - Adicione a chave no arquivo `.env`
+
+5. **Execute o projeto**
+```bash
+npm run dev
+```
+
+O sistema estará disponível em:
+- **Local**: http://localhost:5173
+- **Rede**: http://[seu-ip]:5173
+
+---
+
+## 🌐 Rotas do Sistema
+
+### 🔐 Autenticação
+| Rota | Componente | Descrição | Acesso |
+|------|------------|-----------|--------|
+| `/login` | `LoginView.vue` | Tela de login do sistema | Público |
+
+### 🏠 Dashboard e Principal
+| Rota | Componente | Descrição | Acesso |
+|------|------------|-----------|--------|
+| `/` | *Redirect* | Redireciona para `/dashboard` | Autenticado |
+| `/dashboard` | `DashboardView.vue` | Dashboard principal com indicadores | Autenticado |
+
+### 📦 Gestão de Estoque
+| Rota | Componente | Descrição | Acesso |
+|------|------------|-----------|--------|
+| `/inventory` | `InventoryView.vue` | Gestão completa de estoque e produtos | Autenticado |
+
+### 🤖 Inteligência Artificial
+| Rota | Componente | Descrição | Acesso |
+|------|------------|-----------|--------|
+| `/ai` | `AIView.vue` | Chat com IA e análises automáticas | Autenticado |
+
+### 📊 Relatórios e Analytics
+| Rota | Componente | Descrição | Acesso |
+|------|------------|-----------|--------|
+| `/reports` | `ReportsView.vue` | Relatórios detalhados e exportação | Autenticado |
+
+### 👤 Perfil e Usuário
+| Rota | Componente | Descrição | Acesso |
+|------|------------|-----------|--------|
+| `/profile` | `ProfileView.vue` | Perfil do usuário e configurações pessoais | Autenticado |
+
+### 🏪 Gestão de Negócio
+| Rota | Componente | Descrição | Acesso |
+|------|------------|-----------|--------|
+| `/suppliers` | `SuppliersView.vue` | Gestão de fornecedores | Autenticado |
+| `/menu` | `MenuView.vue` | Gestão de cardápio digital | Autenticado |
+
+### ⚙️ Sistema e Configurações
+| Rota | Componente | Descrição | Acesso |
+|------|------------|-----------|--------|
+| `/settings` | `SettingsView.vue` | Configurações do sistema e preferências | Autenticado |
+| `/about` | `AboutView.vue` | Informações sobre o sistema | Autenticado |
+
+### 🛡️ Proteção de Rotas
+
+O sistema implementa proteção automática de rotas através de:
+
+```typescript
+// router/index.ts
+router.beforeEach(async (to) => {
+  const authStore = useAuthStore()
+  const isAuthenticated = authStore.isAuthenticated
+
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return '/login'
+  }
+
+  if (to.meta.requiresGuest && isAuthenticated) {
+    return '/dashboard'
+  }
+})
+```
+
+---
+
+## 🔧 Configuração de Ambiente
+
+### 🌍 Variáveis de Ambiente (.env)
+
+```bash
+# === SUPABASE CONFIGURATION ===
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua-chave-anonima-aqui
+
+# === GOOGLE GEMINI AI CONFIGURATION ===
+VITE_GEMINI_API_KEY=sua-chave-gemini-ai-aqui
 VITE_GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
 
-# App Configuration
-VITE_APP_NAME=GestaoZe System
+# === APP CONFIGURATION ===
+VITE_APP_NAME=GestãoZé System
 VITE_APP_VERSION=1.0.0
+VITE_APP_DESCRIPTION=Sistema Completo de Gestão de Estoque
+VITE_APP_URL=https://gestao.restpedacinhodoceu.com.br
+
+# === DEVELOPMENT ===
+VITE_DEV_MODE=true
+VITE_DEBUG_LOGS=false
 ```
 
-## 🔐 Configuração do Supabase
+### 🔐 Credenciais de Demonstração
 
-### Tabelas Principais
+Para acessar o sistema de demonstração:
+
+```
+📧 Email: rebecaluize@gmail.com
+🔑 Senha: Restpedacinhodoceu@2025
+```
+
+### 🗄️ Configuração do Banco de Dados
+
+Execute os seguintes scripts SQL no seu projeto Supabase:
+
+<details>
+<summary>📄 Scripts SQL para Configuração</summary>
 
 ```sql
--- Usuários do sistema
+-- =============================================
+-- USUÁRIOS DO SISTEMA
+-- =============================================
 CREATE TABLE admin_users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   username varchar UNIQUE NOT NULL,
@@ -184,12 +374,30 @@ CREATE TABLE admin_users (
   password_hash varchar NOT NULL,
   name varchar,
   role varchar DEFAULT 'admin',
+  avatar_url varchar,
   is_active boolean DEFAULT true,
+  login_count integer DEFAULT 0,
+  last_login timestamptz,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
 
--- Produtos
+-- =============================================
+-- CATEGORIAS DE PRODUTOS
+-- =============================================
+CREATE TABLE categorias (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome varchar NOT NULL,
+  descricao text,
+  cor varchar DEFAULT '#3B82F6',
+  ativo boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- =============================================
+-- PRODUTOS
+-- =============================================
 CREATE TABLE produtos (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   nome varchar NOT NULL,
@@ -198,189 +406,698 @@ CREATE TABLE produtos (
   custo numeric DEFAULT 0,
   current_stock integer DEFAULT 0,
   min_stock integer DEFAULT 0,
+  max_stock integer DEFAULT 1000,
   unidade varchar DEFAULT 'unidade',
   descricao text,
   codigo_barras varchar,
+  imagem_url varchar,
   ativo boolean DEFAULT true,
   created_by uuid REFERENCES admin_users(id),
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
+
+-- =============================================
+-- FORNECEDORES
+-- =============================================
+CREATE TABLE suppliers (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome varchar NOT NULL,
+  contato varchar,
+  telefone varchar,
+  email varchar,
+  endereco text,
+  cnpj varchar,
+  ativo boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- =============================================
+-- MOVIMENTAÇÕES DE ESTOQUE
+-- =============================================
+CREATE TABLE movements (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  produto_id uuid REFERENCES produtos(id),
+  tipo varchar NOT NULL, -- 'entrada', 'saida', 'ajuste'
+  quantidade integer NOT NULL,
+  valor_unitario numeric DEFAULT 0,
+  observacao text,
+  user_id uuid REFERENCES admin_users(id),
+  created_at timestamptz DEFAULT now()
+);
+
+-- =============================================
+-- ITENS DO MENU
+-- =============================================
+CREATE TABLE menu_items (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  nome varchar NOT NULL,
+  descricao text,
+  preco numeric NOT NULL,
+  categoria varchar,
+  ingredientes text[],
+  tempo_preparo integer DEFAULT 0,
+  disponivel boolean DEFAULT true,
+  imagem_url varchar,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- =============================================
+-- CONFIGURAÇÕES DO SISTEMA
+-- =============================================
+CREATE TABLE settings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  key varchar UNIQUE NOT NULL,
+  value text,
+  description text,
+  type varchar DEFAULT 'string',
+  updated_by uuid REFERENCES admin_users(id),
+  updated_at timestamptz DEFAULT now()
+);
+
+-- =============================================
+-- LOGS DO SISTEMA
+-- =============================================
+CREATE TABLE system_logs (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid REFERENCES admin_users(id),
+  action varchar NOT NULL,
+  details jsonb,
+  ip_address varchar,
+  user_agent text,
+  created_at timestamptz DEFAULT now()
+);
+
+-- =============================================
+-- ÍNDICES PARA PERFORMANCE
+-- =============================================
+CREATE INDEX idx_produtos_categoria ON produtos(categoria_id);
+CREATE INDEX idx_produtos_ativo ON produtos(ativo);
+CREATE INDEX idx_movements_produto ON movements(produto_id);
+CREATE INDEX idx_movements_created ON movements(created_at);
+CREATE INDEX idx_users_email ON admin_users(email);
+CREATE INDEX idx_users_username ON admin_users(username);
+
+-- =============================================
+-- RLS (Row Level Security)
+-- =============================================
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE produtos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE categorias ENABLE ROW LEVEL SECURITY;
+ALTER TABLE movements ENABLE ROW LEVEL SECURITY;
+ALTER TABLE suppliers ENABLE ROW LEVEL SECURITY;
+
+-- Política básica de acesso (ajuste conforme necessário)
+CREATE POLICY "Enable all access for authenticated users" ON admin_users
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable all access for authenticated users" ON produtos
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable all access for authenticated users" ON categorias
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable all access for authenticated users" ON movements
+  FOR ALL USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Enable all access for authenticated users" ON suppliers
+  FOR ALL USING (auth.role() = 'authenticated');
 ```
+
+</details>
+
+---
+
+## 📊 Estrutura do Projeto
+
+```
+📦 gestao-estoque-vue/
+├── 📁 public/                    # Arquivos públicos estáticos
+├── 📁 src/
+│   ├── 📁 components/           # Componentes reutilizáveis
+│   │   ├── 🍔 HamburgerMenu.vue     # Menu hambúrguer responsivo
+│   │   └── 🔔 NotificationCenter.vue # Centro de notificações
+│   ├── 📁 config/               # Configurações
+│   │   └── ⚙️ supabase.ts           # Configuração do Supabase
+│   ├── 📁 router/               # Configuração de rotas
+│   │   └── 🛣️ index.ts              # Definição das rotas
+│   ├── 📁 services/             # Serviços de API
+│   │   ├── 🤖 aiService.ts          # Integração com Google Gemini
+│   │   ├── 🔐 authService.ts        # Serviços de autenticação
+│   │   ├── 🍽️ menuService.ts        # Gestão de cardápio
+│   │   ├── 📦 productService.ts     # Gestão de produtos
+│   │   ├── 👤 profileService.ts     # Gestão de perfil
+│   │   ├── 📊 reportsService.ts     # Geração de relatórios
+│   │   ├── 💰 salesService.ts       # Gestão de vendas
+│   │   ├── ⚙️ settingsService.ts    # Configurações do sistema
+│   │   └── 🏪 suppliersService.ts   # Gestão de fornecedores
+│   ├── 📁 stores/               # Gerenciamento de estado (Pinia)
+│   │   ├── 🔐 auth.ts               # Store de autenticação
+│   │   ├── 🔔 notifications.ts      # Store de notificações
+│   │   └── 🎨 theme.ts              # Store de tema
+│   ├── 📁 types/                # Tipos TypeScript
+│   │   ├── 🔐 auth.ts               # Tipos de autenticação
+│   │   └── 📦 product.ts            # Tipos de produtos
+│   ├── 📁 utils/                # Utilitários
+│   │   ├── 🔧 alternativeSettings.ts # Configurações alternativas
+│   │   ├── 🐛 debugSettings.ts       # Debug de configurações
+│   │   └── 🗄️ setupDatabase.ts      # Setup do banco de dados
+│   ├── 📁 views/                # Páginas do sistema
+│   │   ├── 📊 AboutView.vue         # Sobre o sistema
+│   │   ├── 🤖 AIView.vue            # Interface de IA
+│   │   ├── 🏠 DashboardView.vue     # Dashboard principal
+│   │   ├── 📦 InventoryView.vue     # Gestão de estoque
+│   │   ├── 🔐 LoginView.vue         # Tela de login
+│   │   ├── 🍽️ MenuView.vue          # Gestão de cardápio
+│   │   ├── 👤 ProfileView.vue       # Perfil do usuário
+│   │   ├── 📊 ReportsView.vue       # Relatórios e analytics
+│   │   ├── ⚙️ SettingsView.vue      # Configurações
+│   │   └── 🏪 SuppliersView.vue     # Gestão de fornecedores
+│   ├── 🎯 App.vue               # Componente raiz
+│   ├── 📝 main.ts               # Ponto de entrada
+│   └── 🔧 vite-env.d.ts         # Tipos do Vite
+├── 📁 screenshots/              # Capturas de tela do sistema
+├── 📄 .env.example             # Exemplo de variáveis de ambiente
+├── 📄 .gitignore               # Arquivos ignorados pelo Git
+├── 📄 index.html               # HTML principal
+├── 📄 package.json             # Dependências e scripts
+├── 📄 README.md                # Este arquivo
+├── 📄 tsconfig.json            # Configuração TypeScript
+├── 📄 vercel.json              # Configuração do Vercel
+└── 📄 vite.config.ts           # Configuração do Vite
+```
+
+### 🏗️ Arquitetura do Sistema
+
+```mermaid
+graph TD
+    A[Vue.js 3 + TypeScript] --> B[Vue Router]
+    A --> C[Pinia Store]
+    A --> D[Componentes]
+
+    B --> E[Proteção de Rotas]
+    C --> F[Estado Global]
+    D --> G[UI Components]
+
+    A --> H[Services Layer]
+    H --> I[Supabase Client]
+    H --> J[Google Gemini AI]
+    H --> K[Axios HTTP]
+
+    I --> L[PostgreSQL Database]
+    J --> M[AI Analysis]
+
+    style A fill:#4FC08D
+    style I fill:#3ECF8E
+    style J fill:#FF6B35
+    style L fill:#336791
+```
+
+---
 
 ## 🤖 Integração com Google Gemini AI
 
-### Funcionalidades de IA
+### 🧠 Funcionalidades da IA
 
-1. **Análise de Estoque**
-   - Identificação de produtos críticos
-   - Análise de custos e preços
-   - Recomendações estratégicas
+O sistema integra a mais avançada IA do Google Gemini para oferecer:
 
-2. **Sugestões de Compra**
-   - Lista inteligente de compras
-   - Otimização de custos
-   - Planejamento semanal
-
-3. **Chat Interativo**
-   - Assistente 24/7
-   - Respostas contextuais
-   - Perguntas pré-definidas
-
-### Exemplo de Uso da IA
-
+#### 📈 Análise Automática de Estoque
 ```typescript
-import { aiService } from '@/services/aiService'
+// Exemplo de análise automática
+const analysis = await aiService.analyzeInventory({
+  products: inventoryData,
+  sales: salesData,
+  costs: costData
+})
 
-// Análise de estoque
-const analysis = await aiService.analyzeInventory(inventoryData)
-
-// Sugestões de compra
-const suggestions = await aiService.generatePurchaseSuggestions(inventoryData)
-
-// Chat com IA
-const response = await aiService.askQuestion("Como posso reduzir custos?")
+// Retorna insights como:
+// - Produtos críticos
+// - Oportunidades de economia
+// - Tendências de consumo
+// - Previsões de demanda
 ```
+
+#### 🛒 Sugestões Inteligentes de Compra
+```typescript
+const suggestions = await aiService.generatePurchaseSuggestions({
+  currentStock: products,
+  salesHistory: sales,
+  supplier: suppliers
+})
+
+// Gera lista otimizada considerando:
+// - Histórico de vendas
+// - Sazonalidade
+// - Custos de fornecedores
+// - Prazos de entrega
+```
+
+#### 💬 Chat Interativo Especializado
+```typescript
+const response = await aiService.askQuestion(
+  "Como posso reduzir os custos do meu estoque?",
+  inventoryContext
+)
+
+// Respostas contextuais sobre:
+// - Estratégias de compra
+// - Otimização de estoque
+// - Análise de fornecedores
+// - Decisões financeiras
+```
+
+### 🎯 Perguntas Rápidas Pré-definidas
+
+O sistema oferece perguntas prontas para análises rápidas:
+
+- 📊 "Quais produtos estão vendendo mais?"
+- 💰 "Como posso reduzir custos?"
+- 📦 "Que produtos preciso comprar?"
+- 📈 "Qual a tendência das minhas vendas?"
+- ⚠️ "Que produtos estão em falta?"
+- 🎯 "Como otimizar meu estoque?"
+
+### 🔒 Segurança e Privacidade
+
+- **Dados criptografados** em trânsito
+- **Não armazenamento** de dados sensíveis pela IA
+- **API Keys** seguras em variáveis de ambiente
+- **Rate limiting** para evitar abuso da API
+
+---
 
 ## 📱 Responsividade
 
-O sistema é totalmente responsivo e funciona em:
+O sistema foi desenvolvido com **Mobile-First** approach, garantindo perfeita usabilidade em todos os dispositivos:
 
-- 💻 **Desktop** (1200px+)
-- 📱 **Tablet** (768px - 1199px)
-- 📱 **Mobile** (até 767px)
+### 📱 Breakpoints Responsivos
 
-## 🎨 Funcionalidades Visuais
+```css
+/* Mobile First (padrão) */
+.component { /* Estilos mobile 320px+ */ }
 
-### Design System
-- **Cores Primárias:** #667eea, #764ba2, #f093fb
-- **Gradientes:** Linear gradients suaves
-- **Tipografia:** Inter font family
-- **Icones:** Emojis nativos para melhor compatibilidade
+/* Tablet */
+@media (min-width: 768px) {
+  .component { /* Estilos tablet 768px+ */ }
+}
 
-### Componentes Interativos
-- ✨ Animações suaves
-- 🎭 Estados de loading
-- 🎯 Feedback visual
-- 📊 Barras de progresso
-- 🔄 Transições fluidas
+/* Desktop */
+@media (min-width: 1024px) {
+  .component { /* Estilos desktop 1024px+ */ }
+}
 
-## 🔧 Desenvolvimento
-
-### Executar em Desenvolvimento
-
-```bash
-# Instalar dependências
-npm install
-
-# Executar servidor de desenvolvimento
-npm run dev
-
-# O sistema estará disponível em http://localhost:5173
+/* Large Desktop */
+@media (min-width: 1440px) {
+  .component { /* Estilos desktop large 1440px+ */ }
+}
 ```
 
-### Build para Produção
+### 🎨 Adaptações por Dispositivo
 
-```bash
-# Gerar build otimizado
-npm run build
+| Dispositivo | Resolução | Características |
+|------------|-----------|-----------------|
+| 📱 **Mobile** | 320px - 767px | Menu hambúrguer, cards em coluna única, navegação touch |
+| 📟 **Tablet** | 768px - 1023px | Layout híbrido, grid 2 colunas, navegação mista |
+| 💻 **Desktop** | 1024px+ | Sidebar fixa, grid múltiplas colunas, navegação completa |
 
-# O build será gerado na pasta 'dist'
-```
+### ✨ Funcionalidades Mobile
 
-## 🐛 Solução de Problemas
+- **Navegação por gestos** touch friendly
+- **Menu hambúrguer** intuitivo
+- **Cards otimizados** para toque
+- **Formulários adaptativos** com teclado virtual
+- **Gráficos responsivos** com interação touch
+- **Upload de imagens** otimizado para mobile
 
-### Problemas Comuns
-
-1. **Erro de autenticação no Supabase**
-   - Verifique as credenciais no arquivo `.env`
-   - Confirme se o usuário existe na tabela `admin_users`
-
-2. **IA não responde**
-   - Verifique a chave da API do Google Gemini
-   - Confirme se há conexão com a internet
-
-3. **Produtos não carregam**
-   - Verifique a conexão com o Supabase
-   - Confirme se existem produtos na tabela `produtos`
-
-### Logs de Debug
-
-```bash
-# Para ver logs detalhados
-npm run dev -- --debug
-```
+---
 
 ## 🚀 Deploy
 
-### Vercel (Recomendado)
+### 🔵 Vercel (Recomendado)
+
+O sistema está otimizado para deploy no Vercel com configuração automática:
 
 ```bash
 # Instalar Vercel CLI
 npm i -g vercel
 
-# Deploy
+# Deploy direto do repositório
 vercel --prod
+
+# Ou conecte seu repositório GitHub no dashboard do Vercel
 ```
 
-### Netlify
+**Configurações automáticas incluem:**
+- ✅ Build otimizado com Vite
+- ✅ SPA routing configurado
+- ✅ Variáveis de ambiente
+- ✅ CDN global
+- ✅ HTTPS automático
+
+### 🟠 Netlify
 
 ```bash
-# Build
+# Build do projeto
 npm run build
 
-# Deploy pasta dist/ no Netlify
+# Deploy da pasta dist/ no Netlify
+# Configure redirects para SPA no netlify.toml:
 ```
 
-## 📋 Checklist de Funcionalidades
+```toml
+# netlify.toml
+[build]
+  command = "npm run build"
+  publish = "dist"
 
-### ✅ Implementado
-- [x] Sistema de autenticação
-- [x] Dashboard principal
-- [x] Gestão completa de estoque
-- [x] Integração com IA Google Gemini
-- [x] Interface responsiva
-- [x] Sistema de busca e filtros
-- [x] Indicadores visuais de estoque
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
 
-### 🔄 Futuras Implementações
-- [ ] Gestão de fornecedores
-- [ ] Sistema de cardápio digital
-- [ ] Relatórios avançados
-- [ ] Sistema de notificações
-- [ ] Integração com impressoras
-- [ ] App mobile PWA
+### 🟢 Outros Provedores
+
+Para outros provedores (DigitalOcean, AWS, etc.):
+
+```bash
+npm run build
+# Upload da pasta 'dist' para seu servidor
+# Configure redirecionamento SPA no seu servidor web
+```
+
+### 🌐 Configuração de Domínio
+
+Para configurar domínio personalizado:
+
+1. **Configure DNS** apontando para seu provedor
+2. **Adicione domínio** no painel do provedor
+3. **Configure SSL** (automático na maioria dos casos)
+4. **Atualize variáveis** de ambiente se necessário
+
+---
+
+## 🔧 Desenvolvimento
+
+### 🛠️ Scripts Disponíveis
+
+```bash
+# 🚀 Desenvolvimento
+npm run dev              # Servidor de desenvolvimento com HMR
+npm run dev:host         # Servidor acessível na rede local
+
+# 🏗️ Build de Produção
+npm run build            # Build otimizado para produção
+npm run preview          # Preview do build de produção
+
+# 🔍 Verificação de Código
+npm run type-check       # Verificação de tipos TypeScript
+npm run lint             # Linting do código (se configurado)
+
+# 🧪 Testes (se configurado)
+npm run test             # Executar testes
+npm run test:coverage    # Testes com coverage
+```
+
+### 🎯 Estrutura de Desenvolvimento
+
+#### 📁 Convenções de Pastas
+
+```
+src/
+├── components/          # Componentes reutilizáveis
+│   ├── common/         # Componentes genéricos (botões, inputs)
+│   ├── forms/          # Componentes de formulário
+│   └── layout/         # Componentes de layout
+├── services/           # Lógica de negócio e APIs
+├── stores/             # Estado global (Pinia)
+├── types/              # Definições TypeScript
+├── utils/              # Funções utilitárias
+└── views/              # Páginas/rotas
+```
+
+#### 🏷️ Convenções de Nomenclatura
+
+- **Componentes**: PascalCase (ex: `ProductCard.vue`)
+- **Serviços**: camelCase (ex: `productService.ts`)
+- **Stores**: camelCase (ex: `authStore.ts`)
+- **Tipos**: PascalCase (ex: `User`, `Product`)
+- **Constantes**: UPPER_CASE (ex: `API_ENDPOINTS`)
+
+#### 🔧 Configuração do Ambiente de Desenvolvimento
+
+```bash
+# Instalar dependências de desenvolvimento
+npm install
+
+# Configurar hooks do Git (se usando Husky)
+npm run prepare
+
+# Configurar variáveis de ambiente
+cp .env.example .env.local
+```
+
+### 🐛 Debug e Troubleshooting
+
+#### 🔍 Debug Mode
+
+```bash
+# Ativar logs de debug
+VITE_DEBUG_LOGS=true npm run dev
+
+# Debug específico do Supabase
+VITE_SUPABASE_DEBUG=true npm run dev
+```
+
+#### 🚨 Problemas Comuns
+
+<details>
+<summary>🔐 Erro de Autenticação</summary>
+
+```bash
+# Verificar configurações do Supabase
+# 1. URL e chave no .env
+# 2. Políticas RLS configuradas
+# 3. Usuário existe na tabela admin_users
+```
+</details>
+
+<details>
+<summary>🤖 IA não responde</summary>
+
+```bash
+# Verificar configuração do Gemini AI
+# 1. Chave da API válida
+# 2. Cota disponível
+# 3. Conexão com internet
+```
+</details>
+
+<details>
+<summary>📦 Produtos não carregam</summary>
+
+```bash
+# Verificar dados no Supabase
+# 1. Tabela 'produtos' existe e tem dados
+# 2. Políticas RLS permitem leitura
+# 3. Conexão com Supabase estável
+```
+</details>
+
+### 🔄 Fluxo de Desenvolvimento
+
+1. **Clone** do repositório
+2. **Instale** dependências
+3. **Configure** ambiente (.env)
+4. **Execute** em desenvolvimento
+5. **Desenvolva** funcionalidades
+6. **Teste** localmente
+7. **Build** para produção
+8. **Deploy** para staging/produção
+
+---
+
+## 🧪 Testes (Planejado)
+
+### 🎯 Estratégia de Testes
+
+```bash
+# Testes unitários (planejado)
+npm run test:unit
+
+# Testes de integração (planejado)
+npm run test:integration
+
+# Testes E2E (planejado)
+npm run test:e2e
+```
+
+### 🛠️ Ferramentas Planejadas
+
+- **Vitest** - Testes unitários rápidos
+- **Vue Test Utils** - Testes de componentes
+- **Cypress** - Testes E2E
+- **MSW** - Mock de APIs
+
+---
+
+## 🔒 Segurança
+
+### 🛡️ Medidas de Segurança Implementadas
+
+- **Autenticação segura** com Supabase
+- **Proteção de rotas** automática
+- **Validação de entrada** em formulários
+- **Sanitização** de dados exibidos
+- **HTTPS** obrigatório em produção
+- **Variáveis de ambiente** para dados sensíveis
+- **Row Level Security (RLS)** no banco de dados
+
+### 🔐 Boas Práticas
+
+- **Nunca commitar** chaves de API
+- **Sempre validar** dados do usuário
+- **Usar HTTPS** em produção
+- **Manter dependências** atualizadas
+- **Logs** sem dados sensíveis
+
+---
+
+## 📊 Performance
+
+### ⚡ Otimizações Implementadas
+
+- **Vite** para build ultra-rápido
+- **Code splitting** automático
+- **Lazy loading** de componentes
+- **Compressão gzip** automática
+- **CDN** para assets estáticos
+- **Cache** inteligente de recursos
+
+### 📈 Métricas de Performance
+
+- **First Load**: < 2s
+- **Bundle Size**: ~1.6MB (gzipped: ~500KB)
+- **Lighthouse Score**: 90+ (objetivo)
+
+---
 
 ## 🤝 Contribuição
 
-Este é um projeto proprietário. Para contribuições ou melhorias, entre em contato com a equipe de desenvolvimento.
+### 🌟 Como Contribuir
 
-## 📞 Suporte
+1. **Fork** o repositório
+2. **Clone** seu fork localmente
+3. **Crie** uma branch para sua feature
+4. **Desenvolva** e teste suas alterações
+5. **Commit** com mensagens descritivas
+6. **Push** para seu fork
+7. **Abra** um Pull Request
 
-Para suporte técnico ou dúvidas:
+### 📋 Guidelines
 
-- **Email:** suporte@gestaozesystem.com
-- **Documentação:** [Link para docs]
-- **Issues:** [Link para issues do GitHub]
+- **Código limpo** e bem documentado
+- **Testes** para novas funcionalidades
+- **Commits** descritivos em português
+- **TypeScript** para nova funcionalidade
+- **Responsividade** obrigatória
+- **Performance** sempre considerada
+
+### 🐛 Reportar Issues
+
+Use o [GitHub Issues](https://github.com/Gestao-de-estoque/gestao-estoque-vue/issues) para:
+
+- 🐛 Reportar bugs
+- 💡 Sugerir melhorias
+- ❓ Fazer perguntas
+- 📚 Solicitar documentação
+
+### 📬 Contato
+
+- **Email**: suporte@gestaozesystem.com
+- **GitHub**: [@Gestao-de-estoque](https://github.com/Gestao-de-estoque)
+- **Website**: [gestao.restpedacinhodoceu.com.br](https://gestao.restpedacinhodoceu.com.br)
+
+---
 
 ## 📄 Licença
 
-Este projeto é proprietário da empresa. Todos os direitos reservados.
+Este projeto é **proprietário** e todos os direitos são reservados. O uso, distribuição ou modificação do código requer autorização expressa dos proprietários.
+
+### 📋 Termos de Uso
+
+- ✅ Uso permitido para fins de demonstração
+- ❌ Redistribuição não autorizada
+- ❌ Uso comercial sem licença
+- ❌ Modificação sem autorização
 
 ---
 
-## 🎯 Resumo Técnico
+## 🎯 Roadmap
 
-**GestaoZe System** é uma solução completa de gestão de estoque para restaurantes, desenvolvida com tecnologias modernas e integração de IA. O sistema oferece:
+### 🚀 Versão 1.1 (Próxima)
 
-- **Interface intuitiva** e responsiva
-- **Análise inteligente** com Google Gemini AI
-- **Integração robusta** com Supabase
-- **Arquitetura escalável** em Vue.js 3 + TypeScript
-- **Compatibilidade total** com o app mobile existente
+- [ ] 📊 Dashboard expandido com mais widgets
+- [ ] 🔔 Sistema de notificações push
+- [ ] 📱 PWA (Progressive Web App)
+- [ ] 🌍 Internacionalização (i18n)
+- [ ] 📈 Analytics avançados de uso
 
-Ideal para restaurantes que buscam otimizar sua gestão de estoque com tecnologia de ponta e insights baseados em inteligência artificial.
+### 🌟 Versão 1.2 (Futuro)
+
+- [ ] 🖨️ Integração com impressoras
+- [ ] 📦 Sistema de pedidos automatizado
+- [ ] 🤖 IA mais avançada para previsões
+- [ ] 📊 Relatórios customizáveis
+- [ ] 🔗 APIs para integração externa
+
+### 🏆 Versão 2.0 (Longo prazo)
+
+- [ ] 📱 App mobile nativo
+- [ ] ☁️ Sistema multi-loja
+- [ ] 💳 Integração com pagamentos
+- [ ] 📧 Marketing por email
+- [ ] 🎯 CRM integrado
 
 ---
 
-*Desenvolvido com ❤️ para o futuro da gestão gastronômica*
+## 🏆 Reconhecimentos
+
+### 👏 Agradecimentos
+
+- **Equipe de Desenvolvimento** - Pela dedicação e excelência
+- **Comunidade Vue.js** - Pelo framework incrível
+- **Supabase Team** - Pela plataforma robusta
+- **Google AI** - Pela tecnologia de IA avançada
+
+### 🛠️ Tecnologias e Ferramentas
+
+Agradecimentos especiais às tecnologias que tornaram este projeto possível:
+
+- [Vue.js](https://vuejs.org/) - Framework progressivo
+- [TypeScript](https://typescriptlang.org/) - Tipagem estática
+- [Supabase](https://supabase.com/) - Backend as a Service
+- [Vite](https://vitejs.dev/) - Build tool moderno
+- [Vercel](https://vercel.com/) - Plataforma de deploy
+
+---
+
+<div align="center">
+
+## 💫 **GestãoZé System - Gestão Inteligente para o Futuro**
+
+**Desenvolvido com ❤️ para revolucionar a gestão gastronômica**
+
+[![Deploy Status](https://img.shields.io/badge/Deploy-Live-success.svg?style=flat-square)](https://gestao.restpedacinhodoceu.com.br)
+[![Version](https://img.shields.io/badge/Version-1.0.0-blue.svg?style=flat-square)](https://github.com/Gestao-de-estoque/gestao-estoque-vue)
+[![License](https://img.shields.io/badge/License-Proprietary-red.svg?style=flat-square)](./LICENSE)
+
+[🚀 **Acessar Demo**](https://gestao.restpedacinhodoceu.com.br) | [📧 **Contato**](mailto:suporte@gestaozesystem.com) | [📚 **Docs**](https://github.com/Gestao-de-estoque/gestao-estoque-vue/wiki)
+
+---
+
+**© 2024 GestãoZé System. Todos os direitos reservados.**
+
+</div>
