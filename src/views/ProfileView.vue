@@ -362,7 +362,7 @@ import {
 } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
-import { profileService, type UserProfile, type UserStats, type SecurityStatus } from '@/services/profileService'
+import { profileService, type UserStats, type SecurityStatus } from '@/services/profileService'
 import { format, formatDistanceToNow } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 
@@ -541,10 +541,9 @@ async function handleAvatarUpload(event: Event) {
 
   isLoading.value = true
   try {
-    const avatarUrl = await profileService.uploadAvatar(file)
+    await profileService.uploadAvatar(file)
 
-    // Atualizar dados do formulário
-    formData.value = { ...formData.value, avatar_url: avatarUrl }
+    // Avatar upload foi bem sucedido
     markAsChanged()
 
     saveMessage.value = 'Avatar enviado com sucesso!'

@@ -262,10 +262,19 @@ class ProfileService {
     try {
       const user = this.getCurrentUser()
 
+      // Primeiro buscar o login_count atual
+      const { data: currentData } = await supabase
+        .from(DB_TABLES.USERS)
+        .select('login_count')
+        .eq('id', user.id)
+        .single()
+
+      const currentCount = currentData?.login_count || 0
+
       const { error } = await supabase
         .from(DB_TABLES.USERS)
         .update({
-          login_count: supabase.sql`COALESCE(login_count, 0) + 1`,
+          login_count: currentCount + 1,
           last_login_at: new Date().toISOString()
         })
         .eq('id', user.id)

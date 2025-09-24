@@ -403,8 +403,9 @@ const user = computed(() => authStore.user)
 const quickSearch = ref('')
 const showProfile = ref(false)
 const showSettings = ref(false)
-const showReports = ref(false)
-const showAddProduct = ref(false)
+// Removidas variáveis não utilizadas
+// const showReports = ref(false)
+// const showAddProduct = ref(false)
 const selectedPeriod = ref('7d')
 
 // Dados do dashboard

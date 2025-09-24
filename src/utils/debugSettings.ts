@@ -17,7 +17,7 @@ export async function debugSettingsTable() {
     // 2. Verificar se tabela existe
     console.log('🗄️ Testando acesso à tabela app_settings...')
 
-    const { data: tableTest, error: tableError } = await supabase
+    const { error: tableError } = await supabase
       .from('app_settings')
       .select('*')
       .limit(1)

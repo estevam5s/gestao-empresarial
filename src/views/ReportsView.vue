@@ -308,7 +308,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted } from 'vue'
 import { reportsService } from '@/services/reportsService'
 import { Line, Bar, Doughnut } from 'vue-chartjs'
 import { format } from 'date-fns'
@@ -363,10 +363,31 @@ const periods = [
   { label: '90 dias', value: '90d' as const }
 ]
 
-const analytics = ref({
+interface AnalyticsData {
+  sales: {
+    totalSales?: number;
+  };
+  stock: {
+    totalProducts?: number;
+    lowStockCount?: number;
+    outOfStockCount?: number;
+    totalValue?: number;
+    lowStockProducts: any[];
+  };
+  movements: {
+    recentMovements: any[];
+  };
+  suppliers: any;
+}
+
+const analytics = ref<AnalyticsData>({
   sales: {},
-  stock: {},
-  movements: {},
+  stock: {
+    lowStockProducts: [],
+  },
+  movements: {
+    recentMovements: [],
+  },
   suppliers: {}
 })
 
@@ -528,8 +549,7 @@ async function exportToPDF() {
     const chartsContainer = document.querySelector('.charts-grid') as HTMLElement
     if (chartsContainer) {
       const canvas = await html2canvas(chartsContainer, {
-        backgroundColor: '#ffffff',
-        scale: 2,
+        background: '#ffffff',
         logging: false
       })
 
@@ -755,8 +775,7 @@ async function exportToImage() {
     if (!container) return
 
     const canvas = await html2canvas(container, {
-      backgroundColor: '#ffffff',
-      scale: 2,
+      background: '#ffffff',
       logging: false,
       useCORS: true,
       allowTaint: true

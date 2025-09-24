@@ -37,7 +37,7 @@ export async function setupSettingsTable(): Promise<{ success: boolean; message:
     }
 
     // Verificar se a tabela app_settings existe testando uma consulta simples
-    const { data: tableCheck, error: tableError } = await supabase
+    const { error: tableError } = await supabase
       .from('app_settings')
       .select('id')
       .eq('user_id', user.id)

@@ -509,7 +509,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { supabase, DB_TABLES } from '@/config/supabase'
 import { useAuthStore } from '@/stores/auth'
 import type { Product } from '@/types/product'
