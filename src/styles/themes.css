@@ -1,0 +1,259 @@
+/* Estilos globais de temas - Dracula e Light */
+
+/* Classes utilitárias para textos */
+.text-primary {
+  color: var(--theme-text-primary) !important;
+}
+
+.text-secondary {
+  color: var(--theme-text-secondary) !important;
+}
+
+.text-muted {
+  color: var(--theme-text-muted) !important;
+}
+
+/* Classes utilitárias para backgrounds */
+.bg-primary {
+  background-color: var(--theme-primary) !important;
+}
+
+.bg-secondary {
+  background-color: var(--theme-secondary) !important;
+}
+
+.bg-surface {
+  background: var(--theme-surface) !important;
+}
+
+.bg-background {
+  background: var(--theme-background) !important;
+}
+
+/* Classes utilitárias para bordas */
+.border-theme {
+  border-color: var(--theme-border) !important;
+}
+
+/* Classes para containers padrão */
+.theme-container {
+  background: var(--theme-background);
+  min-height: 100vh;
+  color: var(--theme-text-primary);
+}
+
+.theme-card {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 4px 20px var(--theme-shadow);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.theme-header {
+  background: var(--theme-surface);
+  border-bottom: 1px solid var(--theme-border);
+  box-shadow: 0 2px 10px var(--theme-shadow);
+}
+
+/* Botões temáticos */
+.btn-theme-primary {
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-theme-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--theme-shadow);
+}
+
+.btn-theme-secondary {
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-theme-secondary:hover {
+  background: var(--theme-primary);
+  color: white;
+  border-color: var(--theme-primary);
+}
+
+/* Inputs temáticos */
+.input-theme {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text-primary);
+  padding: 12px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.input-theme:focus {
+  outline: none;
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+body.theme-dark .input-theme:focus {
+  box-shadow: 0 0 0 3px rgba(189, 147, 249, 0.2);
+}
+
+.input-theme::placeholder {
+  color: var(--theme-text-muted);
+}
+
+/* Alertas temáticos */
+.alert-success {
+  background: var(--theme-accent-success);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.alert-warning {
+  background: var(--theme-accent-warning);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.alert-error {
+  background: var(--theme-accent-error);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+.alert-info {
+  background: var(--theme-accent-info);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 10px 0;
+}
+
+/* Modais temáticos */
+.modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+body.theme-dark .modal-overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.modal-content {
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px var(--theme-shadow);
+}
+
+/* Navegação temática */
+.nav-item {
+  color: var(--theme-text-secondary);
+  transition: color 0.3s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  color: var(--theme-primary);
+}
+
+/* Tabelas temáticas */
+.table-theme {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table-theme th {
+  background: var(--theme-primary);
+  color: white;
+  padding: 12px 16px;
+  font-weight: 600;
+}
+
+.table-theme td {
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--theme-border);
+}
+
+.table-theme tbody tr:hover td {
+  background: var(--theme-border);
+}
+
+/* Scrollbars temáticas */
+.theme-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-scroll::-webkit-scrollbar-track {
+  background: var(--theme-border);
+  border-radius: 4px;
+}
+
+.theme-scroll::-webkit-scrollbar-thumb {
+  background: var(--theme-text-muted);
+  border-radius: 4px;
+}
+
+.theme-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-primary);
+}
+
+/* Ajustes específicos para tema escuro */
+body.theme-dark {
+  scrollbar-color: #44475a #282a36;
+}
+
+body.theme-dark input[type="text"],
+body.theme-dark input[type="email"],
+body.theme-dark input[type="password"],
+body.theme-dark textarea,
+body.theme-dark select {
+  background: #44475a;
+  color: #f8f8f2;
+  border-color: #6272a4;
+}
+
+body.theme-dark input[type="text"]:focus,
+body.theme-dark input[type="email"]:focus,
+body.theme-dark input[type="password"]:focus,
+body.theme-dark textarea:focus,
+body.theme-dark select:focus {
+  border-color: #bd93f9;
+  background: #44475a;
+}
+
+/* Animações de transição para mudança de tema */
+* {
+  transition: background-color 0.3s ease,
+              color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+/* Disable transitions durante a inicialização */
+.theme-transition-disabled * {
+  transition: none !important;
+}

@@ -7,10 +7,53 @@
           Relatórios - Análises e Gráficos
         </h1>
         <div class="header-actions">
-          <button @click="exportReport" class="btn-secondary">
-            <Download :size="18" />
-            Exportar
-          </button>
+          <div class="export-dropdown" ref="exportDropdown">
+            <button @click="toggleExportMenu" class="btn-secondary">
+              <Download :size="18" />
+              Exportar
+              <svg :class="{ 'rotate-180': showExportMenu }" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
+            </button>
+            <div v-if="showExportMenu" class="export-menu">
+              <button @click="exportToPDF" class="export-option">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                </svg>
+                PDF com Gráficos
+              </button>
+              <button @click="exportToExcel" class="export-option">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <path d="M9 9h6v6H9z"/>
+                </svg>
+                Excel (.xlsx)
+              </button>
+              <button @click="exportToCSV" class="export-option">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                </svg>
+                CSV (.csv)
+              </button>
+              <button @click="exportToJSON" class="export-option">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14,2 14,8 20,8"/>
+                </svg>
+                JSON (.json)
+              </button>
+              <button @click="exportToImage" class="export-option">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+                </svg>
+                Imagem (.png)
+              </button>
+            </div>
+          </div>
           <button @click="refreshData" class="btn-primary" :disabled="loading">
             <RefreshCw :size="18" :class="{ 'animate-spin': loading }" />
             Atualizar
@@ -265,11 +308,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { reportsService } from '@/services/reportsService'
 import { Line, Bar, Doughnut } from 'vue-chartjs'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
+import * as XLSX from 'xlsx'
 
 // Icons
 import {
@@ -308,6 +354,8 @@ ChartJS.register(
 const loading = ref(false)
 const selectedPeriod = ref<'7d' | '30d' | '90d'>('30d')
 const chartType = ref<'line' | 'bar'>('line')
+const showExportMenu = ref(false)
+const exportDropdown = ref<HTMLElement | null>(null)
 
 const periods = [
   { label: '7 dias', value: '7d' as const },
@@ -428,10 +476,312 @@ async function refreshData() {
   await loadAnalytics()
 }
 
-function exportReport() {
-  // Implementar exportação para PDF/Excel
-  console.log('Exportando relatório...')
-  alert('Funcionalidade de exportação será implementada em breve!')
+function toggleExportMenu() {
+  showExportMenu.value = !showExportMenu.value
+}
+
+async function exportToPDF() {
+  try {
+    loading.value = true
+    showExportMenu.value = false
+
+    const pdf = new jsPDF('p', 'mm', 'a4')
+    const pageWidth = pdf.internal.pageSize.getWidth()
+    const pageHeight = pdf.internal.pageSize.getHeight()
+    let currentY = 20
+
+    // Header do relatório
+    pdf.setFontSize(20)
+    pdf.setTextColor(102, 126, 234)
+    pdf.text('Relatório de Análises - GestãoZe', 20, currentY)
+
+    currentY += 10
+    pdf.setFontSize(12)
+    pdf.setTextColor(100, 100, 100)
+    pdf.text(`Período: ${periods.find(p => p.value === selectedPeriod.value)?.label}`, 20, currentY)
+    pdf.text(`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`, 20, currentY + 5)
+
+    currentY += 20
+
+    // Estatísticas resumo
+    pdf.setFontSize(16)
+    pdf.setTextColor(26, 32, 44)
+    pdf.text('Resumo Executivo', 20, currentY)
+    currentY += 10
+
+    pdf.setFontSize(10)
+    pdf.setTextColor(77, 85, 104)
+    const stats = [
+      `Total de Vendas: R$ ${formatCurrency(analytics.value.sales.totalSales || 0)}`,
+      `Total de Produtos: ${analytics.value.stock.totalProducts || 0}`,
+      `Produtos em Falta: ${analytics.value.stock.outOfStockCount || 0}`,
+      `Valor do Estoque: R$ ${formatCurrency(analytics.value.stock.totalValue || 0)}`
+    ]
+
+    stats.forEach((stat, index) => {
+      pdf.text(stat, 20, currentY + (index * 5))
+    })
+
+    currentY += 30
+
+    // Capturar gráficos
+    const chartsContainer = document.querySelector('.charts-grid') as HTMLElement
+    if (chartsContainer) {
+      const canvas = await html2canvas(chartsContainer, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        logging: false
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+      const imgWidth = pageWidth - 40
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+
+      if (currentY + imgHeight > pageHeight - 20) {
+        pdf.addPage()
+        currentY = 20
+      }
+
+      pdf.text('Gráficos de Análise', 20, currentY)
+      currentY += 10
+      pdf.addImage(imgData, 'PNG', 20, currentY, imgWidth, imgHeight)
+    }
+
+    // Nova página para tabelas
+    pdf.addPage()
+    currentY = 20
+
+    pdf.setFontSize(16)
+    pdf.setTextColor(26, 32, 44)
+    pdf.text('Dados Detalhados', 20, currentY)
+    currentY += 15
+
+    // Tabela de produtos com estoque baixo
+    if (analytics.value.stock.lowStockProducts?.length > 0) {
+      pdf.setFontSize(12)
+      pdf.text('Produtos com Estoque Baixo', 20, currentY)
+      currentY += 10
+
+      // Cabeçalhos da tabela
+      pdf.setFontSize(9)
+      pdf.setTextColor(77, 85, 104)
+      pdf.text('Produto', 20, currentY)
+      pdf.text('Estoque Atual', 80, currentY)
+      pdf.text('Estoque Mínimo', 130, currentY)
+      pdf.text('Status', 170, currentY)
+      currentY += 5
+
+      // Linha separadora
+      pdf.line(20, currentY, pageWidth - 20, currentY)
+      currentY += 5
+
+      // Dados da tabela
+      analytics.value.stock.lowStockProducts.slice(0, 15).forEach((product: any) => {
+        pdf.setTextColor(26, 32, 44)
+        pdf.text(product.nome.substring(0, 25), 20, currentY)
+        pdf.text(`${product.current_stock} ${product.unidade}`, 80, currentY)
+        pdf.text(`${product.min_stock} ${product.unidade}`, 130, currentY)
+        pdf.setTextColor(220, 38, 38)
+        pdf.text('Baixo', 170, currentY)
+        currentY += 5
+
+        if (currentY > pageHeight - 20) {
+          pdf.addPage()
+          currentY = 20
+        }
+      })
+    }
+
+    // Salvar PDF
+    pdf.save(`relatorio-gestao-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.pdf`)
+
+  } catch (error) {
+    console.error('Erro ao exportar PDF:', error)
+    alert('Erro ao exportar relatório em PDF')
+  } finally {
+    loading.value = false
+  }
+}
+
+async function exportToExcel() {
+  try {
+    showExportMenu.value = false
+
+    const workbook = XLSX.utils.book_new()
+
+    // Planilha de Resumo
+    const summaryData = [
+      ['Relatório de Análises - GestãoZe'],
+      [''],
+      [`Período: ${periods.find(p => p.value === selectedPeriod.value)?.label}`],
+      [`Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}`],
+      [''],
+      ['RESUMO EXECUTIVO'],
+      ['Total de Vendas', `R$ ${formatCurrency(analytics.value.sales.totalSales || 0)}`],
+      ['Total de Produtos', analytics.value.stock.totalProducts || 0],
+      ['Produtos em Falta', analytics.value.stock.outOfStockCount || 0],
+      ['Valor do Estoque', `R$ ${formatCurrency(analytics.value.stock.totalValue || 0)}`]
+    ]
+
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData)
+    XLSX.utils.book_append_sheet(workbook, summarySheet, 'Resumo')
+
+    // Planilha de Produtos com Estoque Baixo
+    if (analytics.value.stock.lowStockProducts?.length > 0) {
+      const lowStockData = [
+        ['Produto', 'Estoque Atual', 'Unidade', 'Estoque Mínimo', 'Status'],
+        ...analytics.value.stock.lowStockProducts.map((product: any) => [
+          product.nome,
+          product.current_stock,
+          product.unidade,
+          product.min_stock,
+          'Baixo'
+        ])
+      ]
+
+      const lowStockSheet = XLSX.utils.aoa_to_sheet(lowStockData)
+      XLSX.utils.book_append_sheet(workbook, lowStockSheet, 'Estoque Baixo')
+    }
+
+    // Planilha de Movimentações
+    if (analytics.value.movements.recentMovements?.length > 0) {
+      const movementsData = [
+        ['Produto', 'Tipo', 'Quantidade', 'Data'],
+        ...analytics.value.movements.recentMovements.map((movement: any) => [
+          movement.produtos?.nome || 'N/A',
+          movement.type === 'in' ? 'Entrada' : 'Saída',
+          movement.quantity,
+          format(new Date(movement.created_at), 'dd/MM/yyyy HH:mm', { locale: ptBR })
+        ])
+      ]
+
+      const movementsSheet = XLSX.utils.aoa_to_sheet(movementsData)
+      XLSX.utils.book_append_sheet(workbook, movementsSheet, 'Movimentações')
+    }
+
+    // Salvar arquivo
+    XLSX.writeFile(workbook, `relatorio-gestao-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.xlsx`)
+
+  } catch (error) {
+    console.error('Erro ao exportar Excel:', error)
+    alert('Erro ao exportar relatório em Excel')
+  }
+}
+
+function exportToCSV() {
+  try {
+    showExportMenu.value = false
+
+    let csvContent = 'data:text/csv;charset=utf-8,'
+    csvContent += 'Relatório de Análises - GestãoZe\n\n'
+    csvContent += `Período: ${periods.find(p => p.value === selectedPeriod.value)?.label}\n`
+    csvContent += `Gerado em: ${format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR })}\n\n`
+
+    // Resumo
+    csvContent += 'RESUMO EXECUTIVO\n'
+    csvContent += `Total de Vendas,R$ ${formatCurrency(analytics.value.sales.totalSales || 0)}\n`
+    csvContent += `Total de Produtos,${analytics.value.stock.totalProducts || 0}\n`
+    csvContent += `Produtos em Falta,${analytics.value.stock.outOfStockCount || 0}\n`
+    csvContent += `Valor do Estoque,R$ ${formatCurrency(analytics.value.stock.totalValue || 0)}\n\n`
+
+    // Produtos com estoque baixo
+    if (analytics.value.stock.lowStockProducts?.length > 0) {
+      csvContent += 'PRODUTOS COM ESTOQUE BAIXO\n'
+      csvContent += 'Produto,Estoque Atual,Unidade,Estoque Mínimo,Status\n'
+
+      analytics.value.stock.lowStockProducts.forEach((product: any) => {
+        csvContent += `"${product.nome}",${product.current_stock},"${product.unidade}",${product.min_stock},Baixo\n`
+      })
+    }
+
+    const encodedUri = encodeURI(csvContent)
+    const link = document.createElement('a')
+    link.setAttribute('href', encodedUri)
+    link.setAttribute('download', `relatorio-gestao-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.csv`)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+  } catch (error) {
+    console.error('Erro ao exportar CSV:', error)
+    alert('Erro ao exportar relatório em CSV')
+  }
+}
+
+function exportToJSON() {
+  try {
+    showExportMenu.value = false
+
+    const reportData = {
+      metadata: {
+        title: 'Relatório de Análises - GestãoZe',
+        period: periods.find(p => p.value === selectedPeriod.value)?.label,
+        generatedAt: format(new Date(), 'dd/MM/yyyy HH:mm', { locale: ptBR }),
+        periodValue: selectedPeriod.value
+      },
+      analytics: analytics.value,
+      charts: {
+        salesData: salesChartData.value,
+        categoryData: categoryChartData.value,
+        movementsData: movementsChartData.value
+      }
+    }
+
+    const jsonString = JSON.stringify(reportData, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `relatorio-gestao-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    URL.revokeObjectURL(url)
+
+  } catch (error) {
+    console.error('Erro ao exportar JSON:', error)
+    alert('Erro ao exportar relatório em JSON')
+  }
+}
+
+async function exportToImage() {
+  try {
+    loading.value = true
+    showExportMenu.value = false
+
+    const container = document.querySelector('.reports-container') as HTMLElement
+    if (!container) return
+
+    const canvas = await html2canvas(container, {
+      backgroundColor: '#ffffff',
+      scale: 2,
+      logging: false,
+      useCORS: true,
+      allowTaint: true
+    })
+
+    const link = document.createElement('a')
+    link.download = `relatorio-gestao-${selectedPeriod.value}-${format(new Date(), 'yyyy-MM-dd')}.png`
+    link.href = canvas.toDataURL('image/png')
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+  } catch (error) {
+    console.error('Erro ao exportar imagem:', error)
+    alert('Erro ao exportar relatório como imagem')
+  } finally {
+    loading.value = false
+  }
+}
+
+// Fechar dropdown ao clicar fora
+function handleClickOutside(event: Event) {
+  if (exportDropdown.value && !exportDropdown.value.contains(event.target as Node)) {
+    showExportMenu.value = false
+  }
 }
 
 function formatCurrency(value: number): string {
@@ -453,37 +803,47 @@ watch(selectedPeriod, () => {
 // Lifecycle
 onMounted(() => {
   loadAnalytics()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
 <style scoped>
 .reports-container {
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-  background: #f8fafc;
+  padding: 0;
+  width: 100vw;
+  background: var(--theme-background);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .page-header {
-  margin-bottom: 32px;
+  margin: 0;
+  padding: 0;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: white;
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background: var(--theme-surface);
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--theme-border);
+  box-shadow: 0 2px 10px var(--theme-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-content h1 {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #1a202c;
+  color: var(--theme-text-primary);
   margin: 0;
   font-size: 28px;
   font-weight: 700;
@@ -492,6 +852,82 @@ onMounted(() => {
 .header-actions {
   display: flex;
   gap: 12px;
+  align-items: center;
+}
+
+/* Dropdown de Exportação */
+.export-dropdown {
+  position: relative;
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+  transition: transform 0.3s ease;
+}
+
+.export-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  box-shadow: 0 10px 40px var(--theme-shadow);
+  min-width: 200px;
+  z-index: 1000;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  border-radius: 0;
+}
+
+.export-option:first-child {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
+
+.export-option:last-child {
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+.export-option:hover {
+  background: var(--theme-primary);
+  color: white;
+}
+
+.export-option svg {
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.export-option:hover svg {
+  opacity: 1;
 }
 
 .btn-primary, .btn-secondary {
@@ -507,13 +943,13 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background: #667eea;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #5a67d8;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--theme-shadow);
 }
 
 .btn-primary:disabled {
@@ -522,27 +958,27 @@ onMounted(() => {
 }
 
 .btn-secondary {
-  background: #f7fafc;
-  color: #2d3748;
-  border: 2px solid #e2e8f0;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  border: 2px solid var(--theme-border);
 }
 
 .btn-secondary:hover {
-  background: #e2e8f0;
+  background: var(--theme-border);
+  border-color: var(--theme-primary);
 }
 
 .filters-section {
-  margin-bottom: 32px;
-  background: white;
-  padding: 20px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  margin: 0;
+  background: var(--theme-surface);
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--theme-border);
 }
 
 .period-selector label {
   display: block;
   font-weight: 600;
-  color: #2d3748;
+  color: var(--theme-text-primary);
   margin-bottom: 12px;
 }
 
@@ -553,37 +989,40 @@ onMounted(() => {
 
 .period-btn {
   padding: 8px 16px;
-  background: #f7fafc;
-  border: 2px solid #e2e8f0;
+  background: var(--theme-surface);
+  border: 2px solid var(--theme-border);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 500;
-  color: #4a5568;
+  color: var(--theme-text-secondary);
 }
 
 .period-btn:hover {
-  background: #e2e8f0;
+  background: var(--theme-border);
+  color: var(--theme-text-primary);
 }
 
 .period-btn.active {
-  background: #667eea;
+  background: var(--theme-primary);
   color: white;
-  border-color: #667eea;
+  border-color: var(--theme-primary);
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
-  margin-bottom: 32px;
+  padding: 32px;
+  margin: 0;
 }
 
 .stat-card {
-  background: white;
+  background: var(--theme-surface);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
   display: flex;
   align-items: center;
   gap: 16px;
@@ -616,13 +1055,13 @@ onMounted(() => {
 .stat-value {
   font-size: 28px;
   font-weight: 800;
-  color: #1a202c;
+  color: var(--theme-text-primary);
   margin-bottom: 4px;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #64748b;
+  color: var(--theme-text-secondary);
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -643,14 +1082,16 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
-  margin-bottom: 32px;
+  padding: 0 32px 32px;
+  margin: 0;
 }
 
 .chart-panel {
-  background: white;
+  background: var(--theme-surface);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
 }
 
 .chart-panel.full-width {
@@ -670,7 +1111,7 @@ onMounted(() => {
   gap: 8px;
   font-size: 18px;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--theme-text-primary);
   margin: 0;
 }
 
@@ -729,13 +1170,16 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 24px;
+  padding: 0 32px 32px;
+  margin: 0;
 }
 
 .data-panel {
-  background: white;
+  background: var(--theme-surface);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
 }
 
 .count-badge {
@@ -768,20 +1212,20 @@ onMounted(() => {
 }
 
 .data-table th {
-  background: #f8fafc;
+  background: var(--theme-border);
   font-weight: 600;
-  color: #2d3748;
+  color: var(--theme-text-primary);
   font-size: 14px;
 }
 
 .data-table td {
-  color: #4a5568;
+  color: var(--theme-text-secondary);
   font-size: 14px;
 }
 
 .product-name {
   font-weight: 600;
-  color: #1a202c;
+  color: var(--theme-text-primary);
 }
 
 .status-badge {
@@ -815,7 +1259,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  color: #64748b;
+  color: var(--theme-text-muted);
   gap: 12px;
 }
 
@@ -824,14 +1268,14 @@ onMounted(() => {
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: #667eea;
+  color: var(--theme-primary);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.3s ease;
 }
 
 .view-all-link:hover {
-  color: #5a67d8;
+  color: var(--theme-secondary);
 }
 
 /* Responsividade */
@@ -850,14 +1294,11 @@ onMounted(() => {
 }
 
 @media (max-width: 768px) {
-  .reports-container {
-    padding: 16px;
-  }
-
   .header-content {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
+    padding: 20px;
   }
 
   .header-actions {
@@ -866,10 +1307,29 @@ onMounted(() => {
 
   .stats-grid {
     grid-template-columns: 1fr;
+    padding: 20px;
+  }
+
+  .charts-grid {
+    padding: 0 20px 20px;
+  }
+
+  .tables-grid {
+    padding: 0 20px 20px;
+  }
+
+  .filters-section {
+    padding: 20px;
   }
 
   .period-buttons {
     flex-direction: column;
+  }
+
+  .export-menu {
+    right: auto;
+    left: 0;
+    min-width: 180px;
   }
 }
 </style>
