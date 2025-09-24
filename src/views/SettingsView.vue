@@ -603,6 +603,7 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import { useThemeStore } from '@/stores/theme'
 import { settingsService, type AppSettings } from '@/services/settingsService'
+import { databaseSetup } from '@/utils/setupDatabase'
 
 // Icons
 import {
@@ -758,17 +759,29 @@ async function loadSettings() {
 
 async function testDatabaseConnection() {
   try {
-    const isConnected = await settingsService.testConnection()
-    if (isConnected) {
-      showSaveStatus('success', 'Conexão com banco de dados OK!')
+    const result = await databaseSetup.setupSettingsTable()
+
+    if (result.success) {
+      showSaveStatus('success', result.message)
+
+      // Buscar informações adicionais
+      const dbInfo = await databaseSetup.getDatabaseInfo()
+      console.log('📊 Informações do banco:', dbInfo)
+      console.log(`👤 Usuário: ${dbInfo.user?.email}`)
+      console.log(`📋 Configurações salvas: ${dbInfo.settingsCount}`)
+
     } else {
-      showSaveStatus('error', 'Problema na conexão com banco de dados')
-      console.log('🔧 Executando SQL para criar tabela...')
-      await settingsService.createSettingsTable()
+      showSaveStatus('error', result.message)
+      console.log('❌ Problema identificado:', result.message)
+
+      if (result.message.includes('não existe')) {
+        console.log('📋 Para corrigir, execute o SQL em: src/database/create-settings-table.sql')
+        console.log('🔗 Acesse: https://supabase.com/dashboard → SQL Editor')
+      }
     }
-  } catch (error) {
-    console.error('Erro ao testar conexão:', error)
-    showSaveStatus('error', 'Erro ao verificar banco de dados')
+  } catch (error: any) {
+    console.error('❌ Erro ao testar conexão:', error)
+    showSaveStatus('error', `Erro inesperado: ${error.message}`)
   }
 }
 
@@ -1189,5 +1202,141 @@ onMounted(async () => {
   .settings-nav {
     grid-template-columns: 1fr;
   }
+}
+
+/* Loading States */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loading-content {
+  background: var(--theme-surface);
+  padding: 40px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 32px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
+}
+
+.loading-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.loading-state p {
+  color: var(--theme-text-secondary);
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+  color: var(--theme-primary);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Enhanced Theme Support */
+.nav-item {
+  color: var(--theme-text-secondary);
+}
+
+.nav-item:hover {
+  background: var(--theme-background-solid);
+  color: var(--theme-text-primary);
+}
+
+.nav-item.active {
+  background: var(--theme-primary);
+  color: white;
+}
+
+.settings-panel {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+}
+
+.section-header h2 {
+  color: var(--theme-text-primary);
+}
+
+.section-header p {
+  color: var(--theme-text-secondary);
+}
+
+.setting-group {
+  background: var(--theme-background-solid);
+  border: 1px solid var(--theme-border);
+}
+
+.setting-group h3 {
+  color: var(--theme-text-primary);
+}
+
+.setting-group h4 {
+  color: var(--theme-text-secondary);
+}
+
+.form-group label {
+  color: var(--theme-text-primary);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  border: 2px solid var(--theme-border);
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: var(--theme-primary);
+}
+
+.form-group small {
+  color: var(--theme-text-muted);
+}
+
+.checkbox-group label {
+  color: var(--theme-text-primary);
+}
+
+.radio-group label {
+  color: var(--theme-text-primary);
+}
+
+.notification-settings {
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+}
+
+.save-status.success {
+  background: rgba(80, 250, 123, 0.2);
+  color: var(--theme-accent-success);
+  border: 2px solid rgba(80, 250, 123, 0.3);
+}
+
+.save-status.error {
+  background: rgba(255, 85, 85, 0.2);
+  color: var(--theme-accent-error);
+  border: 2px solid rgba(255, 85, 85, 0.3);
 }
 </style>
