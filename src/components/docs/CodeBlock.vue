@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import {
   Copy, Check, Maximize2, Minimize2, Hash, Info,
   FileCode, Database, Terminal, Globe, Braces

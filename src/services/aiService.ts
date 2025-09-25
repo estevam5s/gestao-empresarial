@@ -424,7 +424,7 @@ ANÁLISE FINANCEIRA ESTRATÉGICA SOLICITADA:
     icon: string
   }>> {
     try {
-      const analysis = await this.analyzeFinancialData(summaryData)
+      // const analysis = await this.analyzeFinancialData(summaryData)
 
       // Parse AI response and generate structured insights
       const insights = []

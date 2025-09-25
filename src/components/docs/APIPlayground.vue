@@ -235,7 +235,7 @@ import {
   Terminal, X, Plus, Trash2, Send, Loader2, Code, Clock, AlertCircle
 } from 'lucide-vue-next'
 import CodeBlock from './CodeBlock.vue'
-import { supabase } from '@/config/supabase'
+// import { supabase } from '@/config/supabase'
 
 interface Endpoint {
   id: string

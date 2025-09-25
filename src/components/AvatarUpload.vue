@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import {
   User, Camera, Upload, X, AlertCircle, CheckCircle, Loader2,
   FileImage, HardDrive, Minimize2
@@ -165,8 +165,8 @@ async function handleFileSelect(event: Event) {
     selectedFile.value = file
     showMessage('Preparando imagem...', 'success')
 
-    // Gerar preview original
-    const originalPreview = await generateImagePreview(file)
+    // Gerar preview original (não utilizado atualmente)
+    // const originalPreview = await generateImagePreview(file)
 
     // Redimensionar imagem
     const resizeOptions: ResizeOptions = {

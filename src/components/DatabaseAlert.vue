@@ -49,9 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { X, AlertTriangle, AlertCircle, XCircle, BarChart3, Lightbulb } from 'lucide-vue-next'
-import { databaseStatsService } from '@/services/databaseStatsService'
+// import { databaseStatsService } from '@/services/databaseStatsService'
 
 interface Props {
   usagePercentage: number
@@ -79,13 +79,13 @@ const showAlert = ref(false)
 const alertDismissed = ref(false)
 
 // Computed
-const shouldShowAlert = computed(() => {
-  if (alertDismissed.value && !props.persistAlerts) return false
-  if (!props.autoShow) return showAlert.value
-
-  // Mostrar alerta automaticamente baseado na porcentagem
-  return props.usagePercentage >= 80
-})
+// const shouldShowAlert = computed(() => {
+//   if (alertDismissed.value && !props.persistAlerts) return false
+//   if (!props.autoShow) return showAlert.value
+//
+//   // Mostrar alerta automaticamente baseado na porcentagem
+//   return props.usagePercentage >= 80
+// })
 
 // Funções
 function getAlertIcon() {
