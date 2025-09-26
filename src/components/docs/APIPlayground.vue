@@ -18,6 +18,12 @@
         <!-- Endpoint Selector -->
         <div class="endpoint-section">
           <h3>Endpoints Disponíveis</h3>
+          <div class="toolbar">
+            <button class="test-all" @click="testAllEndpoints" :disabled="isLoading">
+              <Loader2 v-if="isLoading" class="spin" :size="16" />
+              <span v-else>Testar todos</span>
+            </button>
+          </div>
           <div class="endpoints-grid">
             <div
               v-for="endpoint in availableEndpoints"
@@ -235,15 +241,18 @@ import {
   Terminal, X, Plus, Trash2, Send, Loader2, Code, Clock, AlertCircle
 } from 'lucide-vue-next'
 import CodeBlock from './CodeBlock.vue'
-// import { supabase } from '@/config/supabase'
+const supabaseUrl = (import.meta as any).env?.VITE_SUPABASE_URL || ''
+const supabaseAnon = (import.meta as any).env?.VITE_SUPABASE_ANON_KEY || ''
 
 interface Endpoint {
   id: string
   method: string
   path: string
+  restPath: string
   description: string
   parameters?: Parameter[]
   example?: any
+  safe?: boolean
 }
 
 interface Parameter {
@@ -270,10 +279,7 @@ const emit = defineEmits<{
 // Estados
 const selectedEndpoint = ref<Endpoint | null>(null)
 const requestUrl = ref('')
-const requestHeaders = ref<RequestHeader[]>([
-  { key: 'Content-Type', value: 'application/json' },
-  { key: 'Authorization', value: 'Bearer YOUR_TOKEN' }
-])
+const requestHeaders = ref<RequestHeader[]>([])
 const requestParams = ref<Record<string, any>>({})
 const requestBody = ref('')
 const bodyType = ref<'json' | 'form'>('json')
@@ -288,64 +294,84 @@ const availableEndpoints = ref<Endpoint[]>([
   {
     id: 'get-products',
     method: 'GET',
-    path: '/api/products',
+    path: '/products',
+    restPath: '/rest/v1/produtos',
     description: 'Listar todos os produtos',
     parameters: [
       { name: 'limit', type: 'number', required: false, description: 'Número máximo de produtos' },
       { name: 'category', type: 'string', required: false, description: 'Filtrar por categoria' }
-    ]
+    ],
+    safe: true
   },
   {
     id: 'create-product',
     method: 'POST',
-    path: '/api/products',
+    path: '/products',
+    restPath: '/rest/v1/produtos',
     description: 'Criar novo produto',
     example: {
       nome: 'Produto Exemplo',
       descricao: 'Descrição do produto',
       preco: 10.99,
-      categoria_id: 1,
-      quantidade_estoque: 100
-    }
+      current_stock: 10,
+      min_stock: 2,
+      unidade: 'unidade',
+      ativo: true
+    },
+    safe: false
   },
   {
     id: 'get-movements',
     method: 'GET',
-    path: '/api/movements',
+    path: '/movements',
+    restPath: '/rest/v1/movements',
     description: 'Listar movimentações de estoque',
     parameters: [
       { name: 'product_id', type: 'number', required: false, description: 'ID do produto' },
       { name: 'type', type: 'string', required: false, description: 'Tipo: entrada ou saida' }
-    ]
+    ],
+    safe: true
   },
   {
-    id: 'auth-login',
-    method: 'POST',
-    path: '/api/auth/login',
-    description: 'Fazer login no sistema',
-    example: {
-      email: 'admin@exemplo.com',
-      password: 'senha123'
-    }
-  },
-  {
-    id: 'get-dashboard-stats',
+    id: 'get-categories',
     method: 'GET',
-    path: '/api/dashboard/stats',
-    description: 'Obter estatísticas do dashboard'
+    path: '/categories',
+    restPath: '/rest/v1/categorias',
+    description: 'Listar categorias',
+    safe: true
+  },
+  {
+    id: 'get-suppliers',
+    method: 'GET',
+    path: '/suppliers',
+    restPath: '/rest/v1/suppliers',
+    description: 'Listar fornecedores',
+    safe: true
+  },
+  {
+    id: 'get-financial',
+    method: 'GET',
+    path: '/financial',
+    restPath: '/rest/v1/financial_data',
+    description: 'Listar dados financeiros',
+    safe: true
   }
 ])
 
-const baseUrl = computed(() => {
-  return 'https://cxusoclwtixtjwghjlcj.supabase.co'
-})
+const baseUrl = computed(() => supabaseUrl)
 
 function selectEndpoint(endpoint: Endpoint) {
   selectedEndpoint.value = endpoint
-  requestUrl.value = `${baseUrl.value}${endpoint.path}`
+  requestUrl.value = `${baseUrl.value}${endpoint.restPath}`
 
   // Reset form
   requestParams.value = {}
+  // Default headers for Supabase REST
+  requestHeaders.value = [
+    { key: 'apikey', value: supabaseAnon },
+    { key: 'Authorization', value: `Bearer ${supabaseAnon}` },
+    { key: 'Content-Type', value: 'application/json' }
+  ]
   if (endpoint.example) {
     requestBody.value = JSON.stringify(endpoint.example, null, 2)
   } else {
@@ -399,9 +425,12 @@ async function sendRequest() {
       }
     })
 
-    // Construir URL com parâmetros
+    // Construir URL com parâmetros (para GET, adicionar select=*)
     let url = requestUrl.value
     const params = new URLSearchParams()
+    if (selectedEndpoint.value.method === 'GET') {
+      params.append('select', '*')
+    }
     Object.entries(requestParams.value).forEach(([key, value]) => {
       if (value !== null && value !== undefined && value !== '') {
         params.append(key, String(value))
@@ -468,6 +497,29 @@ async function sendRequest() {
     }
   }
 
+  isLoading.value = false
+}
+
+async function testAllEndpoints() {
+  isLoading.value = true
+  const results: any[] = []
+  for (const ep of availableEndpoints.value.filter(e => e.safe)) {
+    const start = performance.now()
+    try {
+      const url = `${baseUrl.value}${ep.restPath}?select=*`
+      const res = await fetch(url, {
+        headers: {
+          apikey: supabaseAnon,
+          Authorization: `Bearer ${supabaseAnon}`
+        }
+      })
+      results.push({ id: ep.id, path: ep.path, status: res.status, ok: res.ok, timeMs: Math.round(performance.now() - start) })
+    } catch (err: any) {
+      results.push({ id: ep.id, path: ep.path, status: 0, ok: false, error: err?.message || 'Erro', timeMs: Math.round(performance.now() - start) })
+    }
+  }
+  response.value = { data: results, headers: { 'content-type': 'application/json' }, status: 200, statusText: 'OK', time: results.reduce((s, r) => s + (r.timeMs || 0), 0) }
+  error.value = null
   isLoading.value = false
 }
 
@@ -584,6 +636,12 @@ onMounted(() => {
   font-size: 1.25rem;
   font-weight: 700;
 }
+
+.toolbar { display:flex; justify-content:flex-end; margin: .5rem 0 1rem 0 }
+.test-all { padding: .5rem .75rem; border-radius: 8px; background: var(--docs-primary,#667eea); color:#fff; border:none; cursor:pointer }
+.test-all:disabled { opacity: .7; cursor: not-allowed }
+.spin { animation: spin 1s linear infinite }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
 
 .endpoints-grid {
   display: grid;

@@ -4,7 +4,15 @@
     <div class="panel database-panel">
       <div class="panel-header">
         <h2>
-          <Database :size="20" />
+          <svg class="supabase-icon" width="22" height="22" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="sbG" x1="0" x2="1" y1="0" y2="1">
+                <stop offset="0%" stop-color="#3ECF8E"/>
+                <stop offset="100%" stop-color="#2EB67D"/>
+              </linearGradient>
+            </defs>
+            <path fill="url(#sbG)" d="M153.1 16c-5.5 0-10.8 2.5-14.2 6.8L48.8 132.7c-9 11-1 27.3 13.1 27.3h64.6l-23.6 79.1c-4.9 16.4 16.3 27.2 27.2 14.2l118.8-140.6c9.2-10.9 1.3-27.5-12.8-27.5h-67.5l22-53.2c4.4-10.6-3.4-22-13.6-22z"/>
+          </svg>
           Banco de Dados
         </h2>
         <div class="status-indicator" :class="getStatusClass()">

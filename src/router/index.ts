@@ -14,6 +14,13 @@ import AboutView from '@/views/AboutView.vue'
 import FinancialView from '@/views/FinancialView.vue'
 import DocumentationView from '@/views/DocumentationView.vue'
 import SupportChatView from '@/views/SupportChatView.vue'
+import UsersView from '@/views/admin/UsersView.vue'
+import AuditView from '@/views/admin/AuditView.vue'
+import BackupView from '@/views/admin/BackupView.vue'
+import SecurityView from '@/views/admin/SecurityView.vue'
+import NotificationsManagementView from '@/views/admin/NotificationsManagementView.vue'
+import APIManagementView from '@/views/admin/APIManagementView.vue'
+import PermissionsView from '@/views/admin/PermissionsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -105,6 +112,49 @@ const router = createRouter({
       name: 'documentation',
       component: DocumentationView,
       meta: { requiresAuth: true }
+    },
+    // Rotas administrativas
+    {
+      path: '/admin/users',
+      name: 'admin-users',
+      component: UsersView,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/admin/audit',
+      name: 'admin-audit',
+      component: AuditView,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/admin/backup',
+      name: 'admin-backup',
+      component: BackupView,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/admin/security',
+      name: 'admin-security',
+      component: SecurityView,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/admin/notifications',
+      name: 'admin-notifications',
+      component: NotificationsManagementView,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/admin/api',
+      name: 'admin-api',
+      component: APIManagementView,
+      meta: { requiresAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/admin/permissions',
+      name: 'admin-permissions',
+      component: PermissionsView,
+      meta: { requiresAuth: true, requiresAdmin: true }
     }
   ]
 })
@@ -119,12 +169,17 @@ router.beforeEach(async (to) => {
   }
 
   const isAuthenticated = authStore.isAuthenticated
+  const isAdmin = authStore.user?.role === 'admin'
 
   if (to.meta.requiresAuth && !isAuthenticated) {
     return '/login'
   }
 
   if (to.meta.requiresGuest && isAuthenticated) {
+    return '/dashboard'
+  }
+
+  if (to.meta.requiresAdmin && !isAdmin) {
     return '/dashboard'
   }
 })

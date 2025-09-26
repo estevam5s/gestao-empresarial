@@ -392,24 +392,24 @@ const changelog = ref([
 
 <style scoped>
 .about-container {
-  padding: 24px;
-  max-width: 1200px;
+  padding: 8px 16px;
+  max-width: 1400px;
   margin: 0 auto;
   background: var(--theme-background-solid);
-  min-height: 100vh;
   transition: background-color 0.3s ease;
 }
 
 .page-header {
-  margin-bottom: 32px;
+  margin: 8px auto 16px auto;
+  max-width: 1100px;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--theme-surface);
-  padding: 32px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.75));
+  padding: 16px 18px;
   border-radius: 20px;
   box-shadow: 0 8px 32px var(--theme-shadow);
   border: 1px solid var(--theme-border);
@@ -423,7 +423,7 @@ const changelog = ref([
   gap: 16px;
   color: var(--theme-text-primary);
   margin: 0;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
@@ -431,10 +431,10 @@ const changelog = ref([
 .version-badge {
   background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
   color: white;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 25px;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
   box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
   transition: all 0.3s ease;
 }
@@ -442,23 +442,27 @@ const changelog = ref([
 .about-content {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 16px;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-info {
   background: var(--theme-surface);
   border-radius: 24px;
-  padding: 40px;
+  padding: 22px;
   box-shadow: 0 12px 40px var(--theme-shadow);
   border: 1px solid var(--theme-border);
   backdrop-filter: blur(20px);
   transition: all 0.3s ease;
+  max-width: 1100px;
+  width: 100%;
 }
 
 .logo-section {
   display: flex;
   gap: 24px;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
   align-items: center;
 }
 
@@ -536,11 +540,14 @@ const changelog = ref([
 .changelog-section {
   background: var(--theme-surface);
   border-radius: 24px;
-  padding: 40px;
+  padding: 22px;
   box-shadow: 0 12px 40px var(--theme-shadow);
   border: 1px solid var(--theme-border);
   backdrop-filter: blur(20px);
   transition: all 0.3s ease;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .features-section h3,
@@ -549,9 +556,9 @@ const changelog = ref([
 .support-section h3,
 .changelog-section h3 {
   color: var(--theme-text-primary);
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
-  margin: 0 0 32px 0;
+  margin: 0 0 24px 0;
   padding-bottom: 16px;
   border-bottom: 3px solid var(--theme-border);
   letter-spacing: -0.02em;
@@ -575,14 +582,14 @@ const changelog = ref([
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
 }
 
 .feature-card {
   background: var(--theme-background-solid);
   border-radius: 20px;
-  padding: 32px;
+  padding: 24px;
   border: 2px solid var(--theme-border);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -662,15 +669,15 @@ const changelog = ref([
 .tech-grid,
 .status-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 .tech-card,
 .status-card {
   background: var(--theme-background-solid);
   border-radius: 20px;
-  padding: 28px;
+  padding: 22px;
   border: 2px solid var(--theme-border);
   transition: all 0.3s ease;
   position: relative;

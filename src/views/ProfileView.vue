@@ -525,18 +525,33 @@ function togglePasswordVisibility(field: 'current' | 'new' | 'confirm') {
 
 async function handleAvatarSuccess(avatarUrl: string) {
   try {
-    // Atualizar o usuário local imediatamente para feedback visual
-    if (user) {
-      user.avatar_url = avatarUrl
-    }
+    console.log('🖼️ Avatar upload realizado com sucesso:', avatarUrl)
 
-    // Marcar como alterado para salvar depois se necessário
-    markAsChanged()
+    // ✅ CORREÇÃO: Atualizar store do usuário imediatamente
+    authStore.updateUser({ avatar_url: avatarUrl })
 
-    saveMessage.value = 'Avatar enviado com sucesso!'
+    // ✅ CORREÇÃO: Salvar avatar no banco automaticamente (O uploadAvatar já fez isso)
+    // Mas vamos garantir que está sincronizado
+    console.log('💾 Sincronizando avatar com o perfil...')
+
+    // Atualizar formData local
+    formData.value = { ...formData.value, avatar_url: avatarUrl }
+    originalFormData.value = { ...originalFormData.value, avatar_url: avatarUrl }
+
+    // Recarregar perfil do banco para garantir sincronização completa
+    await loadProfile()
+
+    // Atualizar store novamente após reload
+    authStore.updateUser({ avatar_url: avatarUrl })
+
+    console.log('✅ Avatar sincronizado com sucesso!')
+    saveMessage.value = 'Avatar atualizado e salvo com sucesso!'
     setTimeout(() => saveMessage.value = '', 3000)
+
   } catch (error: any) {
-    console.error('Erro ao processar sucesso do avatar:', error)
+    console.error('❌ Erro ao processar sucesso do avatar:', error)
+    saveMessage.value = `Erro ao salvar avatar: ${error.message}`
+    setTimeout(() => saveMessage.value = '', 5000)
   } finally {
     isLoading.value = false
   }
@@ -572,19 +587,30 @@ async function loadProfile() {
     isLoadingProfile.value = true
     const profile = await profileService.loadUserProfile()
 
-    // Preencher formulário com dados reais
+    // ✅ CORREÇÃO: Incluir avatar_url no formData
     formData.value = {
       name: profile.name,
       username: profile.username,
       email: profile.email,
       role: profile.role,
-      preferences: profile.preferences
+      preferences: profile.preferences,
+      avatar_url: profile.avatar_url // ← Importante incluir o avatar_url
     }
 
-    // Salvar dados originais
+    // Salvar dados originais (incluindo avatar_url)
     originalFormData.value = JSON.parse(JSON.stringify(formData.value))
 
-    console.log('✅ Perfil carregado:', profile)
+    // ✅ CORREÇÃO: Sincronizar com AuthStore
+    authStore.updateUser({
+      name: profile.name,
+      username: profile.username,
+      email: profile.email,
+      role: profile.role,
+      avatar_url: profile.avatar_url
+    })
+
+    console.log('✅ Perfil carregado completo:', profile)
+    console.log('📋 FormData atualizado:', formData.value)
   } catch (error: any) {
     console.error('❌ Erro ao carregar perfil:', error)
     saveMessage.value = `Erro ao carregar perfil: ${error.message}`

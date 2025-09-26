@@ -27,11 +27,34 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = null
   }
 
+  // ✅ NOVA FUNÇÃO: Atualizar dados do usuário
+  function updateUser(updatedData: Partial<User>) {
+    if (user.value) {
+      user.value = { ...user.value, ...updatedData }
+    }
+  }
+
+  // ✅ NOVA FUNÇÃO: Recarregar dados do usuário
+  async function refreshUser() {
+    if (user.value?.id) {
+      try {
+        const currentUser = authService.getCurrentUser()
+        if (currentUser) {
+          user.value = currentUser
+        }
+      } catch (error) {
+        console.error('Erro ao recarregar dados do usuário:', error)
+      }
+    }
+  }
+
   return {
     user,
     loading,
     isAuthenticated,
     login,
-    logout
+    logout,
+    updateUser,
+    refreshUser
   }
 })

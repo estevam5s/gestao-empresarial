@@ -69,7 +69,7 @@ class LogInterceptor {
           return config
         },
         (error: any) => {
-          this.logError('request_interceptor_error', error)
+          this.logInternalError('request_interceptor_error', error)
           return Promise.reject(error)
         }
       )
@@ -285,9 +285,9 @@ class LogInterceptor {
   }
 
   /**
-   * Log de erro
+   * Log de erro interno
    */
-  private logError(action: string, error: any): void {
+  private logInternalError(action: string, error: any): void {
     logService.createLog({
       action,
       resource: 'system',

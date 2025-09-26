@@ -4,6 +4,8 @@ import App from './App.vue'
 import router from './router'
 import logInterceptorPlugin from '@/plugins/logInterceptor'
 import { initializeLogsSystem } from '@/setup/initializeLogsSystem'
+import AvatarDebug from '@/utils/debugAvatar'
+import LogSystemInitializer from '@/utils/initializeLogs'
 
 const app = createApp(App)
 
@@ -23,4 +25,17 @@ initializeLogsSystem({
   testSystem: false,
   createSampleData: false
 })
+
+// Inicializar sistema de logs avançado
+LogSystemInitializer.autoInitialize()
+LogSystemInitializer.setupAutoLogging()
+
+// Debug tools disponíveis
+console.log('🔧 Ferramentas de Debug disponíveis:')
+console.log('   window.AvatarDebug.runFullDiagnostic() - Diagnóstico completo do sistema de avatar')
+console.log('   window.AvatarDebug.syncCurrentAvatar() - Sincronizar avatar atual')
+console.log('   window.AvatarDebug.checkAvatarColumn() - Verificar coluna avatar_url')
+console.log('   window.AvatarDebug.checkAvatarBucket() - Verificar bucket no Supabase Storage')
+console.log('   window.LogSystemInitializer.runFullDiagnostic() - Diagnóstico completo do sistema de logs')
+console.log('   window.LogSystemInitializer.createSampleLogs() - Criar logs de exemplo')
 

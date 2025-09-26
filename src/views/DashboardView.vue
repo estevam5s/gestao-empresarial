@@ -33,7 +33,8 @@
             <!-- Perfil do usuário -->
             <div class="user-profile" @click="showProfile = !showProfile">
               <div class="user-avatar">
-                <User :size="20" />
+                <img v-if="user?.avatar_url" :src="user.avatar_url" :alt="user.name || 'Avatar'" />
+                <User v-else :size="20" />
               </div>
               <div class="user-info">
                 <span class="user-name">{{ user?.name }}</span>
@@ -356,7 +357,8 @@
         <div class="profile-panel" @click.stop>
           <div class="profile-header">
             <div class="profile-avatar">
-              <User :size="32" />
+              <img v-if="user?.avatar_url" :src="user.avatar_url" :alt="user?.name || 'Avatar'" />
+              <User v-else :size="32" />
             </div>
             <div class="profile-info">
               <h3>{{ user?.name }}</h3>
@@ -369,7 +371,7 @@
               <Settings :size="16" />
               Editar Perfil
             </button>
-            <button @click="showSettings = true" class="profile-action">
+            <button @click="navigateToSettings" class="profile-action">
               <Sliders :size="16" />
               Configurações
             </button>
@@ -394,6 +396,7 @@ import SupportAuthModal from '@/components/support/SupportAuthModal.vue'
 import SupportChatWidget from '@/components/support/SupportChatWidget.vue'
 import { productService } from '@/services/productService'
 import { salesService } from '@/services/salesService'
+import { supabase, DB_TABLES } from '@/config/supabase'
 import { Line, Doughnut } from 'vue-chartjs'
 import { formatDistanceToNow, format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -403,7 +406,7 @@ import DatabaseStats from '@/components/DatabaseStats.vue'
 // Importar ícones do Lucide
 import {
   Search, User, ChevronDown, LogOut, Zap, Package, Brain,
-  BarChart3, Plus, ArrowRight, TrendingUp, TrendingDown, AlertTriangle,
+  BarChart3, Plus, Minus, ArrowRight, TrendingUp, TrendingDown, AlertTriangle,
   RefreshCw, CheckCircle, X, PieChart, Activity, ExternalLink,
   Gauge, Loader2, Settings, Sliders, Users, ChefHat, Info, DollarSign, FileText
 } from 'lucide-vue-next'
@@ -443,7 +446,6 @@ const isSupport = ref(!!supportStore.user)
 const user = computed(() => authStore.user)
 const quickSearch = ref('')
 const showProfile = ref(false)
-const showSettings = ref(false)
 // Removidas variáveis não utilizadas
 // const showReports = ref(false)
 // const showAddProduct = ref(false)
@@ -505,29 +507,7 @@ const alerts = ref([
 ])
 
 
-const recentActivity = ref([
-  {
-    id: 1,
-    type: 'add',
-    description: 'Produto "Feijão Preto" adicionado',
-    timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    icon: Plus
-  },
-  {
-    id: 2,
-    type: 'edit',
-    description: 'Estoque de "Arroz" atualizado',
-    timestamp: new Date(Date.now() - 15 * 60 * 1000),
-    icon: Package
-  },
-  {
-    id: 3,
-    type: 'ai',
-    description: 'Análise de IA executada',
-    timestamp: new Date(Date.now() - 30 * 60 * 1000),
-    icon: Brain
-  }
-])
+const recentActivity = ref<any[]>([])
 
 const systemMetrics = ref({
   cpu: 45,
@@ -725,6 +705,53 @@ async function updateSalesChart() {
   }
 }
 
+async function fetchRecentActivity() {
+  const items: any[] = []
+  try {
+    // Movimentações recentes com nome do produto
+    const { data: movements } = await supabase
+      .from(DB_TABLES.MOVEMENTS)
+      .select('id, product_id, type, quantity, created_at, produtos!product_id(nome, unidade)')
+      .order('created_at', { ascending: false })
+      .limit(6)
+
+    movements?.forEach((m: any) => {
+      const direction = m.type === 'in' ? 'Entrada' : 'Saída'
+      const prod = m.produtos?.nome || 'Produto'
+      items.push({
+        id: `mov-${m.id}`,
+        type: 'movement',
+        description: `${direction} de ${m.quantity} ${m.produtos?.unidade || ''} • ${prod}`,
+        timestamp: new Date(m.created_at),
+        icon: m.type === 'in' ? Plus : Minus
+      })
+    })
+
+    // Logs recentes (se existir)
+    const { data: logs } = await supabase
+      .from(DB_TABLES.LOGS)
+      .select('id, action, category, severity, created_at')
+      .order('created_at', { ascending: false })
+      .limit(4)
+
+    logs?.forEach((l: any) => {
+      items.push({
+        id: `log-${l.id}`,
+        type: 'log',
+        description: `[${(l.category || 'sistema').toUpperCase()}] ${l.action || 'evento'}`,
+        timestamp: new Date(l.created_at),
+        icon: l.severity === 'error' ? AlertTriangle : CheckCircle
+      })
+    })
+
+    // Ordenar e cortar
+    recentActivity.value = items.sort((a, b) => +b.timestamp - +a.timestamp).slice(0, 8)
+  } catch (err) {
+    console.warn('Não foi possível carregar atividades reais, mantendo vazio:', err)
+    recentActivity.value = []
+  }
+}
+
 function generateCategoryData(categories: any[], products: any[]) {
   const categoryCount: { [key: string]: number } = {}
 
@@ -746,6 +773,7 @@ function formatCurrency(value: number): string {
     maximumFractionDigits: 2
   }).format(value)
 }
+
 
 function performQuickSearch() {
   if (quickSearch.value.trim()) {
@@ -770,6 +798,11 @@ function editProfile() {
   router.push('/profile')
 }
 
+function navigateToSettings() {
+  showProfile.value = false
+  router.push('/settings')
+}
+
 async function handleLogout() {
   await authStore.logout()
   router.push('/login')
@@ -791,6 +824,7 @@ watch(selectedPeriod, () => {
 
 onMounted(() => {
   loadDashboardData()
+  fetchRecentActivity()
   metricsInterval = setInterval(updateSystemMetrics, 5000)
 })
 
@@ -800,12 +834,7 @@ onUnmounted(() => {
   }
 })
 
-function onSupportClick() {
-  // Admin sempre pode abrir a tela do chat
-  router.push('/support')
-}
 function onSupportLogin() { isSupport.value = true }
-function goToSupport() { router.push('/support') }
 </script>
 
 <style scoped>
@@ -971,6 +1000,14 @@ function goToSupport() { router.push('/support') }
   align-items: center;
   justify-content: center;
   color: white;
+  overflow: hidden;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .user-info {
@@ -1564,6 +1601,14 @@ function goToSupport() { router.push('/support') }
   align-items: center;
   justify-content: center;
   color: white;
+  overflow: hidden;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .profile-info h3 {

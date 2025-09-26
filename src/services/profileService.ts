@@ -92,23 +92,31 @@ class ProfileService {
     try {
       const user = this.getCurrentUser()
 
+      // ✅ CORREÇÃO: Incluir avatar_url na atualização
+      const updateData: any = {
+        updated_at: new Date().toISOString()
+      }
+
+      // Apenas incluir campos que foram fornecidos
+      if (profileData.name !== undefined) updateData.name = profileData.name
+      if (profileData.username !== undefined) updateData.username = profileData.username
+      if (profileData.email !== undefined) updateData.email = profileData.email
+      if (profileData.role !== undefined) updateData.role = profileData.role
+      if (profileData.preferences !== undefined) updateData.preferences = profileData.preferences
+      if (profileData.avatar_url !== undefined) updateData.avatar_url = profileData.avatar_url
+
+      console.log('📝 Atualizando perfil com dados:', updateData)
+
       const { error } = await supabase
         .from(DB_TABLES.USERS)
-        .update({
-          name: profileData.name,
-          username: profileData.username,
-          email: profileData.email,
-          role: profileData.role,
-          preferences: profileData.preferences,
-          updated_at: new Date().toISOString()
-        })
+        .update(updateData)
         .eq('id', user.id)
 
       if (error) {
         throw new Error(`Erro ao atualizar perfil: ${error.message}`)
       }
 
-      console.log('✅ Perfil atualizado com sucesso')
+      console.log('✅ Perfil atualizado com sucesso no banco de dados')
     } catch (error) {
       console.error('❌ Erro ao atualizar perfil:', error)
       throw error

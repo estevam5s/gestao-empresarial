@@ -224,6 +224,13 @@ async function confirmUpload() {
     // Atualizar avatar local imediatamente
     currentAvatarUrl.value = avatarUrl
 
+    console.log('✅ Avatar upload completo:', {
+      originalFile: selectedFile.value?.name,
+      resizedFile: resizedFile.value?.name,
+      finalUrl: avatarUrl,
+      urlType: avatarUrl.startsWith('data:') ? 'base64' : 'storage'
+    })
+
     showMessage('Avatar atualizado com sucesso!', 'success')
     emit('upload-success', avatarUrl)
     closePreview()

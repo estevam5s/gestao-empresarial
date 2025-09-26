@@ -60,7 +60,8 @@ export class AuthService {
         username: data.username,
         email: data.email,
         name: data.name,
-        role: data.role
+        role: data.role,
+        avatar_url: data.avatar_url // ✅ CORREÇÃO: Incluir avatar_url
       }
 
       localStorage.setItem('userSession', JSON.stringify(userSession))

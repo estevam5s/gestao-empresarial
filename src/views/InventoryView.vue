@@ -166,8 +166,8 @@
 
     <!-- Lista de Produtos -->
     <main class="products-section">
-      <div class="section-header">
-        <div class="results-info">
+        <div class="section-header">
+          <div class="results-info">
           <span class="results-count">
             {{ filteredProducts.length }} produto{{ filteredProducts.length !== 1 ? 's' : '' }} encontrado{{ filteredProducts.length !== 1 ? 's' : '' }}
           </span>
@@ -191,12 +191,21 @@
               </button>
             </span>
           </div>
+          <div class="section-actions">
+            <label class="select-all">
+              <input type="checkbox" v-model="allSelected"> Selecionar todos
+            </label>
+            <button class="btn-danger" :disabled="selectedIds.length===0" @click="deleteProducts(selectedIds)">
+              Remover Selecionados ({{ selectedIds.length }})
+            </button>
+          </div>
         </div>
         <div class="section-actions">
           <button class="tool-btn" @click="clearAllFilters" :disabled="activeFiltersCount === 0">Limpar filtros</button>
           <button class="tool-btn" @click="toggleCompactMode" :class="{ active: compactMode }">Modo compacto</button>
           <button class="tool-btn" @click="exportCSV" :disabled="filteredProducts.length === 0">Exportar CSV</button>
           <button class="tool-btn" @click="exportExcel" :disabled="filteredProducts.length === 0">Exportar Excel</button>
+          <button class="btn-primary" @click="exportInventoryPDF" :disabled="filteredProducts.length === 0">Gerar Relatório (PDF)</button>
           <div class="page-size">
             <label>Itens:</label>
             <select v-model.number="pageSize" class="filter-select small">
@@ -242,6 +251,7 @@
             :class="getCardClasses(product)"
           >
             <div class="card-header">
+              <input type="checkbox" v-model="selectedIds" :value="product.id" />
               <div class="product-image">
                 <Package :size="24" />
               </div>
@@ -255,6 +265,9 @@
                 </button>
                 <button @click="duplicateProduct(product)" class="action-btn duplicate" title="Duplicar">
                   <Copy :size="16" />
+                </button>
+                <button @click="deleteProducts([product.id])" class="action-btn duplicate" title="Remover">
+                  <Trash2 :size="16" />
                 </button>
               </div>
             </div>
@@ -319,7 +332,7 @@
         <!-- List View -->
         <div v-else class="products-list" :class="{ compact: compactMode }">
           <div class="list-header sticky">
-            <div class="list-col name">Produto</div>
+            <div class="list-col name"><input type="checkbox" v-model="allSelected" /> Produto</div>
             <div class="list-col category">Categoria</div>
             <div class="list-col stock">Estoque</div>
             <div class="list-col price">Preço</div>
@@ -335,6 +348,7 @@
             :class="getRowClasses(product)"
           >
             <div class="list-col name">
+              <input type="checkbox" v-model="selectedIds" :value="product.id" />
               <div class="product-info">
                 <div class="product-icon">
                   <Package :size="20" />
@@ -393,6 +407,9 @@
                 </button>
                 <button @click="quickEdit(product, 'add')" class="action-btn add" title="Adicionar">
                   <Plus :size="14" />
+                </button>
+                <button @click="deleteProducts([product.id])" class="action-btn delete" title="Remover">
+                  <Trash2 :size="14" />
                 </button>
               </div>
             </div>
@@ -548,6 +565,21 @@
         </div>
       </div>
     </div>
+    <!-- Charts Overview -->
+    <section class="inventory-charts">
+      <div class="chart-card">
+        <h3>Distribuição por Categoria</h3>
+        <div class="chart-wrapper">
+          <Doughnut :data="categoryChartData" :options="{ responsive: true, maintainAspectRatio: false }" />
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3>Status de Estoque</h3>
+        <div class="chart-wrapper">
+          <Bar :data="statusChartData" :options="{ responsive: true, maintainAspectRatio: false, plugins:{legend:{display:false}} }" />
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -556,6 +588,21 @@ import { ref, computed, onMounted } from 'vue'
 import { supabase, DB_TABLES } from '@/config/supabase'
 import { useAuthStore } from '@/stores/auth'
 import type { Product } from '@/types/product'
+import { Doughnut, Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js'
+import jsPDF from 'jspdf'
+import 'jspdf-autotable'
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend)
 
 // Icons
 import {
@@ -578,6 +625,7 @@ const sortBy = ref('nome')
 const viewMode = ref<'grid' | 'list'>('grid')
 const showAddModal = ref(false)
 const editingProduct = ref<Product | null>(null)
+const selectedIds = ref<string[]>([])
 const compactMode = ref(false)
 const pageSize = ref(12)
 const currentPage = ref(1)
@@ -643,6 +691,14 @@ const filteredProducts = computed(() => {
   }
 
   return filtered
+})
+
+const allSelected = computed({
+  get: () => filteredProducts.value.length > 0 && selectedIds.value.length === filteredProducts.value.length,
+  set: (val: boolean) => {
+    if (val) selectedIds.value = filteredProducts.value.map(p => p.id)
+    else selectedIds.value = []
+  }
 })
 
 const sortedProducts = computed(() => {
@@ -736,6 +792,7 @@ async function loadProducts() {
 
     if (error) throw error
     products.value = data || []
+    computeCharts()
   } catch (error) {
     console.error('Erro ao carregar produtos:', error)
   } finally {
@@ -753,6 +810,7 @@ async function loadCategories() {
 
     if (error) throw error
     categories.value = data || []
+    computeCharts()
   } catch (error) {
     console.error('Erro ao carregar categorias:', error)
   }
@@ -795,6 +853,61 @@ async function saveProduct() {
     alert('Erro ao salvar produto')
   } finally {
     saving.value = false
+  }
+}
+
+async function deleteProducts(ids: string[]) {
+  if (!ids.length) return
+  if (!confirm(`Remover ${ids.length} produto(s)? Essa ação não pode ser desfeita.`)) return
+  try {
+    await supabase.from(DB_TABLES.PRODUCTS).delete().in('id', ids)
+    await loadProducts()
+    selectedIds.value = []
+  } catch (error) {
+    console.error('Erro ao remover produtos:', error)
+    alert('Erro ao remover produtos')
+  }
+}
+
+async function exportInventoryPDF() {
+  try {
+    const pdf = new jsPDF('p', 'mm', 'a4')
+    let y = 16
+    pdf.setFont('helvetica', 'bold')
+    pdf.setFontSize(16)
+    pdf.text('Relatório de Estoque', 14, y)
+    y += 8
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 14, y)
+    y += 6
+    pdf.text(`Total de itens filtrados: ${filteredProducts.value.length}`, 14, y)
+    y += 10
+
+    const head = [['Produto', 'Categoria', 'Estoque', 'Mínimo', 'Unidade', 'Preço', 'Total']]
+    const body = filteredProducts.value.map(p => [
+      p.nome,
+      getProductCategory(p) || '—',
+      String(p.current_stock),
+      String(p.min_stock),
+      p.unidade,
+      `R$ ${formatCurrency(p.preco)}`,
+      `R$ ${formatCurrency(p.preco * p.current_stock)}`
+    ])
+
+    ;(pdf as any).autoTable({
+      head,
+      body,
+      startY: y,
+      styles: { fontSize: 9 },
+      headStyles: { fillColor: [102, 126, 234] },
+      margin: { left: 14, right: 14 }
+    })
+
+    pdf.save(`relatorio-estoque-${new Date().toISOString().slice(0,10)}.pdf`)
+  } catch (error) {
+    console.error('Erro ao gerar PDF:', error)
+    alert('Falha ao gerar relatório PDF')
   }
 }
 
@@ -935,7 +1048,41 @@ async function updateProductStock(productId: string, newStock: number) {
 onMounted(() => {
   loadProducts()
   loadCategories()
+  computeCharts()
 })
+
+// Charts
+const categoryChartData = ref<any>({ labels: [], datasets: [] })
+const statusChartData = ref<any>({ labels: [], datasets: [] })
+
+function computeCharts() {
+  // Distribuição por categoria
+  const counts: Record<string, number> = {}
+  products.value.forEach(p => {
+    const cat = categories.value.find((c:any) => c.id === p.categoria_id)?.nome || 'Sem categoria'
+    counts[cat] = (counts[cat] || 0) + 1
+  })
+  categoryChartData.value = {
+    labels: Object.keys(counts),
+    datasets: [{ data: Object.values(counts), backgroundColor: ['#667eea','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#22c55e'] }]
+  }
+
+  // Estoque crítico x normal
+  let crit = 0, low = 0, ok = 0
+  products.value.forEach(p => {
+    if (p.current_stock === 0) crit++
+    else if (p.current_stock <= p.min_stock) low++
+    else ok++
+  })
+  statusChartData.value = {
+    labels: ['Sem estoque','Baixo','Normal'],
+    datasets: [{
+      label: 'Produtos',
+      data: [crit, low, ok],
+      backgroundColor: ['#ef4444','#f59e0b','#10b981']
+    }]
+  }
+}
 
 const selectedProduct = ref<Product | null>(null)
 const showViewModal = ref(false)
@@ -948,7 +1095,7 @@ const showViewModal = ref(false)
 .inventory-container {
   width: 100vw;
   min-height: 100vh;
-  background: var(--theme-background);
+  background: var(--theme-background-solid);
   overflow-x: hidden;
 }
 
@@ -2212,4 +2359,10 @@ const showViewModal = ref(false)
     margin-bottom: 6px;
   }
 }
+
+/* Inventory charts overview */
+.inventory-charts { display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; padding: 0 32px 32px }
+.inventory-charts .chart-card { background: var(--theme-surface); border:1px solid var(--theme-border); border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px var(--theme-shadow) }
+.inventory-charts .chart-card h3 { margin: 0 0 10px 0; color: var(--theme-text-primary) }
+.inventory-charts .chart-wrapper { height: 240px }
 </style>
