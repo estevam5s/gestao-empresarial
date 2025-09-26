@@ -393,7 +393,7 @@ export class AdvancedExportService {
     return currentY + 10
   }
 
-  private async addChartsSection(pdf: jsPDF, charts: HTMLElement[], currentY: number, pageWidth: number, pageHeight: number): Promise<number> {
+  private async addChartsSection(pdf: jsPDF, charts: HTMLElement[] | NodeListOf<HTMLElement> | any, currentY: number, pageWidth: number, pageHeight: number): Promise<number> {
     if (currentY > pageHeight - 100) {
       pdf.addPage()
       currentY = 20
@@ -404,7 +404,8 @@ export class AdvancedExportService {
     pdf.text('📈 Análise Visual', 20, currentY)
     currentY += 15
 
-    for (const chart of charts.slice(0, 2)) {
+    const chartElems: HTMLElement[] = Array.from(charts as any).slice(0, 2)
+    for (const chart of chartElems) {
       try {
         const canvas = await html2canvas(chart, { background: '#ffffff' })
         const imgData = canvas.toDataURL('image/png')

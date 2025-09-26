@@ -13,6 +13,7 @@ import SettingsView from '@/views/SettingsView.vue'
 import AboutView from '@/views/AboutView.vue'
 import FinancialView from '@/views/FinancialView.vue'
 import DocumentationView from '@/views/DocumentationView.vue'
+import SupportChatView from '@/views/SupportChatView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -20,6 +21,12 @@ const router = createRouter({
     {
       path: '/',
       redirect: '/dashboard'
+    },
+    {
+      path: '/support',
+      name: 'support',
+      component: SupportChatView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',

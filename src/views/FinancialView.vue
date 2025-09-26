@@ -195,6 +195,81 @@
         </div>
       </div>
 
+      <!-- Advanced Analytics -->
+      <div class="charts-grid advanced-grid">
+        <!-- Stacked Monthly Revenue vs Salary -->
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>
+              <BarChart3 :size="20" />
+              Receita x Salário (Mensal, Empilhado)
+            </h3>
+          </div>
+          <div class="chart-wrapper">
+            <Bar :data="stackedMonthlyData" :options="stackedOptions" />
+          </div>
+        </div>
+
+        <!-- Scatter Revenue vs Salary -->
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>
+              <Activity :size="20" />
+              Dispersão: Salário vs Receita
+            </h3>
+          </div>
+          <div class="chart-wrapper">
+            <Scatter :data="scatterRevenueVsSalary" :options="scatterOptions" />
+          </div>
+        </div>
+
+        <!-- Radar KPIs -->
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3>
+              <Target :size="20" />
+              Radar de KPIs
+            </h3>
+          </div>
+          <div class="chart-wrapper">
+            <Radar :data="radarKpiData" :options="radarOptions" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Forecast Section (ML & Estatística) -->
+      <section class="forecast-section">
+        <div class="section-header">
+          <h2>
+            <Sparkles :size="24" />
+            Previsão de Receita (ML & Estatística)
+          </h2>
+        </div>
+        <div class="forecast-grid">
+          <div class="chart-container full">
+            <div class="chart-header">
+              <h3>Próximos 30 dias</h3>
+            </div>
+            <div class="chart-wrapper">
+              <Line :data="forecastChartData" :options="forecastOptions" />
+            </div>
+          </div>
+          <div class="insight-panel">
+            <h4>Metodologia</h4>
+            <ul>
+              <li>Regressão linear sobre a série temporal diária</li>
+              <li>Bandas de confiança (~90%) a partir dos resíduos</li>
+              <li>Atualiza conforme novos registros</li>
+            </ul>
+            <h4>Leitura Rápida</h4>
+            <p>
+              A linha laranja projeta a tendência futura. As linhas verde/vermelha
+              indicam a faixa provável de valores. Acompanhe desvios persistentes para
+              recalibrar metas e estratégias.
+            </p>
+          </div>
+        </div>
+      </section>
       <!-- Financial Records Table -->
       <section class="records-section">
         <div class="section-header">
@@ -212,11 +287,25 @@
                 class="search-input"
               />
             </div>
+            <div class="date-filters">
+              <label>De</label>
+              <input v-model="dateFrom" type="date" class="date-input" />
+              <label>Até</label>
+              <input v-model="dateTo" type="date" class="date-input" />
+            </div>
             <select v-model="sortBy" class="select-modern">
               <option value="full_day">Data</option>
               <option value="total">Receita Total</option>
               <option value="amount">Salário Garçom</option>
             </select>
+            <div class="page-size">
+              <label>Itens</label>
+              <select v-model.number="pageSize" class="select-modern small">
+                <option :value="10">10</option>
+                <option :value="20">20</option>
+                <option :value="50">50</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -241,7 +330,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="record in filteredRecords" :key="record.id" class="table-row">
+              <tr v-for="record in paginatedRecords" :key="record.id" class="table-row">
                 <td class="date-cell">{{ formatDate(record.full_day) }}</td>
                 <td class="currency-cell">{{ formatCurrency(record.total) }}</td>
                 <td class="currency-cell secondary">{{ formatCurrency(record.amount) }}</td>
@@ -257,6 +346,13 @@
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div class="pagination-bar" v-if="totalPages > 1">
+          <button class="page-btn" :disabled="currentPage === 1" @click="currentPage--">Anterior</button>
+          <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+          <button class="page-btn" :disabled="currentPage === totalPages" @click="currentPage++">Próxima</button>
+          <span class="page-count">Exibindo {{ paginatedRecords.length }} de {{ filteredRecords.length }}</span>
         </div>
 
         <div class="table-summary">
@@ -343,7 +439,7 @@ import {
   Download, Sparkles, BarChart3, PieChart, Activity, Table,
   Search, ArrowUpDown, Edit, Trash2, X
 } from 'lucide-vue-next'
-import { Line, Bar, Doughnut } from 'vue-chartjs'
+import { Line, Bar, Doughnut, Scatter, Radar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -357,6 +453,7 @@ import {
   Legend,
   Filler
 } from 'chart.js'
+import { RadialLinearScale } from 'chart.js'
 import { financialService, FinancialRecord, FinancialSummary } from '@/services/financialService'
 import { executeMigration } from '@/utils/migrateFinancialData'
 
@@ -371,7 +468,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  RadialLinearScale
 )
 
 // Reactive data
@@ -383,6 +481,10 @@ const showAddForm = ref(false)
 const editingRecord = ref<FinancialRecord | null>(null)
 const searchTerm = ref('')
 const sortBy = ref('full_day')
+const dateFrom = ref('')
+const dateTo = ref('')
+const pageSize = ref(20)
+const currentPage = ref(1)
 const chartPeriod = ref('30')
 
 const records = ref<FinancialRecord[]>([])
@@ -406,10 +508,33 @@ const recordForm = reactive({
 })
 
 // Computed properties
+function parseDateStr(d: string): Date | null {
+  // accepts 'dd/mm/yyyy' or 'yyyy-mm-dd'
+  if (!d) return null
+  if (d.includes('/')) {
+    const [dd, mm, yyyy] = d.split('/')
+    return new Date(`${yyyy}-${mm}-${dd}T00:00:00`)
+  }
+  return new Date(`${d}T00:00:00`)
+}
+
 const filteredRecords = computed(() => {
   let filtered = records.value.filter(record =>
     record.full_day.toLowerCase().includes(searchTerm.value.toLowerCase())
   )
+
+  // Date range filter
+  const from = parseDateStr(dateFrom.value)
+  const to = parseDateStr(dateTo.value)
+  if (from || to) {
+    filtered = filtered.filter(r => {
+      const d = parseDateStr(r.full_day)
+      if (!d) return false
+      const passFrom = from ? d >= from : true
+      const passTo = to ? d <= to : true
+      return passFrom && passTo
+    })
+  }
 
   // Sort records
   filtered.sort((a, b) => {
@@ -425,6 +550,13 @@ const filteredRecords = computed(() => {
   })
 
   return filtered
+})
+
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredRecords.value.length / pageSize.value)))
+const paginatedRecords = computed(() => {
+  if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+  const start = (currentPage.value - 1) * pageSize.value
+  return filteredRecords.value.slice(start, start + pageSize.value)
 })
 
 const revenueChartData = computed(() => {
@@ -506,6 +638,96 @@ const chartOptions = {
     }
   }
 }
+
+// Advanced charts data
+const stackedMonthlyData = computed(() => {
+  const monthly = summary.value.monthlyData || []
+  return {
+    labels: monthly.map((m: any) => m.month),
+    datasets: [
+      { label: 'Receita', data: monthly.map((m: any) => m.revenue), backgroundColor: 'rgba(59,130,246,0.7)', stack: 'combined' },
+      { label: 'Salários', data: monthly.map((m: any) => m.waiterSalary), backgroundColor: 'rgba(16,185,129,0.7)', stack: 'combined' }
+    ]
+  }
+})
+
+const scatterRevenueVsSalary = computed(() => {
+  const data = records.value.map(r => ({ x: r.amount, y: r.total }))
+  return { datasets: [{ label: 'R$ Salário x Receita', data, backgroundColor: 'rgba(139,92,246,0.6)' }] }
+})
+
+const radarKpiData = computed(() => {
+  const perf = analyticsData.value?.performanceMetrics || { growth: 0, consistency: 0, efficiency: 0 }
+  return {
+    labels: ['Crescimento', 'Consistência', 'Eficiência'],
+    datasets: [{
+      label: 'KPIs',
+      data: [perf.growth || 0, perf.consistency || 0, (perf.efficiency || 50)],
+      backgroundColor: 'rgba(99,102,241,0.2)',
+      borderColor: 'rgba(99,102,241,1)'
+    }]
+  }
+})
+
+// Simple ML forecast (linear regression + bands)
+function computeForecast(points: { x: number; y: number }[], horizon = 30) {
+  const n = points.length
+  if (n < 5) return { forecast: [], upper: [], lower: [] }
+  const sumX = points.reduce((a, p) => a + p.x, 0)
+  const sumY = points.reduce((a, p) => a + p.y, 0)
+  const sumXY = points.reduce((a, p) => a + p.x * p.y, 0)
+  const sumXX = points.reduce((a, p) => a + p.x * p.x, 0)
+  const denom = n * sumXX - sumX * sumX
+  const a = (n * sumXY - sumX * sumY) / (denom || 1)
+  const b = (sumY - a * sumX) / n
+  // residual stddev
+  const residuals = points.map(p => p.y - (a * p.x + b))
+  const meanRes = residuals.reduce((s, r) => s + r, 0) / n
+  const std = Math.sqrt(residuals.reduce((s, r) => s + Math.pow(r - meanRes, 2), 0) / (n - 1))
+  const lastX = points[points.length - 1].x
+  const forecast = [] as number[]
+  const upper = [] as number[]
+  const lower = [] as number[]
+  for (let i = 1; i <= horizon; i++) {
+    const x = lastX + i
+    const y = a * x + b
+    forecast.push(y)
+    upper.push(y + 1.64 * std)
+    lower.push(Math.max(0, y - 1.64 * std))
+  }
+  return { forecast, upper, lower }
+}
+
+const forecastChartData = computed(() => {
+  // Build time series index
+  const series = records.value.map((r, idx) => ({ x: idx + 1, y: r.total }))
+  const horizon = 30
+  const { forecast, upper, lower } = computeForecast(series, horizon)
+  const labels = [
+    ...records.value.map(r => r.full_day),
+    ...Array.from({ length: horizon }, (_, i) => `+${i + 1}`)
+  ]
+  const history = series.map(p => p.y)
+  return {
+    labels,
+    datasets: [
+      { label: 'Histórico', data: history.concat(Array(horizon).fill(null)), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.35, fill: false },
+      { label: 'Previsão', data: Array(history.length).fill(null).concat(forecast), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.15)', borderDash: [6,4], tension: 0.35 },
+      { label: 'Limite Superior', data: Array(history.length).fill(null).concat(upper), borderColor: 'rgba(16,185,129,0.8)', borderDash: [3,4], pointRadius: 0 },
+      { label: 'Limite Inferior', data: Array(history.length).fill(null).concat(lower), borderColor: 'rgba(239,68,68,0.8)', borderDash: [3,4], pointRadius: 0 }
+    ]
+  }
+})
+
+const stackedOptions = {
+  responsive: true,
+  plugins: { legend: { position: 'top' } },
+  scales: { x: { stacked: true }, y: { stacked: true } }
+}
+
+const scatterOptions = { responsive: true, plugins: { legend: { display: false } } }
+const radarOptions = { responsive: true, plugins: { legend: { display: false } }, scales: { r: { beginAtZero: true, suggestedMax: 100 } } }
+const forecastOptions = { responsive: true, plugins: { legend: { position: 'top' } } }
 
 const barChartOptions = {
   responsive: true,
@@ -992,6 +1214,31 @@ onMounted(() => {
   gap: 2rem;
   margin-bottom: 2rem;
 }
+.advanced-grid { margin-top: 0.5rem }
+.chart-container.full { grid-column: 1 / -1 }
+
+.forecast-section {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px rgba(0,0,0,.08);
+  margin-bottom: 2rem;
+}
+
+.forecast-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+}
+
+.insight-panel {
+  background: rgba(248,250,252,0.9);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1rem;
+}
+.insight-panel h4 { margin: 0.5rem 0 }
+.insight-panel ul { margin: 0.25rem 0 0.75rem 1.2rem }
 
 .chart-container {
   background: rgba(255, 255, 255, 0.95);
@@ -1117,10 +1364,20 @@ onMounted(() => {
   background: rgba(255, 255, 255, 0.9);
   min-width: 250px;
 }
+.date-filters { display:flex; align-items:center; gap:8px }
+.date-input { padding: 0.5rem 0.75rem; border:1px solid #e5e7eb; border-radius:8px; background: rgba(255,255,255,.9) }
+.page-size { display:flex; align-items:center; gap:6px }
+.select-modern.small { padding: 0.4rem 0.75rem; }
+.pagination-bar { display:flex; gap: 12px; align-items:center; justify-content:flex-end; margin: 6px 0 0 0 }
+.page-btn { padding: 8px 10px; border-radius:8px; background: #fff; border:1px solid #e5e7eb; cursor:pointer }
+.page-btn:disabled { opacity: .5; cursor: not-allowed }
+.page-info { color: #64748b }
+.page-count { color: #94a3b8; font-size: 12px }
 
 .table-container {
-  overflow-x: auto;
+  overflow: auto;
   margin: 2rem 0;
+  max-height: 540px;
 }
 
 .financial-table {
@@ -1135,22 +1392,33 @@ onMounted(() => {
 .financial-table th {
   background: linear-gradient(45deg, #667eea, #764ba2);
   color: white;
-  padding: 1.25rem 1rem;
+  padding: 0.9rem 1rem;
   text-align: left;
   font-weight: 600;
   font-size: 0.95rem;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .financial-table th.sortable {
   cursor: pointer;
   user-select: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  position: relative;
+  padding-right: 2rem; /* espaço para o ícone */
+}
+
+.financial-table th.sortable svg {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.9;
 }
 
 .financial-table td {
-  padding: 1rem;
+  padding: 0.9rem 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 

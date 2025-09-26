@@ -244,6 +244,36 @@
           </DocBlock>
         </DocSection>
 
+        <!-- Authentication Section -->
+        <DocSection id="authentication">
+          <DocHeader
+            title="🔐 Autenticação"
+            description="Como autenticar usuários e proteger rotas"
+          />
+
+          <DocBlock title="Fluxo de Autenticação" variant="info" :icon="Shield">
+            <ul>
+              <li>Login via Supabase Auth (email/senha)</li>
+              <li>Persistência de sessão segura (JWT)</li>
+              <li>Proteção de rotas com guard no Vue Router</li>
+              <li>RLS (Row Level Security) no banco para isolar dados</li>
+            </ul>
+          </DocBlock>
+
+          <DocBlock title="Exemplo de Uso no Front" variant="code">
+            <CodeBlock language="typescript" filename="auth.ts" :code="authCode" />
+          </DocBlock>
+        </DocSection>
+
+        <!-- Configuration Section -->
+        <DocSection id="configuration">
+          <DocHeader title="⚙️ Configuração" description="Variáveis de ambiente e ajustes essenciais" />
+          <DocBlock title=".env (Vite)" variant="warning">
+            <p>Defina as chaves do Supabase e da IA no arquivo <code>.env</code>:</p>
+            <CodeBlock language="bash" filename=".env" :code="configEnvCode" />
+          </DocBlock>
+        </DocSection>
+
         <!-- Inventory Section -->
         <DocSection id="inventory">
           <DocHeader
@@ -344,6 +374,54 @@
           </DocBlock>
         </DocSection>
 
+        <!-- Menu Management Section -->
+        <DocSection id="menu-management">
+          <DocHeader title="📋 Gestão de Menu" description="Cadastro e organização de itens do cardápio" />
+          <DocBlock title="Funcionalidades">
+            <ul>
+              <li>Cadastro/edição de itens e categorias</li>
+              <li>Vinculação com estoque e custos</li>
+              <li>Sugestões de otimização com IA</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <!-- Reports Section (App) -->
+        <DocSection id="reports">
+          <DocHeader title="📑 Relatórios" description="Relatórios avançados e exportações" />
+          <DocBlock title="Tipos de Relatório" variant="success">
+            <ul>
+              <li>Técnico/Executivo (PDF/Excel/JSON)</li>
+              <li>Relatórios preditivos (IA)</li>
+              <li>Exportação Power BI</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <!-- Suppliers Section -->
+        <DocSection id="suppliers">
+          <DocHeader title="🚚 Fornecedores" description="Gestão e acompanhamento de fornecedores" />
+          <DocBlock title="Funcionalidades">
+            <ul>
+              <li>Cadastro e status (ativo/inativo)</li>
+              <li>Pedidos recentes e métricas</li>
+              <li>Integração com compras e estoque</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <!-- User Management Section -->
+        <DocSection id="user-management">
+          <DocHeader title="👥 Usuários" description="Permissões e atividades" />
+          <DocBlock title="Permissões e Logs" variant="info">
+            <ul>
+              <li>Perfis de acesso por função</li>
+              <li>Logs de auditoria por ação</li>
+              <li>Integração com interceptadores</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
         <!-- API Reference Section -->
         <DocSection id="api-overview">
           <DocHeader
@@ -418,6 +496,31 @@
               </div>
             </div>
           </DocBlock>
+        </DocSection>
+
+        <DocSection id="api-auth">
+          <DocHeader title="API: Autenticação" description="Endpoints de sessão e usuários" />
+          <DocBlock title="Exemplos"><CodeBlock language="bash" filename="auth.http" :code="apiAuthCode" /></DocBlock>
+        </DocSection>
+
+        <DocSection id="api-products">
+          <DocHeader title="API: Produtos" description="CRUD de produtos" />
+          <DocBlock title="Exemplos"><CodeBlock language="bash" filename="products.http" :code="apiProductsCode" /></DocBlock>
+        </DocSection>
+
+        <DocSection id="api-movements">
+          <DocHeader title="API: Movimentações" description="Entradas e saídas de estoque" />
+          <DocBlock title="Exemplos"><CodeBlock language="bash" filename="movements.http" :code="apiMovementsCode" /></DocBlock>
+        </DocSection>
+
+        <DocSection id="api-reports">
+          <DocHeader title="API: Relatórios" description="Geração e exportação" />
+          <DocBlock title="Exemplos"><CodeBlock language="bash" filename="reports.http" :code="apiReportsCode" /></DocBlock>
+        </DocSection>
+
+        <DocSection id="api-users">
+          <DocHeader title="API: Usuários" description="Gestão de usuários" />
+          <DocBlock title="Exemplos"><CodeBlock language="bash" filename="users.http" :code="apiUsersCode" /></DocBlock>
         </DocSection>
 
         <!-- Tech Stack Section -->
@@ -496,6 +599,95 @@
                 <p>Tipografia moderna</p>
               </div>
             </div>
+          </DocBlock>
+        </DocSection>
+
+        <DocSection id="database-schema">
+          <DocHeader title="🗄️ Schema do Banco" description="Tabelas principais e relacionamentos" />
+          <DocBlock title="Visão Geral"><CodeBlock language="sql" filename="schema.sql" :code="databaseSchemaCode" /></DocBlock>
+        </DocSection>
+
+        <DocSection id="services">
+          <DocHeader title="🧩 Serviços" description="Camada de serviços e responsabilidades" />
+          <DocBlock title="Principais Serviços">
+            <ul class="component-list">
+              <li class="component-item"><code>logService</code> — logs e auditoria</li>
+              <li class="component-item"><code>reportService</code> — relatórios avançados</li>
+              <li class="component-item"><code>reportsService</code> — analytics e dashboards</li>
+              <li class="component-item"><code>aiAnalyticsService</code> — IA para análises</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <DocSection id="components">
+          <DocHeader title="🧱 Componentes" description="Componentes reutilizáveis e padrões UI" />
+          <DocBlock title="Exemplos">
+            <ul class="component-list">
+              <li class="component-item"><code>DocSection</code>, <code>DocHeader</code>, <code>DocBlock</code>, <code>CodeBlock</code></li>
+              <li class="component-item"><code>Charts</code> — componentes de gráficos</li>
+              <li class="component-item"><code>Modals</code> — formulários e confirmação</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <DocSection id="state-management">
+          <DocHeader title="🗂 Gerenciamento de Estado" description="Pinia stores e convenções" />
+          <DocBlock title="Padrões">
+            <ul>
+              <li>Stores modulares por domínio (auth, settings, notifications)</li>
+              <li>Evitar lógica pesada no componente; usar serviços</li>
+              <li>Tipagem forte com TypeScript</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <!-- Development Guides -->
+        <DocSection id="setup-dev">
+          <DocHeader title="🧪 Setup Desenvolvimento" description="Como rodar localmente" />
+          <DocBlock title="Comandos"><CodeBlock language="bash" filename="dev.sh" :code="devSetupCode" /></DocBlock>
+        </DocSection>
+
+        <DocSection id="coding-standards">
+          <DocHeader title="✍️ Padrões de Código" description="Estilo, estrutura e boas práticas" />
+          <DocBlock title="Guia Rápido">
+            <ul>
+              <li>Uso de Composition API e TypeScript</li>
+              <li>Serviços isolados por domínio</li>
+              <li>Componentes pequenos e reutilizáveis</li>
+              <li>Nomenclatura consistente e comentários quando necessário</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <DocSection id="testing">
+          <DocHeader title="✅ Testes" description="Estratégia e exemplos" />
+          <DocBlock title="Estratégia">
+            <ul>
+              <li>Testes unitários de serviços (ex.: reportService)</li>
+              <li>Testes de integração leves para rotas críticas</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <DocSection id="deployment">
+          <DocHeader title="🚀 Deploy" description="Ambientes e build" />
+          <DocBlock title="Passos">
+            <ul>
+              <li>Build: <code>npm run build</code></li>
+              <li>Pré-visualização: <code>npm run preview</code></li>
+              <li>Hospedagem recomendada: Vercel/Netlify com envs VITE_*</li>
+            </ul>
+          </DocBlock>
+        </DocSection>
+
+        <DocSection id="troubleshooting">
+          <DocHeader title="🛠 Troubleshooting" description="Problemas comuns e soluções" />
+          <DocBlock title="Erros Frequentes" variant="warning">
+            <ul>
+              <li>Import não encontrado: instale dependências faltantes (<code>npm i</code>)</li>
+              <li>Variáveis <code>process.env</code> no browser: use <code>import.meta.env</code></li>
+              <li>Permissões Supabase: verifique RLS e policies</li>
+            </ul>
           </DocBlock>
         </DocSection>
 
@@ -693,6 +885,102 @@ const response = await fetch('/api/products', {
   method: 'GET'
 })`
 
+// New: Auth front example
+const authCode = `import { supabase } from '@/config/supabase'
+
+export async function signIn(email: string, password: string) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw error
+  return data.session
+}
+
+export async function signOut() {
+  await supabase.auth.signOut()
+}
+`
+
+// New: Configuration .env example
+const configEnvCode = `# Supabase
+VITE_SUPABASE_URL=... 
+VITE_SUPABASE_ANON_KEY=...
+
+# Gemini AI
+VITE_GEMINI_API_KEY=...
+VITE_GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+
+# App
+VITE_APP_NAME=GestaoZe System
+VITE_APP_VERSION=1.0.0`
+
+// New: API reference samples
+const apiAuthCode = `### Login
+POST https://<project>.supabase.co/auth/v1/token?grant_type=password
+content-type: application/json
+
+{ "email": "user@example.com", "password": "••••••" }
+`
+
+const apiProductsCode = `### Listar produtos
+GET /api/products
+
+### Criar produto
+POST /api/products
+content-type: application/json
+
+{ "nome": "Produto A", "preco": 12.5, "current_stock": 10 }
+`
+
+const apiMovementsCode = `### Listar movimentações
+GET /api/movements
+
+### Registrar saída
+POST /api/movements
+content-type: application/json
+
+{ "product_id": "...", "type": "out", "quantity": 2 }
+`
+
+const apiReportsCode = `### Relatório de estoque
+GET /api/reports/inventory
+
+### Relatório financeiro
+GET /api/reports/financial
+`
+
+const apiUsersCode = `### Usuários
+GET /api/users
+`
+
+// New: Database schema sample
+const databaseSchemaCode = `-- Tabela de produtos
+create table if not exists produtos (
+  id uuid primary key default gen_random_uuid(),
+  nome text not null,
+  preco numeric(12,2) not null default 0,
+  current_stock integer not null default 0,
+  min_stock integer not null default 0,
+  categoria_id uuid,
+  created_at timestamp default now(),
+  updated_at timestamp default now()
+);
+
+-- Movimentações
+create table if not exists movimentacoes (
+  id uuid primary key default gen_random_uuid(),
+  product_id uuid references produtos(id),
+  type text check (type in ('in','out')),
+  quantity integer not null,
+  created_at timestamp default now()
+);`
+
+// New: Dev setup snippet
+const devSetupCode = `npm install
+npm run dev
+
+# Build & preview
+npm run build
+npm run preview`
+
 // Funções
 function toggleTheme() {
   isDarkMode.value = !isDarkMode.value
@@ -772,8 +1060,9 @@ onUnmounted(() => {
 }
 
 .header-content {
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: none;
+  width: 100%;
+  margin: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -881,11 +1170,12 @@ onUnmounted(() => {
 
 /* Container */
 .docs-container {
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: none;
+  width: 100%;
+  margin: 0;
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 0;
+  grid-template-columns: 320px minmax(0, 1fr);
+  column-gap: 24px;
   min-height: calc(100vh - 80px);
 }
 
@@ -979,8 +1269,8 @@ onUnmounted(() => {
 
 /* Main Content */
 .docs-content {
-  padding: 2rem;
-  max-width: 800px;
+  padding: 2rem 2.5rem 3rem 2rem;
+  max-width: none;
 }
 
 .features-grid {

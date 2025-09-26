@@ -103,9 +103,18 @@
           </div>
         </div>
         <div class="ai-content">
-          <div class="executive-summary">
+          <div class="executive-summary markdown-body">
             <h3>Resumo Executivo</h3>
-            <p>{{ aiAnalysis.executiveSummary }}</p>
+            <div v-html="renderMarkdown(aiAnalysis.executiveSummary)"></div>
+          </div>
+          <div class="insight-card" v-if="aiAnalysis.kpiCommentary">
+            <h4>📈 Comentários de KPI</h4>
+            <ul>
+              <li v-if="aiAnalysis.kpiCommentary.overall" v-html="renderMarkdown(aiAnalysis.kpiCommentary.overall)"></li>
+              <li v-if="aiAnalysis.kpiCommentary.sales" v-html="renderMarkdown(aiAnalysis.kpiCommentary.sales)"></li>
+              <li v-if="aiAnalysis.kpiCommentary.inventory" v-html="renderMarkdown(aiAnalysis.kpiCommentary.inventory)"></li>
+              <li v-if="aiAnalysis.kpiCommentary.efficiency" v-html="renderMarkdown(aiAnalysis.kpiCommentary.efficiency)"></li>
+            </ul>
           </div>
           <div class="insights-grid">
             <div class="insight-card" v-if="aiAnalysis.insights?.length">
@@ -132,6 +141,67 @@
                 <li v-for="alert in aiAnalysis.alerts.slice(0, 3)" :key="alert">{{ alert }}</li>
               </ul>
             </div>
+            <div class="insight-card" v-if="aiAnalysis.riskMatrix?.length">
+              <h4>🛡️ Matriz de Riscos</h4>
+              <ul>
+                <li v-for="risk in aiAnalysis.riskMatrix.slice(0, 4)" :key="risk.title">
+                  <span class="badge" :class="`sev-${risk.severity}`">{{ risk.severity.toUpperCase() }}</span>
+                  <strong>{{ risk.title }}</strong>
+                  <span class="muted"> · Prob.: {{ risk.likelihood }}</span>
+                  <div class="muted">Mitigação: {{ risk.mitigation }}</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="swot-grid" v-if="aiAnalysis.swot">
+            <div class="swot-card strengths">
+              <h4>Forças</h4>
+              <ul>
+                <li v-for="s in aiAnalysis.swot.strengths || []" :key="s">{{ s }}</li>
+              </ul>
+            </div>
+            <div class="swot-card weaknesses">
+              <h4>Fraquezas</h4>
+              <ul>
+                <li v-for="w in aiAnalysis.swot.weaknesses || []" :key="w">{{ w }}</li>
+              </ul>
+            </div>
+            <div class="swot-card opportunities">
+              <h4>Oportunidades</h4>
+              <ul>
+                <li v-for="o in aiAnalysis.swot.opportunities || []" :key="o">{{ o }}</li>
+              </ul>
+            </div>
+            <div class="swot-card threats">
+              <h4>Ameaças</h4>
+              <ul>
+                <li v-for="t in aiAnalysis.swot.threats || []" :key="t">{{ t }}</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="insight-card" v-if="aiAnalysis.roadmap?.length">
+            <h4>🗺️ Roadmap 90 dias</h4>
+            <ul>
+              <li v-for="step in aiAnalysis.roadmap" :key="step.title">
+                <span class="badge timeframe">{{ step.timeframe }}</span>
+                <strong>{{ step.title }}</strong>
+                <span class="muted"> · Impacto: {{ step.impact }} · Esforço: {{ step.effort }}</span>
+                <div class="muted">Ação: {{ step.action }}</div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="insight-card" v-if="aiAnalysis.scenarioAnalysis?.length">
+            <h4>🧪 Análise de Cenários</h4>
+            <ul>
+              <li v-for="sc in aiAnalysis.scenarioAnalysis" :key="sc.name">
+                <strong>{{ sc.name }}</strong>
+                <div class="muted">Impacto: {{ sc.impact }}</div>
+                <div class="muted">Recomendação: {{ sc.recommendation }}</div>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -232,7 +302,7 @@
     <!-- Gráficos Avançados -->
     <div class="charts-grid">
       <!-- Gráfico Principal de Performance -->
-      <section class="chart-panel primary-chart">
+      <section v-if="selectedChartType !== 'predictive'" class="chart-panel primary-chart">
         <div class="panel-header">
           <h2>
             <TrendingUp :size="20" />
@@ -276,7 +346,7 @@
       </section>
 
       <!-- Gráfico Radar de Categorias -->
-      <section class="chart-panel">
+      <section v-if="selectedChartType === 'advanced'" class="chart-panel">
         <div class="panel-header">
           <h2>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -301,7 +371,7 @@
       </section>
 
       <!-- Gráfico Bubble de Produtos -->
-      <section class="chart-panel">
+      <section v-if="selectedChartType === 'advanced'" class="chart-panel">
         <div class="panel-header">
           <h2>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -325,7 +395,7 @@
       </section>
 
       <!-- Gráfico Polar de Estoque -->
-      <section class="chart-panel">
+      <section v-if="selectedChartType === 'advanced'" class="chart-panel">
         <div class="panel-header">
           <h2>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -349,7 +419,7 @@
       </section>
 
       <!-- Gráfico de Movimentações Stack -->
-      <section class="chart-panel full-width">
+      <section v-if="selectedChartType === 'advanced'" class="chart-panel full-width">
         <div class="panel-header">
           <h2>
             <Activity :size="20" />
@@ -439,7 +509,7 @@
     </div>
 
     <!-- Seção de Análise Preditiva -->
-    <div v-if="predictiveInsights.length > 0" class="predictive-section">
+    <div v-if="selectedChartType === 'predictive'" class="predictive-section">
       <div class="section-header">
         <h2>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -841,6 +911,46 @@ const movementMetrics = ref({
 const salesPerformance = ref(75)
 const stockPerformance = ref(82)
 const efficiencyPerformance = ref(68)
+
+// Simple Markdown renderer (headings, bold/italic, code, lists, paragraphs)
+function renderMarkdown(md: string | undefined): string {
+  if (!md) return ''
+  let html = md
+    // Code blocks ``` ```
+    .replace(/```([\s\S]*?)```/g, (_m, p1) => `<pre><code>${escapeHtml(p1)}</code></pre>`)
+    // Inline code `code`
+    .replace(/`([^`]+)`/g, (_m, p1) => `<code>${escapeHtml(p1)}</code>`)
+    // Headings
+    .replace(/^###\s+(.*)$/gm, '<h3>$1</h3>')
+    .replace(/^##\s+(.*)$/gm, '<h2>$1</h2>')
+    .replace(/^#\s+(.*)$/gm, '<h1>$1</h1>')
+    // Bold and italics
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+
+  // Lists: convert lines starting with - or * into <ul><li>
+  html = html.replace(/(^|\n)([-*] .*(?:\n[-*] .*)*)/g, (_m, p1, p2) => {
+    const items = p2.split(/\n/).map((line: string) => line.replace(/^[-*]\s+/, '')).map(li => `<li>${li}</li>`).join('')
+    return `${p1}<ul>${items}</ul>`
+  })
+
+  // Paragraphs: wrap plain lines in <p>
+  html = html
+    .split(/\n{2,}/)
+    .map(block => (/^\s*<(h\d|ul|pre|blockquote|p|table|img|div)/i.test(block.trim()) ? block : `<p>${block.replace(/\n/g, '<br/>')}</p>`))
+    .join('')
+
+  return html
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
 
 // Chart options
 const chartOptions = {
@@ -1619,7 +1729,7 @@ async function exportToPDF() {
       aiAnalysis: aiAnalysis.value,
       predictiveData: predictiveAnalysisData.value,
       statisticalAnalysis: await generateStatisticalAnalysis(),
-      charts: document.querySelectorAll('.chart-container') as any
+      charts: Array.from(document.querySelectorAll('.chart-container')) as HTMLElement[]
     }
 
     const options = {
@@ -2515,6 +2625,41 @@ watch(selectedPeriod, () => {
   color: var(--theme-text-secondary);
 }
 
+/* Markdown styles */
+.markdown-body :is(h1,h2,h3) {
+  margin: 10px 0 8px 0;
+  color: var(--theme-text-primary);
+}
+.markdown-body p {
+  margin: 8px 0;
+  color: var(--theme-text-secondary);
+}
+.markdown-body ul {
+  margin: 8px 0 8px 18px;
+}
+.markdown-body li {
+  margin: 4px 0;
+}
+.markdown-body code {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.markdown-body pre {
+  background: #0b1220;
+  color: #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  overflow: auto;
+}
+.markdown-body pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
 .insights-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -2584,6 +2729,44 @@ watch(selectedPeriod, () => {
 .chart-panel.primary-chart {
   grid-column: span 2;
 }
+
+/* SWOT & Risk matrix & badges */
+.swot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.swot-card {
+  background: #fff;
+  border: 1px solid #f1f5f9;
+  border-radius: 12px;
+  padding: 16px;
+}
+.swot-card h4 { margin: 0 0 8px 0; }
+.swot-card ul { margin: 0; padding-left: 18px; }
+.swot-card.strengths { border-left: 4px solid #10b981; }
+.swot-card.weaknesses { border-left: 4px solid #ef4444; }
+.swot-card.opportunities { border-left: 4px solid #3b82f6; }
+.swot-card.threats { border-left: 4px solid #f59e0b; }
+
+.badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  color: #111827;
+  margin-right: 6px;
+}
+.badge.timeframe { background: #eef2ff; color: #4338ca; }
+.badge.sev-low { background: #dcfce7; color: #166534; }
+.badge.sev-medium { background: #fef9c3; color: #854d0e; }
+.badge.sev-high { background: #fee2e2; color: #b91c1c; }
+.badge.sev-critical { background: #fecaca; color: #7f1d1d; }
+
+.muted { color: #64748b; font-size: 12px; }
 
 .chart-panel.gauge-panel {
   display: flex;
@@ -2698,6 +2881,225 @@ watch(selectedPeriod, () => {
   margin-right: 12px;
 }
 
+/* Seção Preditiva */
+.predictive-section {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.predictive-section .section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.prediction-accuracy {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prediction-accuracy .accuracy-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+}
+
+.prediction-accuracy .accuracy-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #111827;
+  background: #eef2ff;
+  border: 1px solid #e5e7eb;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+
+.predictive-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 24px;
+}
+
+.predictive-panel {
+  background: var(--theme-surface);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px var(--theme-shadow);
+  border: 1px solid var(--theme-border);
+}
+
+.sales-forecast .forecast-chart {
+  height: 240px;
+}
+
+.insights-panel .insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.insight-item {
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-left: 4px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.insight-item.high-impact { border-left-color: #ef4444; }
+.insight-item.medium-impact { border-left-color: #f59e0b; }
+.insight-item.low-impact { border-left-color: #10b981; }
+
+.insight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.insight-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.insight-confidence {
+  font-size: 12px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.insight-title {
+  margin: 6px 0 4px 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--theme-text-primary);
+}
+
+.insight-description {
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  color: var(--theme-text-secondary);
+}
+
+.insight-timeframe {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.action-required {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #b45309;
+  font-weight: 700;
+}
+
+.demand-panel .demand-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.demand-item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.demand-item .product-info .product-name {
+  font-weight: 700;
+  color: var(--theme-text-primary);
+}
+
+.demand-item .current-stock {
+  font-size: 12px;
+  color: var(--theme-text-secondary);
+}
+
+.demand-forecast {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.predicted-demand {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.demand-label {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.reorder-recommendation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.reorder-qty {
+  font-size: 14px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 8px;
+  color: #ffffff;
+}
+
+.reorder-qty.urgent { background: #ef4444; }
+.reorder-qty.warning { background: #f59e0b; }
+.reorder-qty.good { background: #10b981; }
+
+.reorder-label {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.confidence-bar {
+  grid-column: 1 / -1;
+  height: 6px;
+  background: #f1f5f9;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #22d3ee);
+}
+
+.anomalies-section .anomalies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.anomalies-section .anomaly-card {
+  background: #fff;
+  border: 1px solid #eef2f7;
+  border-radius: 12px;
+  padding: 12px;
+}
+
 @media (max-width: 1200px) {
   .chart-panel.primary-chart {
     grid-column: span 1;
@@ -2757,6 +3159,14 @@ watch(selectedPeriod, () => {
 
   .ai-panel {
     padding: 20px;
+  }
+
+  .predictive-section {
+    padding: 20px;
+  }
+
+  .predictive-grid {
+    grid-template-columns: 1fr;
   }
 
   .insights-grid {

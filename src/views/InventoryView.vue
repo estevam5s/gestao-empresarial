@@ -192,6 +192,20 @@
             </span>
           </div>
         </div>
+        <div class="section-actions">
+          <button class="tool-btn" @click="clearAllFilters" :disabled="activeFiltersCount === 0">Limpar filtros</button>
+          <button class="tool-btn" @click="toggleCompactMode" :class="{ active: compactMode }">Modo compacto</button>
+          <button class="tool-btn" @click="exportCSV" :disabled="filteredProducts.length === 0">Exportar CSV</button>
+          <button class="tool-btn" @click="exportExcel" :disabled="filteredProducts.length === 0">Exportar Excel</button>
+          <div class="page-size">
+            <label>Itens:</label>
+            <select v-model.number="pageSize" class="filter-select small">
+              <option :value="12">12</option>
+              <option :value="24">24</option>
+              <option :value="48">48</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div v-if="loading" class="loading-state">
@@ -220,9 +234,9 @@
 
       <div v-else class="products-container">
         <!-- Grid View -->
-        <div v-if="viewMode === 'grid'" class="products-grid">
+        <div v-if="viewMode === 'grid'" class="products-grid" :class="{ compact: compactMode }">
           <div
-            v-for="product in sortedProducts"
+            v-for="product in paginatedProducts"
             :key="product.id"
             class="product-card"
             :class="getCardClasses(product)"
@@ -231,6 +245,7 @@
               <div class="product-image">
                 <Package :size="24" />
               </div>
+              <span class="status-chip" :class="getStockClass(product)">{{ getStockStatus(product) }}</span>
               <div class="product-actions">
                 <button @click="editProduct(product)" class="action-btn edit" title="Editar">
                   <Edit2 :size="16" />
@@ -302,8 +317,8 @@
         </div>
 
         <!-- List View -->
-        <div v-else class="products-list">
-          <div class="list-header">
+        <div v-else class="products-list" :class="{ compact: compactMode }">
+          <div class="list-header sticky">
             <div class="list-col name">Produto</div>
             <div class="list-col category">Categoria</div>
             <div class="list-col stock">Estoque</div>
@@ -314,7 +329,7 @@
           </div>
 
           <div
-            v-for="product in sortedProducts"
+            v-for="product in paginatedProducts"
             :key="product.id"
             class="list-row"
             :class="getRowClasses(product)"
@@ -382,6 +397,12 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="pagination-bar" v-if="totalPages > 1">
+          <button class="page-btn" :disabled="currentPage === 1" @click="currentPage--">Anterior</button>
+          <span class="page-info">Página {{ currentPage }} de {{ totalPages }}</span>
+          <button class="page-btn" :disabled="currentPage === totalPages" @click="currentPage++">Próxima</button>
+          <span class="page-count">Exibindo {{ paginatedProducts.length }} de {{ filteredProducts.length }}</span>
         </div>
       </div>
     </main>
@@ -505,6 +526,28 @@
         </form>
       </div>
     </div>
+
+    <!-- Modal de visualização de produto -->
+    <div v-if="showViewModal" class="modal-overlay" @click="showViewModal = false">
+      <div class="modal-content" @click.stop>
+        <div class="modal-header">
+          <h2>Detalhes do Produto</h2>
+          <button @click="showViewModal = false" class="modal-close">×</button>
+        </div>
+        <div class="product-view" v-if="selectedProduct">
+          <div class="view-grid">
+            <div class="view-row"><span class="label">Nome:</span><span class="value">{{ selectedProduct.nome }}</span></div>
+            <div class="view-row"><span class="label">Categoria:</span><span class="value">{{ getProductCategory(selectedProduct) }}</span></div>
+            <div class="view-row"><span class="label">Estoque:</span><span class="value">{{ selectedProduct.current_stock }} {{ selectedProduct.unidade }}</span></div>
+            <div class="view-row"><span class="label">Mínimo:</span><span class="value">{{ selectedProduct.min_stock }}</span></div>
+            <div class="view-row"><span class="label">Preço:</span><span class="value">R$ {{ formatCurrency(selectedProduct.preco) }}</span></div>
+            <div class="view-row" v-if="selectedProduct.codigo_barras"><span class="label">Código:</span><span class="value">{{ selectedProduct.codigo_barras }}</span></div>
+            <div class="view-row" v-if="selectedProduct.descricao"><span class="label">Descrição:</span><span class="value">{{ selectedProduct.descricao }}</span></div>
+            <div class="view-row"><span class="label">Atualizado:</span><span class="value">{{ formatDate(selectedProduct.updated_at) }}</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -520,6 +563,7 @@ import {
   X, Tag, BarChart3, SortAsc, Eye, Grid, List, Loader2, Edit2, Copy, Clock,
   Minus
 } from 'lucide-vue-next'
+import * as XLSX from 'xlsx'
 
 const authStore = useAuthStore()
 
@@ -534,6 +578,9 @@ const sortBy = ref('nome')
 const viewMode = ref<'grid' | 'list'>('grid')
 const showAddModal = ref(false)
 const editingProduct = ref<Product | null>(null)
+const compactMode = ref(false)
+const pageSize = ref(12)
+const currentPage = ref(1)
 
 const productForm = ref({
   nome: '',
@@ -614,6 +661,69 @@ const sortedProducts = computed(() => {
       return sorted
   }
 })
+
+// Paginação e utilitários
+const totalPages = computed(() => Math.max(1, Math.ceil(filteredProducts.value.length / pageSize.value)))
+
+const paginatedProducts = computed(() => {
+  if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+  const start = (currentPage.value - 1) * pageSize.value
+  return sortedProducts.value.slice(start, start + pageSize.value)
+})
+
+function clearAllFilters() {
+  searchQuery.value = ''
+  selectedCategory.value = ''
+  stockFilter.value = ''
+  sortBy.value = 'nome'
+}
+
+function toggleCompactMode() {
+  compactMode.value = !compactMode.value
+}
+
+function exportCSV() {
+  const rows = [[
+    'Nome','Categoria','Estoque','Mínimo','Unidade','Preço','Total','Status'
+  ]]
+  filteredProducts.value.forEach(p => {
+    rows.push([
+      p.nome,
+      categories.value.find(c => c.id === p.categoria_id)?.nome || '',
+      p.current_stock,
+      p.min_stock,
+      p.unidade,
+      p.preco,
+      (p.preco * p.current_stock).toFixed(2),
+      getStockStatus(p)
+    ] as any)
+  })
+  const csv = rows.map(r => r.join(',')).join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `estoque-${new Date().toISOString().split('T')[0]}.csv`
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+function exportExcel() {
+  const rows = filteredProducts.value.map(p => ({
+    Nome: p.nome,
+    Categoria: categories.value.find(c => c.id === p.categoria_id)?.nome || '',
+    Estoque: p.current_stock,
+    Minimo: p.min_stock,
+    Unidade: p.unidade,
+    Preco: p.preco,
+    Total: Number((p.preco * p.current_stock).toFixed(2)),
+    Status: getStockStatus(p)
+  }))
+  const ws = XLSX.utils.json_to_sheet(rows)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Estoque')
+  XLSX.writeFile(wb, `estoque-${new Date().toISOString().split('T')[0]}.xlsx`)
+}
 
 async function loadProducts() {
   loading.value = true
@@ -705,7 +815,8 @@ function editProduct(product: Product) {
 }
 
 function viewProduct(product: Product) {
-  alert(`Detalhes do produto: ${product.nome}\nEstoque: ${product.current_stock} ${product.unidade}\nPreço: R$ ${formatCurrency(product.preco)}`)
+  selectedProduct.value = product
+  showViewModal.value = true
 }
 
 function closeModal() {
@@ -825,6 +936,9 @@ onMounted(() => {
   loadProducts()
   loadCategories()
 })
+
+const selectedProduct = ref<Product | null>(null)
+const showViewModal = ref(false)
 </script>
 
 <style scoped>
@@ -1115,6 +1229,29 @@ onMounted(() => {
   flex-wrap: wrap;
 }
 
+.section-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.tool-btn {
+  padding: 8px 12px;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  color: var(--theme-text-secondary);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.tool-btn:hover { background: var(--theme-border); }
+.tool-btn.active { background: var(--theme-primary); color: #fff; border-color: var(--theme-primary); }
+.tool-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.page-size { display: flex; align-items: center; gap: 6px; }
+.filter-select.small { padding: 6px 8px; font-size: 12px; }
+
 .filter-badge {
   display: flex;
   align-items: center;
@@ -1198,6 +1335,9 @@ onMounted(() => {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 16px;
 }
+.products-grid.compact .product-card { max-height: 220px; }
+.products-grid.compact .card-content { padding: 10px 12px; }
+.products-grid.compact .product-name { font-size: 14px; }
 
 .product-card {
   background: var(--theme-surface);
@@ -1232,6 +1372,15 @@ onMounted(() => {
   align-items: center;
   padding: 14px 16px 0;
 }
+.status-chip {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+.status-chip.normal { background: #ecfdf5; color: #065f46; }
+.status-chip.warning { background: #fff7ed; color: #b45309; }
+.status-chip.critical { background: #fee2e2; color: #991b1b; }
 
 .product-image {
   width: 32px;
@@ -1462,6 +1611,9 @@ onMounted(() => {
   border-radius: 8px;
   overflow: hidden;
 }
+.products-list.compact .list-row { padding: 10px 14px; }
+.products-list.compact .list-col { font-size: 12px; }
+.products-list .sticky { position: sticky; top: 80px; background: var(--theme-surface); z-index: 5; }
 
 .list-header {
   display: grid;
@@ -1487,6 +1639,7 @@ onMounted(() => {
   min-height: 60px;
   align-items: center;
 }
+.list-row:nth-child(odd) { background: rgba(0,0,0,0.01); }
 
 .list-row:hover {
   background: rgba(var(--theme-primary-rgb, 102, 126, 234), 0.02);
@@ -1828,6 +1981,30 @@ onMounted(() => {
   padding-top: 24px;
   border-top: 1px solid var(--theme-border);
 }
+
+/* Pagination */
+.pagination-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 14px 0 0;
+}
+.page-btn {
+  padding: 8px 10px;
+  background: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.page-info { color: var(--theme-text-secondary); font-size: 13px; }
+.page-count { color: var(--theme-text-muted); font-size: 12px; }
+
+.product-view .view-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.product-view .view-row { display: flex; gap: 8px; align-items: center; }
+.product-view .label { width: 110px; color: var(--theme-text-muted); font-size: 12px; }
+.product-view .value { font-weight: 600; }
 
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 1400px) {

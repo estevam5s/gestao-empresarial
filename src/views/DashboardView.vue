@@ -342,6 +342,12 @@
       </div>
     </main>
 
+    <!-- Support Chat Launcher -->
+    <Teleport to="body">
+      <SupportAuthModal :open="supportAuthOpen" @close="supportAuthOpen=false" @success="onSupportLogin" />
+      <SupportChatWidget />
+    </Teleport>
+
     <!-- Modais e Overlays -->
     <Teleport to="body">
 
@@ -383,6 +389,9 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useSupportAuthStore } from '@/stores/supportAuth'
+import SupportAuthModal from '@/components/support/SupportAuthModal.vue'
+import SupportChatWidget from '@/components/support/SupportChatWidget.vue'
 import { productService } from '@/services/productService'
 import { salesService } from '@/services/salesService'
 import { Line, Doughnut } from 'vue-chartjs'
@@ -425,6 +434,10 @@ ChartJS.register(
 
 const router = useRouter()
 const authStore = useAuthStore()
+const supportStore = useSupportAuthStore()
+supportStore.restore()
+const supportAuthOpen = ref(false)
+const isSupport = ref(!!supportStore.user)
 
 // Estados reativas
 const user = computed(() => authStore.user)
@@ -786,6 +799,13 @@ onUnmounted(() => {
     clearInterval(metricsInterval)
   }
 })
+
+function onSupportClick() {
+  // Admin sempre pode abrir a tela do chat
+  router.push('/support')
+}
+function onSupportLogin() { isSupport.value = true }
+function goToSupport() { router.push('/support') }
 </script>
 
 <style scoped>
@@ -796,6 +816,11 @@ onUnmounted(() => {
   font-family: 'Inter', system-ui, sans-serif;
   overflow-x: hidden;
 }
+
+.support-floating { position: fixed; right: 24px; bottom: 24px; display:flex; flex-direction:column; gap:8px; z-index: 1000; }
+.support-btn { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border:none; display:flex; align-items:center; justify-content:center; box-shadow: 0 12px 30px rgba(102,126,234,.35); cursor:pointer; transition: transform .2s ease, box-shadow .2s ease; }
+.support-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba(102,126,234,.45); }
+.support-enter { padding: 8px 12px; border-radius: 999px; border:1px solid var(--theme-border); background: var(--theme-surface); cursor:pointer; }
 
 /* Header */
 .dashboard-header {

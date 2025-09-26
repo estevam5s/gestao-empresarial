@@ -13,6 +13,37 @@ interface AIAnalysisResult {
     demand: string[]
     risks: string[]
   }
+  kpiCommentary?: {
+    overall?: string
+    sales?: string
+    inventory?: string
+    efficiency?: string
+  }
+  swot?: {
+    strengths?: string[]
+    weaknesses?: string[]
+    opportunities?: string[]
+    threats?: string[]
+  }
+  riskMatrix?: Array<{
+    title: string
+    severity: 'low' | 'medium' | 'high' | 'critical'
+    likelihood: 'low' | 'medium' | 'high'
+    mitigation: string
+  }>
+  roadmap?: Array<{
+    title: string
+    impact: 'low' | 'medium' | 'high'
+    effort: 'low' | 'medium' | 'high'
+    timeframe: '30d' | '60d' | '90d'
+    action: string
+  }>
+  anomaliesSummary?: string
+  scenarioAnalysis?: Array<{
+    name: string
+    impact: string
+    recommendation: string
+  }>
 }
 
 export class AIAnalyticsService {
@@ -206,6 +237,21 @@ export class AIAnalyticsService {
        - Principais métricas
        - Comparativo setorial
 
+    6. COMENTÁRIOS DE KPI (curtos):
+       - Vendas, Estoque, Eficiência e visão geral
+
+    7. MATRIZ SWOT:
+       - Forças, Fraquezas, Oportunidades, Ameaças (listas de 3-5 itens)
+
+    8. MATRIZ DE RISCOS (top 3):
+       - Título, severidade (low|medium|high|critical), probabilidade (low|medium|high), mitigação
+
+    9. ROADMAP 90 DIAS (3-5 itens):
+       - Título, impacto (low|medium|high), esforço (low|medium|high), timeframe (30d|60d|90d), ação
+
+    10. CENÁRIOS (2-3):
+       - Nome, impacto, recomendação
+
     Retorne no formato JSON:
     {
       "insights": ["insight1", "insight2", ...],
@@ -218,7 +264,13 @@ export class AIAnalyticsService {
         "sales": número_estimado,
         "demand": ["item1", "item2"],
         "risks": ["risco1", "risco2"]
-      }
+      },
+      "kpiCommentary": { "overall": string, "sales": string, "inventory": string, "efficiency": string },
+      "swot": { "strengths": [string], "weaknesses": [string], "opportunities": [string], "threats": [string] },
+      "riskMatrix": [{ "title": string, "severity": "low"|"medium"|"high"|"critical", "likelihood": "low"|"medium"|"high", "mitigation": string }],
+      "roadmap": [{ "title": string, "impact": "low"|"medium"|"high", "effort": "low"|"medium"|"high", "timeframe": "30d"|"60d"|"90d", "action": string }],
+      "scenarioAnalysis": [{ "name": string, "impact": string, "recommendation": string }],
+      "anomaliesSummary": string
     }
     `
   }
@@ -247,7 +299,13 @@ export class AIAnalyticsService {
 
   private parseAIResponse(response: any): AIAnalysisResult {
     try {
-      const parsed = JSON.parse(response.text || '{}')
+      let text = response.text || '{}'
+      // Handle responses wrapped in markdown code fences
+      const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i)
+      if (fenced && fenced[1]) {
+        text = fenced[1]
+      }
+      const parsed = JSON.parse(text)
       return {
         insights: parsed.insights || [],
         predictions: parsed.predictions || [],
@@ -260,7 +318,13 @@ export class AIAnalyticsService {
           sales: 0,
           demand: [],
           risks: []
-        }
+        },
+        kpiCommentary: parsed.kpiCommentary || {},
+        swot: parsed.swot || {},
+        riskMatrix: parsed.riskMatrix || [],
+        roadmap: parsed.roadmap || [],
+        anomaliesSummary: parsed.anomaliesSummary || '',
+        scenarioAnalysis: parsed.scenarioAnalysis || []
       }
     } catch (error) {
       console.error('Erro ao parsear resposta da IA:', error)
@@ -276,7 +340,13 @@ export class AIAnalyticsService {
           sales: 0,
           demand: [],
           risks: []
-        }
+        },
+        kpiCommentary: {},
+        swot: {},
+        riskMatrix: [],
+        roadmap: [],
+        anomaliesSummary: '',
+        scenarioAnalysis: []
       }
     }
   }
