@@ -379,9 +379,9 @@ import { productService } from '@/services/productService'
 import { salesService } from '@/services/salesService'
 import { alertsService, type SystemAlert } from '@/services/alertsService'
 import { populateTestData } from '@/utils/populateTestAlerts'
-import { initializeAlertsTable, testAlertsSystem } from '@/utils/initializeAlerts'
+// import { initializeAlertsTable, testAlertsSystem } from '@/utils/initializeAlerts'
 import { supabase, DB_TABLES } from '@/config/supabase'
-import { populateTestLogs, populateTestMovements } from '@/utils/populateTestData'
+import { populateTestLogs } from '@/utils/populateTestData'
 import { Line, Doughnut } from 'vue-chartjs'
 import { formatDistanceToNow, format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -394,7 +394,7 @@ import {
   Search, User, ChevronDown, LogOut, Zap, Package, Brain,
   BarChart3, Plus, Minus, ArrowRight, TrendingUp, TrendingDown, AlertTriangle,
   RefreshCw, CheckCircle, X, PieChart, Activity, ExternalLink,
-  Gauge, Loader2, Settings, Sliders, Users, ChefHat, Info, DollarSign, FileText,
+  Loader2, Settings, Sliders, Users, ChefHat, Info, DollarSign, FileText,
   AlertCircle, XCircle, FolderX
 } from 'lucide-vue-next'
 

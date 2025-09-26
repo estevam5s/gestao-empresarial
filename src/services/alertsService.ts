@@ -19,80 +19,8 @@ export interface SystemAlert {
   metadata?: any
 }
 
-export interface AlertRule {
-  id: string
-  name: string
-  category: string
-  condition: string
-  threshold: number
-  severity: 'critical' | 'warning' | 'info'
-  enabled: boolean
-  description: string
-}
-
 class AlertsService {
-  private readonly alertRules: AlertRule[] = [
-    {
-      id: 'low_stock',
-      name: 'Estoque Baixo',
-      category: 'estoque',
-      condition: 'current_stock <= min_stock',
-      threshold: 1,
-      severity: 'warning',
-      enabled: true,
-      description: 'Produtos com estoque abaixo do mínimo'
-    },
-    {
-      id: 'critical_stock',
-      name: 'Estoque Crítico',
-      category: 'estoque',
-      condition: 'current_stock = 0',
-      threshold: 0,
-      severity: 'critical',
-      enabled: true,
-      description: 'Produtos sem estoque'
-    },
-    {
-      id: 'high_stock',
-      name: 'Estoque Alto',
-      category: 'estoque',
-      condition: 'current_stock > max_stock',
-      threshold: 1,
-      severity: 'info',
-      enabled: true,
-      description: 'Produtos com estoque acima do máximo'
-    },
-    {
-      id: 'database_size',
-      name: 'Banco de Dados Cheio',
-      category: 'sistema',
-      condition: 'usage_percentage >= 85',
-      threshold: 85,
-      severity: 'warning',
-      enabled: true,
-      description: 'Banco de dados com uso elevado'
-    },
-    {
-      id: 'inactive_products',
-      name: 'Produtos Inativos',
-      category: 'dados',
-      condition: 'ativo = false',
-      threshold: 5,
-      severity: 'info',
-      enabled: true,
-      description: 'Muitos produtos marcados como inativos'
-    },
-    {
-      id: 'no_recent_movements',
-      name: 'Sem Movimentações',
-      category: 'sistema',
-      condition: 'no_movements_days >= 7',
-      threshold: 7,
-      severity: 'warning',
-      enabled: true,
-      description: 'Sem movimentações de estoque recentes'
-    }
-  ]
+  // Regras podem ser lidas do banco no futuro, mantidas aqui como documentação
 
   /**
    * Verifica todas as regras de alerta e gera alertas necessários

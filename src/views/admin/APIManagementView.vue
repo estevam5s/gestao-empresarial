@@ -113,8 +113,8 @@
           <div v-for="log in apiLogs" :key="log.id" class="log-item">
             <div class="log-method" :class="log.method">{{ log.method }}</div>
             <div class="log-endpoint">{{ log.endpoint }}</div>
-            <div class="log-status" :class="getStatusClass(log.status_code || log.status)">{{ log.status_code || log.status }}</div>
-            <div class="log-time">{{ formatDate(log.created_at || log.timestamp) }}</div>
+            <div class="log-status" :class="getStatusClass((log.status_code ?? log.status ?? 0))">{{ log.status_code ?? log.status }}</div>
+            <div class="log-time">{{ formatDate(log.created_at ?? log.timestamp ?? new Date()) }}</div>
           </div>
         </div>
       </div>
@@ -141,19 +141,12 @@ const apiStats = ref<APIStats>({
 })
 
 const apiKeys = ref<APIKey[]>([])
-const apiLogs = ref<APIRequest[]>([])
+const apiLogs = ref<(APIRequest & { status?: number; timestamp?: string })[]>([])
 const loading = ref(false)
 const error = ref('')
 const showPlayground = ref(false)
 
-// Estados dos modais
-const showNewKeyModal = ref(false)
-const newKeyForm = ref({
-  name: '',
-  description: '',
-  permissions: ['read'],
-  rate_limit: 1000
-})
+// Estados dos modais (reservado para futura implementação de criação via modal)
 
 // Inicialização dos dados
 onMounted(async () => {
