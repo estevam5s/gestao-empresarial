@@ -172,7 +172,7 @@ const permissions = ref([
 ])
 
 // Matriz de permissões inicial
-const rolePermissions = reactive({
+const rolePermissions = reactive<Record<string, Record<string, boolean>>>({
   admin: {
     users_view: true,
     users_create: true,
@@ -229,7 +229,7 @@ const rolePermissions = reactive({
     settings_manage: false,
     backup_manage: false
   }
-})
+} as Record<string, Record<string, boolean>>)
 
 function updatePermission(roleId: string, permissionId: string) {
   // A alteração já foi feita pelo v-model

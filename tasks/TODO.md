@@ -141,7 +141,7 @@ Deve tambem ter uma funcionalidade de tirar o relatorio, essa parte, o relatorio
 94. Substituir quaisquer declarações `var` restantes por `let` ou `const`.
 95. Adicionar atributos `key` a todos os loops `v-for`.
 96. Criar um manipulador de erros global para requisições de API.
-97. Configurar um hook de pré-commit para executar o linter automaticamente.
+97. Configurar um hook de pré-commit para executar o lter automaticamente.
 98. Documentar o propósito de cada script no `package.json`.
 99. Criar um arquivo `CONTRIBUTING.md` com diretrizes para novos desenvolvedores.
 100. Adicionar um arquivo `.editorconfig` para manter configurações de editor consistentes.
@@ -340,3 +340,81 @@ Deve tambem ter uma funcionalidade de tirar o relatorio, essa parte, o relatorio
 248. Adicionar um script `lint:css` ao `package.json` para lintar arquivos CSS.
 249. Criar um script `test:coverage` no `package.json` para gerar um relatório de cobertura de teste.
 250. Adicionar um script `generate-sitemap` ao `package.json` para gerar um arquivo sitemap.xml.
+
+---
+### Femto-Tarefas
+
+#### UI/UX
+251. Adicionar uma região `aria-live` para anunciar novas notificações.
+252. Garantir que todos os elementos `<table>` tenham uma `<caption>`.
+253. Adicionar uma cor de fundo sutil à linha da tabela ativa.
+254. Melhorar o estilo do botão "carregar mais".
+255. Adicionar um botão "limpar" ao histórico de pesquisa.
+256. Garantir que o site tenha um arquivo `humans.txt`.
+257. Adicionar uma animação sutil à barra de progresso.
+258. Melhorar o estilo da página "nossa equipe".
+259. Adicionar uma mensagem "nenhum resultado de pesquisa" à pesquisa da documentação.
+260. Garantir que o site tenha um arquivo `manifest.json` válido.
+
+#### Funcionalidade
+261. Adicionar um botão "copiar para a área de transferência" para o ID do usuário em seu perfil.
+262. Implementar uma confirmação simples de "tem certeza?" antes de excluir um produto.
+263. Adicionar um resumo de "receita total" ao dashboard.
+264. Criar uma seção simples "nossos parceiros" na página "sobre nós".
+265. Adicionar um filtro "filtrar por fornecedor" à lista de estoque.
+266. Implementar uma confirmação simples de "tem certeza?" antes de redefinir o banco de dados.
+267. Adicionar um botão "envie-nos um e-mail" que abre o cliente de e-mail padrão com o endereço de e-mail do restaurante.
+268. Criar uma seção simples "nossa história" na página "sobre nós".
+269. Adicionar um botão "rastrear pedido" ao e-mail de confirmação do pedido.
+270. Implementar um recurso simples de "compartilhar no LinkedIn" para o site do restaurante.
+
+#### Código & Manutenção
+271. Adicionar um script `test:ci` ao `package.json` para executar testes em um ambiente de CI.
+272. Criar uma função utilitária para gerar números aleatórios.
+273. Substituir qualquer uso de `innerHTML` por `textContent` sempre que possível.
+274. Adicionar comentários para explicar o propósito de cada ação da store Vuex.
+275. Criar um arquivo `.prettierignore` para excluir certos arquivos da formatação.
+276. Adicionar um hook `pre-commit` para executar `lint-staged`.
+277. Criar um arquivo `.env.local` para substituições locais.
+278. Adicionar um script `lint:style` ao `package.json` para lintar arquivos de estilo.
+279. Criar um script `test:e2e:ci` no `package.json` para executar testes e2e em um ambiente de CI.
+280. Adicionar um script `generate-favicons` ao `package.json` para gerar favicons para diferentes dispositivos.
+
+---
+### Zepto-Tarefas
+
+#### UI/UX
+281. Adicionar um `aria-label` a todos os botões de ícone.
+282. Garantir que todos os links que abrem em uma nova aba tenham um ícone indicando isso.
+283. Adicionar uma sombra sutil ao item de menu ativo.
+284. Melhorar o estilo da página "nossa história".
+285. Adicionar um botão "limpar" ao campo de entrada de arquivo para o upload da imagem do produto.
+286. Garantir que o site tenha um arquivo `browserconfig.xml` válido.
+287. Adicionar uma animação sutil ao componente de acordeão.
+288. Melhorar o estilo da página "nossos valores".
+289. Adicionar uma mensagem "nenhum item encontrado" aos relatórios quando não houver dados.
+290. Garantir que o site tenha um `apple-touch-icon.png` válido.
+
+#### Funcionalidade
+291. Adicionar um botão "copiar para a área de transferência" para o SKU do produto na visualização de detalhes do produto.
+292. Implementar uma confirmação simples de "tem certeza?" antes de excluir um relatório.
+293. Adicionar uma contagem de "total de produtos" ao dashboard de estoque.
+294. Criar uma seção simples "nossa filosofia" na página "sobre nós".
+295. Adicionar um filtro "filtrar por tags" à lista de produtos.
+296. Implementar uma confirmação simples de "tem certeza?" antes de limpar o cache.
+297. Adicionar um botão "siga-nos no Instagram" no rodapé.
+298. Criar uma seção simples "nossos prêmios" na página "sobre nós".
+299. Adicionar um botão "reordenar" ao histórico de pedidos.
+300. Implementar um recurso simples de "compartilhar no Pinterest" para o site do restaurante.
+
+#### Código & Manutenção
+301. Adicionar um script `validate` ao `package.json` para validar os arquivos de configuração do projeto.
+302. Criar uma função utilitária para converter unidades (ex: kg para g).
+303. Substituir quaisquer hooks de ciclo de vida depreciados em componentes Vue.
+304. Adicionar comentários para explicar o propósito de cada middleware.
+305. Criar um arquivo `.commitlintrc.js` para impor mensagens de commit convencionais.
+306. Adicionar um hook `pre-push` para executar testes antes de enviar para o repositório remoto.
+307. Criar um arquivo `.env.production.local` para substituições locais de produção.
+308. Adicionar um script `lint:markdown` ao `package.json` para lintar arquivos Markdown.
+309. Criar um script `test:regression` no `package.json` para executar testes de regressão.
+310. Adicionar um script `generate-icons` ao `package.json` para gerar uma fonte de ícones a partir de arquivos SVG.

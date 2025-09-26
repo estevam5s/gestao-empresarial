@@ -1,4 +1,4 @@
-import { supabase, DB_TABLES } from '@/config/supabase'
+import { supabase } from '@/config/supabase'
 
 export interface SupportConversation {
   id: string

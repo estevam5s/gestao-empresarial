@@ -13,7 +13,9 @@ export interface SystemLog {
   user_agent?: string
   severity: 'info' | 'warning' | 'error' | 'critical' | 'debug'
   category: 'auth' | 'crud' | 'system' | 'security' | 'performance' | 'user' | 'api' | 'database' | 'command'
-  timestamp: string
+  created_at?: string
+  // Compatibilidade com versões antigas
+  timestamp?: string
   session_id?: string
   execution_time?: number
   status: 'success' | 'failed' | 'pending'
@@ -68,7 +70,7 @@ class LogService {
 
   private getCurrentUser() {
     const user = authService.getCurrentUser()
-    return user || { id: 'anonymous', username: 'anonymous' }
+    return user || ({ id: 'anonymous', username: 'anonymous' } as any)
   }
 
   private getUserInfo() {
@@ -93,15 +95,14 @@ class LogService {
       const userInfo = this.getUserInfo()
 
       const log: SystemLog = {
-        user_id: user.id,
-        username: user.username || user.email || 'unknown',
+        user_id: (user as any).id,
+        username: (user as any)?.username ?? (user as any)?.email ?? 'unknown',
         action: logData.action || 'unknown_action',
         resource: logData.resource || 'unknown_resource',
         resource_id: logData.resource_id,
         details: logData.details || {},
         severity: logData.severity || 'info',
         category: logData.category || 'system',
-        timestamp: new Date().toISOString(),
         status: logData.status || 'success',
         error_message: logData.error_message,
         metadata: logData.metadata || {},
@@ -134,10 +135,10 @@ class LogService {
 
       // Aplicar filtros
       if (query.startDate) {
-        supabaseQuery = supabaseQuery.gte('timestamp', query.startDate)
+        supabaseQuery = supabaseQuery.gte('created_at', query.startDate)
       }
       if (query.endDate) {
-        supabaseQuery = supabaseQuery.lte('timestamp', query.endDate)
+        supabaseQuery = supabaseQuery.lte('created_at', query.endDate)
       }
       if (query.severity && query.severity.length > 0) {
         supabaseQuery = supabaseQuery.in('severity', query.severity)
@@ -162,7 +163,7 @@ class LogService {
       const limit = query.limit || 50
       const offset = query.offset || 0
       supabaseQuery = supabaseQuery
-        .order('timestamp', { ascending: false })
+        .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1)
 
       const { data, error, count } = await supabaseQuery
@@ -359,7 +360,7 @@ class LogService {
     return {
       message: `Exibindo ${logs.length} logs mais recentes`,
       data: logs.map(log => ({
-        timestamp: log.timestamp,
+        timestamp: log.created_at || log.timestamp,
         severity: log.severity,
         action: log.action,
         user: log.username,
@@ -638,7 +639,7 @@ com foco em ${this.getPriorityAreas(stats)}.
     if (criticalLogs.length > 0) {
       analysis += `**${criticalLogs.length} EVENTOS CRÍTICOS DETECTADOS:**\n`
       criticalLogs.slice(0, 3).forEach((log, i) => {
-        analysis += `${i + 1}. ${log.action} - ${log.resource} (${new Date(log.timestamp).toLocaleString('pt-BR')})\n`
+        analysis += `${i + 1}. ${log.action} - ${log.resource} (${new Date(log.created_at || log.timestamp || '').toLocaleString('pt-BR')})\n`
       })
     }
 
@@ -705,7 +706,7 @@ com foco em ${this.getPriorityAreas(stats)}.
       date.setDate(date.getDate() - i)
       const dateStr = date.toISOString().split('T')[0]
 
-      const dayLogs = logs.filter(log => log.timestamp.startsWith(dateStr))
+      const dayLogs = logs.filter(log => (log.created_at || log.timestamp || '').startsWith(dateStr))
       const errors = dayLogs.filter(log => log.severity === 'error' || log.severity === 'critical').length
 
       timeline.push({
@@ -800,11 +801,11 @@ com foco em ${this.getPriorityAreas(stats)}.
       const { data, error } = await supabase
         .from(DB_TABLES.LOGS)
         .delete()
-        .lt('timestamp', cutoffDate.toISOString())
+        .lt('created_at', cutoffDate.toISOString())
 
       if (error) throw error
 
-      const deletedCount = data?.length || 0
+      const deletedCount = (data as unknown[] | null)?.length ?? 0
 
       await this.createLog({
         action: 'cleanup_old_logs',

@@ -3,7 +3,7 @@
  */
 
 import { App } from 'vue'
-import { logInterceptor, useLogInterceptor } from '@/middleware/logInterceptor'
+import { logInterceptor } from '@/middleware/logInterceptor'
 import { logService } from '@/services/logService'
 
 export default {
@@ -33,9 +33,9 @@ export default {
         }
       },
 
-      errorCaptured(err: Error, instance: any, info: string) {
+      errorCaptured(err: unknown, instance: any, info: string): boolean | void {
         // Captura erros em componentes
-        logInterceptor.logError(err, 'component_error', {
+        logInterceptor.logError(err as Error, 'component_error', {
           component: instance?.$options.name,
           errorInfo: info,
           route: this.$route?.path

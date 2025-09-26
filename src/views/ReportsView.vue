@@ -930,7 +930,10 @@ function renderMarkdown(md: string | undefined): string {
 
   // Lists: convert lines starting with - or * into <ul><li>
   html = html.replace(/(^|\n)([-*] .*(?:\n[-*] .*)*)/g, (_m, p1, p2) => {
-    const items = p2.split(/\n/).map((line: string) => line.replace(/^[-*]\s+/, '')).map(li => `<li>${li}</li>`).join('')
+    const items = p2.split(/\n/)
+      .map((line: string) => line.replace(/^[-*]\s+/, ''))
+      .map((li: string) => `<li>${li}</li>`)
+      .join('')
     return `${p1}<ul>${items}</ul>`
   })
 

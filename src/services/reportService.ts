@@ -143,7 +143,7 @@ class ReportService {
       const analytics = await this.generateAnalytics(logs, statistics)
 
       // Gera recomendações
-      const recommendations = this.generateRecommendations(statistics, logs, config.template)
+      const recommendations = this.generateRecommendations(statistics, logs)
 
       // Monta o relatório
       const reportData: ReportData = {
@@ -457,7 +457,7 @@ class ReportService {
       const logsData = [
         ['Timestamp', 'Severidade', 'Categoria', 'Ação', 'Usuário', 'Recurso', 'Status', 'Detalhes'],
         ...reportData.logs.slice(0, 1000).map(log => [
-          log.timestamp,
+          log.created_at || log.timestamp,
           log.severity,
           log.category,
           log.action,
@@ -817,7 +817,7 @@ class ReportService {
         username,
         totalActions: userActions.length,
         errorRate: userActions.length > 0 ? (errorActions.length / userActions.length) * 100 : 0,
-        lastActivity: Math.max(...userActions.map(log => new Date(log.timestamp).getTime()))
+        lastActivity: Math.max(...userActions.map(log => new Date(log.created_at || log.timestamp || '').getTime()))
       }
     })
 
@@ -848,8 +848,7 @@ class ReportService {
    */
   private generateRecommendations(
     statistics: LogStatistics,
-    logs: SystemLog[],
-    template: string
+    logs: SystemLog[]
   ): Array<any> {
     const recommendations: Array<any> = []
 
@@ -1022,7 +1021,7 @@ class ReportService {
     const distribution = new Array(24).fill(0).map((_, index) => ({ hour: index, count: 0 }))
 
     logs.forEach(log => {
-      const hour = new Date(log.timestamp).getHours()
+      const hour = new Date(log.created_at || log.timestamp || '').getHours()
       distribution[hour].count++
     })
 
@@ -1079,8 +1078,8 @@ class ReportService {
       template: 'executive'
     }
 
-    const reportData = await this.generateReport(config)
-    return await logService.generateTechnicalReport(days)
+    const report = await this.generateReport(config)
+    return JSON.stringify(report)
   }
 }
 

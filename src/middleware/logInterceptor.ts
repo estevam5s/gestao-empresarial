@@ -4,7 +4,6 @@
  */
 
 import { logService } from '@/services/logService'
-import { authService } from '@/services/authService'
 
 // Interface para o contexto de interceptação
 export interface LogInterceptorContext {
@@ -350,7 +349,7 @@ class LogInterceptor {
   /**
    * Categoriza a requisição
    */
-  private categorizeRequest(config: any): string {
+  private categorizeRequest(config: any): 'auth' | 'crud' | 'system' | 'security' | 'performance' | 'user' | 'api' | 'database' | 'command' {
     const url = config.url?.toLowerCase() || ''
     const method = config.method?.toUpperCase() || ''
 

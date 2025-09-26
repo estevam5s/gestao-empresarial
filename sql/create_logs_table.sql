@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.logs (
     user_agent TEXT,
     severity TEXT NOT NULL DEFAULT 'info' CHECK (severity IN ('info', 'warning', 'error', 'critical', 'debug')),
     category TEXT NOT NULL DEFAULT 'system' CHECK (category IN ('auth', 'crud', 'system', 'security', 'performance', 'user', 'api', 'database', 'command')),
-    timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    -- Usamos created_at para o momento do log para evitar conflitos com palavra-chave timestamp
     session_id TEXT,
     execution_time INTEGER, -- em millisegundos
     status TEXT DEFAULT 'success' CHECK (status IN ('success', 'failed', 'pending')),
@@ -26,8 +26,30 @@ CREATE TABLE IF NOT EXISTS public.logs (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Compatibilidade: garantir colunas essenciais em bancos já existentes
+-- Evita erro "column 'severity' does not exist" ao criar índices em bases antigas
+ALTER TABLE public.logs
+    ADD COLUMN IF NOT EXISTS user_id TEXT NOT NULL DEFAULT 'system',
+    ADD COLUMN IF NOT EXISTS username TEXT NOT NULL DEFAULT 'system',
+    ADD COLUMN IF NOT EXISTS action TEXT NOT NULL DEFAULT 'unknown',
+    ADD COLUMN IF NOT EXISTS resource TEXT NOT NULL DEFAULT 'system',
+    ADD COLUMN IF NOT EXISTS resource_id TEXT,
+    ADD COLUMN IF NOT EXISTS details JSONB DEFAULT '{}'::jsonb,
+    ADD COLUMN IF NOT EXISTS ip_address TEXT,
+    ADD COLUMN IF NOT EXISTS user_agent TEXT,
+    ADD COLUMN IF NOT EXISTS severity TEXT NOT NULL DEFAULT 'info',
+    ADD COLUMN IF NOT EXISTS category TEXT NOT NULL DEFAULT 'system',
+    ADD COLUMN IF NOT EXISTS session_id TEXT,
+    ADD COLUMN IF NOT EXISTS execution_time INTEGER,
+    ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'success',
+    ADD COLUMN IF NOT EXISTS error_message TEXT,
+    ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb,
+    ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+
 -- Índices para otimização de consultas
-CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON public.logs(timestamp DESC);
+-- Índice por data de criação (substitui o antigo por timestamp)
+CREATE INDEX IF NOT EXISTS idx_logs_created_at ON public.logs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_logs_user_id ON public.logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_logs_severity ON public.logs(severity);
 CREATE INDEX IF NOT EXISTS idx_logs_category ON public.logs(category);
@@ -37,9 +59,9 @@ CREATE INDEX IF NOT EXISTS idx_logs_status ON public.logs(status);
 CREATE INDEX IF NOT EXISTS idx_logs_session ON public.logs(session_id);
 
 -- Índices compostos para consultas frequentes
-CREATE INDEX IF NOT EXISTS idx_logs_severity_timestamp ON public.logs(severity, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_logs_category_timestamp ON public.logs(category, timestamp DESC);
-CREATE INDEX IF NOT EXISTS idx_logs_user_timestamp ON public.logs(user_id, timestamp DESC);
+CREATE INDEX IF NOT EXISTS idx_logs_severity_created_at ON public.logs(severity, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_logs_category_created_at ON public.logs(category, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_logs_user_created_at ON public.logs(user_id, created_at DESC);
 
 -- Índice para busca de texto em detalhes
 CREATE INDEX IF NOT EXISTS idx_logs_details_gin ON public.logs USING GIN (details);
@@ -119,7 +141,6 @@ CREATE POLICY "Admins can delete old logs" ON public.logs
             AND admin_users.role = 'admin'
             AND admin_users.is_active = true
         )
-        AND timestamp < NOW() - INTERVAL '90 days' -- Só permite deletar logs com mais de 90 dias
     );
 
 -- ================================================
@@ -132,14 +153,18 @@ RETURNS INTEGER AS $$
 DECLARE
     deleted_count INTEGER;
 BEGIN
-    DELETE FROM public.logs
-    WHERE timestamp < NOW() - (days_to_keep || ' days')::INTERVAL
-    AND EXISTS (
+    -- Garante que apenas administradores podem executar a limpeza
+    IF NOT EXISTS (
         SELECT 1 FROM public.admin_users
         WHERE admin_users.id::text = auth.uid()::text
         AND admin_users.role = 'admin'
-    );
-
+    ) THEN
+        RAISE EXCEPTION 'Permission denied to cleanup logs. Admin role required.';
+    END IF;
+    
+    DELETE FROM public.logs
+    WHERE created_at < NOW() - (days_to_keep || ' days')::INTERVAL;
+    
     GET DIAGNOSTICS deleted_count = ROW_COUNT;
 
     -- Log da operação de limpeza
@@ -152,8 +177,8 @@ BEGIN
         category,
         severity
     ) VALUES (
-        COALESCE(auth.uid()::text, 'system'),
-        COALESCE((SELECT username FROM public.admin_users WHERE id::text = auth.uid()::text), 'system'),
+        COALESCE(auth.uid()::text, '00000000-0000-0000-0000-000000000000'),
+        COALESCE((SELECT username FROM public.admin_users WHERE id::text = auth.uid()::text LIMIT 1), 'system'),
         'cleanup_old_logs',
         'system_maintenance',
         json_build_object('days_to_keep', days_to_keep, 'deleted_count', deleted_count)::jsonb,
@@ -171,50 +196,50 @@ RETURNS JSON AS $$
 DECLARE
     result JSON;
 BEGIN
-    SELECT json_build_object(
-        'total_logs', COUNT(*),
-        'error_rate', ROUND((COUNT(*) FILTER (WHERE severity IN ('error', 'critical'))::DECIMAL / COUNT(*)) * 100, 2),
-        'warning_rate', ROUND((COUNT(*) FILTER (WHERE severity = 'warning')::DECIMAL / COUNT(*)) * 100, 2),
-        'critical_issues', COUNT(*) FILTER (WHERE severity = 'critical'),
-        'avg_execution_time', ROUND(AVG(execution_time), 2),
-        'top_users', (
-            SELECT json_agg(json_build_object('username', username, 'count', cnt))
-            FROM (
-                SELECT username, COUNT(*) as cnt
-                FROM public.logs
-                WHERE timestamp >= NOW() - (days || ' days')::INTERVAL
-                GROUP BY username
-                ORDER BY COUNT(*) DESC
-                LIMIT 5
-            ) top_users_subquery
-        ),
-        'severity_distribution', (
-            SELECT json_object_agg(severity, cnt)
-            FROM (
-                SELECT severity, COUNT(*) as cnt
-                FROM public.logs
-                WHERE timestamp >= NOW() - (days || ' days')::INTERVAL
-                GROUP BY severity
-            ) severity_subquery
-        ),
-        'category_distribution', (
-            SELECT json_object_agg(category, cnt)
-            FROM (
-                SELECT category, COUNT(*) as cnt
-                FROM public.logs
-                WHERE timestamp >= NOW() - (days || ' days')::INTERVAL
-                GROUP BY category
-            ) category_subquery
-        )
-    ) INTO result
-    FROM public.logs
-    WHERE timestamp >= NOW() - (days || ' days')::INTERVAL
-    AND EXISTS (
+    -- Garante que apenas administradores ou gerentes podem ver as estatísticas
+    IF NOT EXISTS (
         SELECT 1 FROM public.admin_users
         WHERE admin_users.id::text = auth.uid()::text
         AND admin_users.role IN ('admin', 'manager')
-    );
+    ) THEN
+        RAISE EXCEPTION 'Permission denied to view log statistics. Admin or Manager role required.';
+    END IF;
 
+    WITH filtered_logs AS (
+        SELECT *
+        FROM public.logs
+        WHERE created_at >= NOW() - (days || ' days')::INTERVAL
+    )
+    SELECT json_build_object( -- A consulta principal não precisa de um FROM, pois usa a CTE
+        'total_logs', (SELECT COUNT(*) FROM filtered_logs),
+        'error_rate', ROUND((SELECT COUNT(*) FROM filtered_logs WHERE severity IN ('error', 'critical'))::DECIMAL / GREATEST( (SELECT COUNT(*) FROM filtered_logs), 1) * 100, 2),
+        'warning_rate', ROUND((SELECT COUNT(*) FROM filtered_logs WHERE severity = 'warning')::DECIMAL / GREATEST( (SELECT COUNT(*) FROM filtered_logs), 1) * 100, 2),
+        'critical_issues', (SELECT COUNT(*) FROM filtered_logs WHERE severity = 'critical'),
+        'avg_execution_time', ROUND((SELECT AVG(execution_time) FROM filtered_logs), 2),
+        'top_users', (
+            SELECT json_agg(t)
+            FROM (
+                SELECT username, COUNT(*) AS count
+                FROM filtered_logs
+                GROUP BY username
+                ORDER BY count DESC
+                LIMIT 10
+            ) t
+        ),
+        'severity_distribution', (
+            SELECT json_object_agg(severity, count)
+            FROM (
+                SELECT severity, COUNT(*) AS count FROM filtered_logs GROUP BY severity
+            ) t
+        ),
+        'category_distribution', (
+            SELECT json_object_agg(category, count)
+            FROM (
+                SELECT category, COUNT(*) AS count FROM filtered_logs GROUP BY category
+            ) t
+        ))
+    INTO result;
+    
     RETURN COALESCE(result, '{}'::json);
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -233,11 +258,11 @@ INSERT INTO public.logs (
     category,
     severity,
     status
-) VALUES
-    ('system', 'system', 'table_created', 'database', '{"table": "logs", "columns": 16}', 'system', 'info', 'success'),
-    ('system', 'system', 'indexes_created', 'database', '{"indexes": 8, "performance": "optimized"}', 'system', 'info', 'success'),
-    ('system', 'system', 'rls_enabled', 'security', '{"policies": 4, "security_level": "high"}', 'security', 'info', 'success'),
-    ('system', 'system', 'functions_created', 'database', '{"functions": 3, "type": "utility"}', 'system', 'info', 'success')
+VALUES
+    ('00000000-0000-0000-0000-000000000000', 'system', 'table_created', 'database', '{"table": "logs", "columns": 16}', 'system', 'info', 'success'),
+    ('00000000-0000-0000-0000-000000000000', 'system', 'indexes_created', 'database', '{"indexes": 8, "performance": "optimized"}', 'system', 'info', 'success'),
+    ('00000000-0000-0000-0000-000000000000', 'system', 'rls_enabled', 'security', '{"policies": 4, "security_level": "high"}', 'security', 'info', 'success'),
+    ('00000000-0000-0000-0000-000000000000', 'system', 'functions_created', 'database', '{"functions": 3, "type": "utility"}', 'system', 'info', 'success')
 ON CONFLICT DO NOTHING;
 
 -- ================================================

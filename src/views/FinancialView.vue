@@ -721,13 +721,13 @@ const forecastChartData = computed(() => {
 
 const stackedOptions = {
   responsive: true,
-  plugins: { legend: { position: 'top' } },
+  plugins: { legend: { position: 'top' as const } },
   scales: { x: { stacked: true }, y: { stacked: true } }
 }
 
 const scatterOptions = { responsive: true, plugins: { legend: { display: false } } }
 const radarOptions = { responsive: true, plugins: { legend: { display: false } }, scales: { r: { beginAtZero: true, suggestedMax: 100 } } }
-const forecastOptions = { responsive: true, plugins: { legend: { position: 'top' } } }
+const forecastOptions = { responsive: true, plugins: { legend: { position: 'top' as const } } }
 
 const barChartOptions = {
   responsive: true,

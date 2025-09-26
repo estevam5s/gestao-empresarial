@@ -404,7 +404,7 @@ export class AdvancedExportService {
     pdf.text('📈 Análise Visual', 20, currentY)
     currentY += 15
 
-    const chartElems: HTMLElement[] = Array.from(charts as any).slice(0, 2)
+    const chartElems = (Array.from(charts as HTMLElement[] | NodeListOf<HTMLElement>) as HTMLElement[]).slice(0, 2)
     for (const chart of chartElems) {
       try {
         const canvas = await html2canvas(chart, { background: '#ffffff' })

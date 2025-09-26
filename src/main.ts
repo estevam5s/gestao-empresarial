@@ -4,7 +4,8 @@ import App from './App.vue'
 import router from './router'
 import logInterceptorPlugin from '@/plugins/logInterceptor'
 import { initializeLogsSystem } from '@/setup/initializeLogsSystem'
-import AvatarDebug from '@/utils/debugAvatar'
+// Import apenas para efeitos colaterais (expor em window)
+import '@/utils/debugAvatar'
 import LogSystemInitializer from '@/utils/initializeLogs'
 
 const app = createApp(App)
@@ -38,4 +39,3 @@ console.log('   window.AvatarDebug.checkAvatarColumn() - Verificar coluna avatar
 console.log('   window.AvatarDebug.checkAvatarBucket() - Verificar bucket no Supabase Storage')
 console.log('   window.LogSystemInitializer.runFullDiagnostic() - Diagnóstico completo do sistema de logs')
 console.log('   window.LogSystemInitializer.createSampleLogs() - Criar logs de exemplo')
-

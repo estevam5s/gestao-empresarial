@@ -15,7 +15,7 @@ export class LogSystemInitializer {
     try {
       console.log('🔍 Verificando existência da tabela de logs...')
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from(DB_TABLES.LOGS)
         .select('id')
         .limit(1)
@@ -39,7 +39,7 @@ export class LogSystemInitializer {
   static async checkRLSPolicies(): Promise<boolean> {
     try {
       // Tentar uma operação que requer RLS
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from(DB_TABLES.LOGS)
         .select('count(*)')
         .limit(1)

@@ -375,6 +375,7 @@ const formData = ref({
   username: '',
   email: '',
   role: 'admin',
+  avatar_url: '',
   preferences: {
     emailNotifications: true,
     pushNotifications: true,
@@ -594,7 +595,7 @@ async function loadProfile() {
       email: profile.email,
       role: profile.role,
       preferences: profile.preferences,
-      avatar_url: profile.avatar_url // ← Importante incluir o avatar_url
+      avatar_url: profile.avatar_url || '' // ← Importante incluir o avatar_url
     }
 
     // Salvar dados originais (incluindo avatar_url)

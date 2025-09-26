@@ -224,7 +224,7 @@ const showCreateUser = ref(false)
 const showEditUser = ref(false)
 const editingUser = ref<any>(null)
 
-const userForm = ref({
+const userForm = ref<{ id: number | null; name: string; email: string; password: string; role: string; status: string}>({
   id: null,
   name: '',
   email: '',
@@ -400,11 +400,12 @@ function closeModals() {
 function saveUser() {
   if (showCreateUser.value) {
     // Criar novo usuário
+    const { id: _ignoreId, ...userData } = userForm.value
     const newUser = {
       id: Math.max(...allUsers.value.map(u => u.id)) + 1,
-      ...userForm.value,
+      ...userData,
       avatar_url: null,
-      last_login: null,
+      last_login: new Date(),
       created_at: new Date()
     }
     allUsers.value.push(newUser)

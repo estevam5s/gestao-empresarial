@@ -97,7 +97,7 @@ export class LogsSystemInitializer {
 
     // Verifica se o Supabase está configurado
     try {
-      const { data } = await logService.getLogs({ limit: 1 })
+      await logService.getLogs({ limit: 1 })
       console.log('✅ Conexão com banco de dados funcionando')
     } catch (error) {
       console.warn('⚠️  Aviso: Conexão com banco pode estar indisponível, usando fallback local')
@@ -307,7 +307,7 @@ export class LogsSystemInitializer {
       }
 
       // Detectar acessos de IPs suspeitos
-      if (logData.details?.ip && logData.category === 'auth' && logData.action.includes('login')) {
+      if (logData.details?.ip && logData.category === 'auth' && (logData.action ?? '').includes('login')) {
         const suspiciousIPs = ['127.0.0.1', '0.0.0.0'] // IPs para monitorar
         if (suspiciousIPs.includes(logData.details.ip)) {
           await originalCreateLog({
@@ -467,7 +467,7 @@ export class LogsSystemInitializer {
         isHealthy: stats.errorRate < 10 && stats.criticalIssues === 0,
         statistics: stats,
         recentActivity: recentLogs.data.length,
-        lastActivity: recentLogs.data[0]?.timestamp,
+        lastActivity: recentLogs.data[0]?.created_at ?? recentLogs.data[0]?.timestamp,
         uptime: Date.now() - (window.sessionStartTime || Date.now())
       }
     } catch (error) {

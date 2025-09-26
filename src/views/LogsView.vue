@@ -193,8 +193,8 @@
             <tr v-for="log in logs" :key="log.id || Math.random()" :class="getSeverityClass(log.severity)">
               <td class="timestamp-cell">
                 <div class="timestamp-container">
-                  <span class="date">{{ formatDate(log.timestamp) }}</span>
-                  <span class="time">{{ formatTime(log.timestamp) }}</span>
+                  <span class="date">{{ formatDate(log.created_at || log.timestamp || '') }}</span>
+                  <span class="time">{{ formatTime(log.created_at || log.timestamp || '') }}</span>
                 </div>
               </td>
               <td>
@@ -312,7 +312,7 @@
             <strong>ID:</strong> {{ selectedLog.id || 'N/A' }}
           </div>
           <div class="detail-row">
-            <strong>Timestamp:</strong> {{ formatFullDateTime(selectedLog.timestamp) }}
+            <strong>Timestamp:</strong> {{ formatFullDateTime(selectedLog.created_at || selectedLog.timestamp || '') }}
           </div>
           <div class="detail-row">
             <strong>Usuário:</strong> {{ selectedLog.username || 'Sistema' }}
@@ -384,7 +384,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick, onBeforeUnmount } from 'vue'
-import { logService, type SystemLog, type LogQuery, type LogStatistics, type CommandResult } from '@/services/logService'
+import { logService, type SystemLog, type LogStatistics, type CommandResult } from '@/services/logService'
 
 // Estados principais
 const logs = ref<SystemLog[]>([])
