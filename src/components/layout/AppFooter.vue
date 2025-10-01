@@ -87,12 +87,13 @@
 
             <!-- QR Code -->
             <div class="qr-section">
-              <button @click="downloadViaQR" class="qr-code qr-clickable" title="Clique para baixar o APK">
-                <div class="qr-pattern">
+              <button @click="downloadViaQR" class="qr-code qr-clickable" title="Clique para expandir o QR Code">
+                <img v-if="qrCodeDataUrl" :src="qrCodeDataUrl" alt="QR Code" class="qr-image-small" />
+                <div v-else class="qr-pattern">
                   <div class="qr-dot" v-for="i in 25" :key="i"></div>
                 </div>
               </button>
-              <span class="qr-text">Clique ou escaneie para baixar</span>
+              <span class="qr-text">Clique para expandir e escanear</span>
             </div>
           </div>
         </div>
@@ -260,19 +261,73 @@
         </div>
       </div>
     </div>
+
+    <!-- QR Code Modal -->
+    <Transition name="modal-fade">
+      <div v-if="showQRModal" class="qr-modal-overlay" @click="closeQRModal">
+        <div class="qr-modal-content" @click.stop>
+          <button class="qr-modal-close" @click="closeQRModal" aria-label="Fechar">
+            <X :size="24" />
+          </button>
+
+          <div class="qr-modal-header">
+            <Smartphone :size="32" class="qr-modal-icon" />
+            <h3>Escaneie para Baixar</h3>
+            <p>Aponte a câmera do seu celular para o QR Code</p>
+          </div>
+
+          <div class="qr-modal-body">
+            <div class="qr-code-container">
+              <img v-if="qrCodeDataUrl" :src="qrCodeDataUrl" alt="QR Code para download" class="qr-image-large" />
+              <div v-else class="qr-loading">
+                <Package :size="48" class="qr-loading-icon" />
+                <p>Gerando QR Code...</p>
+              </div>
+            </div>
+
+            <div class="qr-info">
+              <div class="qr-info-item">
+                <Download :size="20" />
+                <div>
+                  <strong>Arquivo:</strong>
+                  <span>{{ apkFileName }}</span>
+                </div>
+              </div>
+              <div class="qr-info-item">
+                <Package :size="20" />
+                <div>
+                  <strong>Versão:</strong>
+                  <span>v{{ appVersion }}</span>
+                </div>
+              </div>
+            </div>
+
+            <button @click="downloadAPK" class="qr-download-button">
+              <Download :size="20" />
+              <span>Ou clique para baixar direto</span>
+            </button>
+          </div>
+
+          <div class="qr-modal-footer">
+            <p>📱 Compatível com Android 5.0 ou superior</p>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </footer>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import {
   Smartphone, Package, Zap, Shield, BarChart3, Navigation, Home, ExternalLink,
   Globe, LifeBuoy, BookOpen, FileText, Video, Headphones, Download,
   MessageCircle, Mail, Phone, MapPin, Clock, Linkedin, Github, Instagram,
-  Youtube, Heart
+  Youtube, Heart, X
 } from 'lucide-vue-next'
+import QRCode from 'qrcode'
 
-const appVersion = (import.meta as any).env?.VITE_APP_VERSION || '2.0.0'
+const appVersion = (import.meta as any).env?.VITE_APP_VERSION || '1.0.0'
 const year = new Date().getFullYear()
 
 // Ícone/Logo: coloque o arquivo em /public/images/site-icon.png
@@ -286,11 +341,29 @@ function onLogoError(e: Event) {
   }
 }
 
-// APK Download URL - Arquivo local do aplicativo
-const apkDownloadUrl = '/app/gestao_estoque.apk'
-const apkFileName = 'GestaoZe_v' + appVersion + '.apk'
+// APK Download URL - GitHub Releases
+const apkDownloadUrl = 'https://github.com/estevam5s/gestao-estoque-vue/releases/download/v1.0.0/gestao_estoque.apk'
+const apkFileName = 'gestao_estoque.apk'
 
-// URLs das lojas (opcional, mantém para futuro)
+// Estado do modal do QR Code
+const showQRModal = ref(false)
+const qrCodeDataUrl = ref('')
+
+// Gerar QR Code ao montar o componente
+onMounted(async () => {
+  try {
+    qrCodeDataUrl.value = await QRCode.toDataURL(apkDownloadUrl, {
+      width: 300,
+      margin: 2,
+      color: {
+        dark: '#000000',
+        light: '#FFFFFF'
+      }
+    })
+  } catch (error) {
+    console.error('Erro ao gerar QR Code:', error)
+  }
+})
 
 // Função para download direto do APK com notificação
 async function downloadAPK() {
@@ -298,20 +371,15 @@ async function downloadAPK() {
     console.log('📱 Iniciando download do APK:', apkFileName)
     console.log('📂 URL:', apkDownloadUrl)
 
-    // Verificar se o arquivo existe antes de baixar
-    const response = await fetch(apkDownloadUrl, { method: 'HEAD' })
-
-    if (!response.ok) {
-      throw new Error(`APK não encontrado (${response.status})`)
-    }
-
     // Mostrar notificação de sucesso
-    showNotification('📥 Download iniciado!', 'O arquivo APK será baixado em instantes...', 'success')
+    showNotification('📥 Download iniciado!', 'O arquivo APK será baixado do GitHub...', 'success')
 
     // Criar elemento de link temporário para download
     const link = document.createElement('a')
     link.href = apkDownloadUrl
     link.download = apkFileName
+    link.target = '_blank'
+    link.rel = 'noopener noreferrer'
     link.style.display = 'none'
 
     // Adicionar ao DOM, clicar e remover
@@ -331,7 +399,7 @@ async function downloadAPK() {
     // Mostrar notificação de erro
     showNotification(
       '⚠️ Erro no download',
-      'Tentando método alternativo...',
+      'Abrindo página de download...',
       'warning'
     )
 
@@ -342,10 +410,15 @@ async function downloadAPK() {
   }
 }
 
-// Função para download via QR Code
+// Função para abrir modal do QR Code
 function downloadViaQR() {
-  showNotification('📱 QR Code', 'Iniciando download do aplicativo...', 'info')
-  downloadAPK()
+  showQRModal.value = true
+  showNotification('📱 QR Code aberto!', 'Escaneie com seu celular para baixar', 'info')
+}
+
+// Função para fechar modal do QR Code
+function closeQRModal() {
+  showQRModal.value = false
 }
 
 // Função auxiliar para mostrar notificações
@@ -456,6 +529,11 @@ const siteDescription = (import.meta as any).env?.VITE_APP_DESCRIPTION || 'Plata
 .qr-clickable {
   cursor: pointer;
   transition: all 0.3s ease;
+  background: white;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .qr-clickable:hover {
@@ -465,6 +543,13 @@ const siteDescription = (import.meta as any).env?.VITE_APP_DESCRIPTION || 'Plata
 
 .qr-clickable:active {
   transform: scale(0.98);
+}
+
+.qr-image-small {
+  width: 120px;
+  height: 120px;
+  display: block;
+  border-radius: 8px;
 }
 
 /* Indicador de download */
@@ -479,5 +564,305 @@ const siteDescription = (import.meta as any).env?.VITE_APP_DESCRIPTION || 'Plata
 
 .badge-link:active .badge-icon {
   animation: pulse 0.5s ease-in-out;
+}
+
+/* QR Code Modal */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-from .qr-modal-content,
+.modal-fade-leave-to .qr-modal-content {
+  transform: scale(0.9) translateY(-20px);
+}
+
+.qr-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.qr-modal-content {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: modalSlideUp 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.qr-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: white;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.qr-modal-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.qr-modal-header {
+  text-align: center;
+  padding: 32px 32px 24px;
+  color: white;
+}
+
+.qr-modal-icon {
+  margin: 0 auto 16px;
+  display: block;
+  animation: floatIcon 3s ease-in-out infinite;
+}
+
+@keyframes floatIcon {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.qr-modal-header h3 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.qr-modal-header p {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.qr-modal-body {
+  padding: 0 32px 32px;
+}
+
+.qr-code-container {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.qr-image-large {
+  width: 300px;
+  height: 300px;
+  display: block;
+  animation: zoomIn 0.4s ease;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.qr-loading {
+  text-align: center;
+  color: #666;
+}
+
+.qr-loading-icon {
+  margin: 0 auto 16px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.qr-info {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.qr-info-item {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: white;
+}
+
+.qr-info-item > svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
+.qr-info-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.qr-info-item strong {
+  font-size: 12px;
+  opacity: 0.8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.qr-info-item span {
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.qr-download-button {
+  width: 100%;
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 16px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.qr-download-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  background: #f8f9ff;
+}
+
+.qr-download-button:active {
+  transform: translateY(0);
+}
+
+.qr-modal-footer {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 16px 32px;
+  text-align: center;
+  color: white;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.qr-modal-footer p {
+  margin: 0;
+}
+
+/* Responsividade */
+@media (max-width: 640px) {
+  .qr-modal-content {
+    margin: 20px;
+  }
+
+  .qr-modal-header {
+    padding: 24px 20px 16px;
+  }
+
+  .qr-modal-header h3 {
+    font-size: 24px;
+  }
+
+  .qr-modal-body {
+    padding: 0 20px 20px;
+  }
+
+  .qr-code-container {
+    padding: 16px;
+    min-height: 250px;
+  }
+
+  .qr-image-large {
+    width: 250px;
+    height: 250px;
+  }
+
+  .qr-info {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .qr-modal-footer {
+    padding: 12px 20px;
+    font-size: 12px;
+  }
 }
 </style>
