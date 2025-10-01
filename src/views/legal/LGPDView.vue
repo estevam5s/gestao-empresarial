@@ -280,7 +280,7 @@
               <Phone :size="24" />
               <div>
                 <strong>Suporte Telefônico</strong>
-                <p>(48) 0000-0000</p>
+                <p>(48) 3237-7280</p>
                 <span class="response-time">Horário comercial</span>
               </div>
             </div>
@@ -343,7 +343,7 @@
               <div class="dpo-details">
                 <h3>Dados para Proteção Officer</h3>
                 <p><strong>E-mail:</strong> dpo@gestaozesystem.com</p>
-                <p><strong>Telefone:</strong> (48) 0000-0000</p>
+                <p><strong>Telefone:</strong> (48) 3237-7280</p>
                 <p><strong>Horário:</strong> Segunda a Sexta, 8h às 18h</p>
               </div>
             </div>

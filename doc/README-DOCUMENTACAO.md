@@ -313,7 +313,7 @@ echo "✅ Documentação compilada: manual-usuario-gestaozesystem.pdf"
 
 ### 🆘 **Canais de Suporte Técnico**
 
-[![Email](https://img.shields.io/badge/Email-suporte@gestaozesystem.com-red?style=for-the-badge&logo=gmail&logoColor=white)](mailto:suporte@gestaozesystem.com)
+[![Email](https://img.shields.io/badge/Email-restpedacinhodoceu@gmail.com-red?style=for-the-badge&logo=gmail&logoColor=white)](mailto:restpedacinhodoceu@gmail.com)
 [![GitHub](https://img.shields.io/badge/Issues-GitHub_Repo-black?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Gestao-de-estoque/gestaozesystem-web/issues)
 [![Wiki](https://img.shields.io/badge/Wiki-Online_Docs-blue?style=for-the-badge&logo=gitbook&logoColor=white)](https://docs.gestaozesystem.com)
 
@@ -324,7 +324,7 @@ echo "✅ Documentação compilada: manual-usuario-gestaozesystem.pdf"
 <td width="33%" align="center">
   <strong>🏃‍♂️ Suporte Rápido</strong><br/>
   <small>Dúvidas gerais, bugs simples</small><br/>
-  📧 <code>suporte@gestaozesystem.com</code><br/>
+  📧 <code>restpedacinhodoceu@gmail.com</code><br/>
   ⏱️ <em>Resposta em 24h</em>
 </td>
 <td width="33%" align="center">

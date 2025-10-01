@@ -814,7 +814,7 @@ const budgets = {
 
 Problemas com deployment? Entre em contato:
 
-[![Email](https://img.shields.io/badge/Email-suporte@gestaozesystem.com-red?style=for-the-badge&logo=gmail)](mailto:suporte@gestaozesystem.com)
+[![Email](https://img.shields.io/badge/Email-restpedacinhodoceu@gmail.com-red?style=for-the-badge&logo=gmail)](mailto:restpedacinhodoceu@gmail.com)
 [![GitHub](https://img.shields.io/badge/GitHub-Issues-black?style=for-the-badge&logo=github)](https://github.com/Gestao-de-estoque/gestaozesystem-web/issues)
 
 ---

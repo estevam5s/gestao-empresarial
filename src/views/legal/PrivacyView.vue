@@ -400,7 +400,7 @@
               </div>
               <div class="contact-item">
                 <Phone :size="16" />
-                <span>(48) 0000-0000</span>
+                <span>(48) 3237-7280</span>
               </div>
             </div>
 

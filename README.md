@@ -1431,7 +1431,7 @@ Se aplicável, adicione screenshots
 
 ### 📬 Contato
 
-- 📧 **Email**: suporte@gestaozesystem.com
+- 📧 **Email**: restpedacinhodoceu@gmail.com
 - 🐙 **GitHub**: [@Gestao-de-estoque](https://github.com/Gestao-de-estoque)
 - 🌐 **Website**: [gestao.restpedacinhodoceu.com.br](https://gestao.restpedacinhodoceu.com.br)
 - 💬 **Discord**: [Em breve]
@@ -1615,7 +1615,7 @@ Agradecimentos especiais às tecnologias que tornaram este projeto possível:
 [🚀 **Acessar Sistema Web**](https://gestao.restpedacinhodoceu.com.br) |
 [📱 **Baixar App Android**](https://github.com/estevam5s/estevam5s/releases/download/v1.0.0/gestao_estoque.apk) |
 [📖 **Documentação**](./doc/README-DOCUMENTACAO.md) |
-[💬 **Suporte**](mailto:suporte@gestaozesystem.com)
+[💬 **Suporte**](mailto:restpedacinhodoceu@gmail.com)
 
 ---
 
@@ -1625,7 +1625,7 @@ Agradecimentos especiais às tecnologias que tornaram este projeto possível:
 <tr>
 <td align="center" width="25%">
   📧 <strong>Email</strong><br/>
-  <a href="mailto:suporte@gestaozesystem.com">suporte@gestaozesystem.com</a>
+  <a href="mailto:restpedacinhodoceu@gmail.com">restpedacinhodoceu@gmail.com</a>
 </td>
 <td align="center" width="25%">
   🐙 <strong>GitHub</strong><br/>
@@ -1637,7 +1637,7 @@ Agradecimentos especiais às tecnologias que tornaram este projeto possível:
 </td>
 <td align="center" width="25%">
   📱 <strong>WhatsApp</strong><br/>
-  <a href="https://wa.me/5548000000000">(48) 0000-0000</a>
+  <a href="https://wa.me/5548000000000">(48) 3237-7280</a>
 </td>
 </tr>
 </table>

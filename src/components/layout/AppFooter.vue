@@ -278,15 +278,15 @@
 
           <ul class="nav-links">
             <li>
-              <a href="mailto:suporte@gestaozesystem.com" class="nav-link">
+              <a href="mailto:restpedacinhodoceu@gmail.com" class="nav-link">
                 <Mail :size="16" />
-                <span>suporte@gestaozesystem.com</span>
+                <span>restpedacinhodoceu@gmail.com</span>
               </a>
             </li>
             <li>
               <a href="tel:+554800000000" class="nav-link">
                 <Phone :size="16" />
-                <span>(48) 0000-0000</span>
+                <span>(48) 3237-7280</span>
               </a>
             </li>
             <li>
