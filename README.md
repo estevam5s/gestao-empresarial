@@ -662,7 +662,7 @@ Responsive Design          // Mobile-first approach
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/Gestao-de-estoque/gestao-estoque-vue.git
+git clone https://github.com/Gestao-de-estoque/gestao-empresarial.git
 
 # 2. Entre no diretório
 cd gestao-estoque-vue
@@ -1399,7 +1399,7 @@ Por que essa mudança é necessária?
 
 ### 🐛 Reportar Issues
 
-Use o [GitHub Issues](https://github.com/Gestao-de-estoque/gestao-estoque-vue/issues) para:
+Use o [GitHub Issues](https://github.com/Gestao-de-estoque/gestao-empresarial/issues) para:
 
 - 🐛 **Reportar bugs** - Descreva o problema e como reproduzir
 - 💡 **Sugerir melhorias** - Novas funcionalidades ou otimizações
