@@ -88,7 +88,7 @@ export class RegistrationService {
      */
     async submitContactMessage(msg: { name: string; email: string; phone?: string; company?: string; subject?: string; message: string }): Promise<{ success: boolean; error?: string }> {
       try {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from(DB_TABLES.CONTACT_MESSAGES)
           .insert([{
             name: msg.name,
