@@ -23,9 +23,20 @@ class EmployeeService {
 
   async getAllEmployees(): Promise<Employee[]> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        console.warn('Usuário não está logado')
+        return []
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       const { data, error } = await supabase
         .from('employees')
         .select('*')
+        .eq('tenant_id', tenantId) // ⭐ Filtra por tenant_id
         .order('name', { ascending: true })
 
       if (error) throw error
@@ -87,9 +98,21 @@ class EmployeeService {
 
   async createEmployee(employee: EmployeeFormData): Promise<Employee> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        throw new Error('Usuário não está logado')
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       const { data, error } = await supabase
         .from('employees')
-        .insert([employee])
+        .insert([{
+          ...employee,
+          tenant_id: tenantId // ⭐ Passa tenant_id explicitamente
+        }])
         .select()
         .single()
 

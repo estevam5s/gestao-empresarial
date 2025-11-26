@@ -55,20 +55,20 @@ export class AuthService {
         throw new Error('Senha incorreta')
       }
 
-      // Buscar o tenant do usuário
-      const { data: tenantUser } = await supabase
-        .from(DB_TABLES.TENANT_USERS)
-        .select('tenant_id, tenant:tenants(*)')
-        .eq('admin_user_id', data.id)
-        .eq('is_active', true)
-        .single()
+      // ⭐ CRÍTICO: Configurar tenant_id na sessão (tenant_id = id do usuário)
+      if (data.id) {
+        try {
+          // Cada usuário tem tenant_id = seu próprio id
+          await supabase.rpc('set_current_tenant', { tenant_uuid: data.id })
+          console.log('✓ Tenant configurado na sessão:', data.id)
 
-      let tenantId = data.tenant_id || tenantUser?.tenant_id
-
-      // Configurar tenant_id na sessão do Supabase
-      if (tenantId) {
-        await supabase.rpc('set_current_tenant', { tenant_uuid: tenantId })
-        localStorage.setItem('currentTenantId', tenantId)
+          // Armazenar tenant_id no localStorage também (backup)
+          localStorage.setItem('currentTenantId', data.id)
+        } catch (rpcError) {
+          console.error('⚠️ ERRO CRÍTICO: Não foi possível configurar tenant na sessão!')
+          console.error('Detalhes:', rpcError)
+          throw new Error('Erro ao configurar sessão do usuário. Por favor, tente novamente.')
+        }
       }
 
       const userSession: User = {
@@ -77,8 +77,7 @@ export class AuthService {
         email: data.email,
         name: data.name,
         role: data.role,
-        avatar_url: data.avatar_url,
-        tenant_id: tenantId
+        avatar_url: data.avatar_url
       }
 
       localStorage.setItem('userSession', JSON.stringify(userSession))

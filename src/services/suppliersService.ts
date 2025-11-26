@@ -32,9 +32,20 @@ export interface UpdateSupplierData extends Partial<CreateSupplierData> {
 class SuppliersService {
   async getSuppliers(): Promise<Supplier[]> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        console.warn('Usuário não está logado')
+        return []
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       const { data, error } = await supabase
         .from('suppliers')
         .select('*')
+        .eq('tenant_id', tenantId) // ⭐ Filtra por tenant_id
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -71,12 +82,22 @@ class SuppliersService {
 
   async createSupplier(supplierData: CreateSupplierData): Promise<Supplier | null> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        throw new Error('Usuário não está logado')
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id // tenant_id = id do usuário
+
       const { data, error } = await supabase
         .from('suppliers')
         .insert([{
           ...supplierData,
           status: supplierData.status || 'active',
-          products_count: 0
+          products_count: 0,
+          tenant_id: tenantId // ⭐ Passa tenant_id explicitamente
         }])
         .select()
         .single()
