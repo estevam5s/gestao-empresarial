@@ -1,6 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+
+// Public Pages (SaaS)
+import HomeView from '@/views/HomeView.vue'
+import PricingView from '@/views/PricingView.vue'
+import RegisterView from '@/views/RegisterView.vue'
+import FAQView from '@/views/FAQView.vue'
+import ContactView from '@/views/ContactView.vue'
+import AppsView from '@/views/AppsView.vue'
+
+// Auth
 import LoginView from '@/views/LoginView.vue'
+
+// Dashboard (Authenticated)
 import DashboardView from '@/views/DashboardView.vue'
 import InventoryView from '@/views/InventoryView.vue'
 import AIView from '@/views/AIView.vue'
@@ -15,6 +27,8 @@ import FinancialView from '@/views/FinancialView.vue'
 import EmployeeManagementView from '@/views/EmployeeManagementView.vue'
 import DocumentationView from '@/views/DocumentationView.vue'
 import SupportChatView from '@/views/SupportChatView.vue'
+
+// Admin
 import UsersView from '@/views/admin/UsersView.vue'
 import AuditView from '@/views/admin/AuditView.vue'
 import BackupView from '@/views/admin/BackupView.vue'
@@ -22,6 +36,8 @@ import SecurityView from '@/views/admin/SecurityView.vue'
 import NotificationsManagementView from '@/views/admin/NotificationsManagementView.vue'
 import APIManagementView from '@/views/admin/APIManagementView.vue'
 import PermissionsView from '@/views/admin/PermissionsView.vue'
+
+// Legal
 import TermsView from '@/views/legal/TermsView.vue'
 import PrivacyView from '@/views/legal/PrivacyView.vue'
 import LGPDView from '@/views/legal/LGPDView.vue'
@@ -30,10 +46,44 @@ import CookiesView from '@/views/legal/CookiesView.vue'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    // ==========================================
+    // ROTAS PÚBLICAS DO SAAS (Landing pages)
+    // ==========================================
     {
       path: '/',
-      redirect: '/dashboard'
+      name: 'home',
+      component: HomeView
     },
+    {
+      path: '/pricing',
+      name: 'pricing',
+      component: PricingView
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
+      meta: { requiresGuest: true }
+    },
+    {
+      path: '/faq',
+      name: 'faq',
+      component: FAQView
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: ContactView
+    },
+    {
+      path: '/apps',
+      name: 'apps',
+      component: AppsView
+    },
+
+    // ==========================================
+    // AUTENTICAÇÃO
+    // ==========================================
     {
       path: '/support',
       name: 'support',

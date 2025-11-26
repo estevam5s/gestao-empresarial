@@ -1,5 +1,13 @@
 <template>
   <div class="login-container">
+    <!-- Botão Voltar ao Site -->
+    <router-link to="/" class="back-to-site">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      <span>Voltar ao site</span>
+    </router-link>
+
     <!-- Background animado -->
     <div class="animated-background">
       <div class="floating-shapes">
@@ -400,6 +408,39 @@ onMounted(() => {
   --text-secondary: #e2e8f0;
   --border-color: #4a5568;
   --bg-light: #1a202c;
+}
+
+/* Botão Voltar ao Site */
+.back-to-site {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  color: #4a5568;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.back-to-site svg {
+  width: 18px;
+  height: 18px;
+}
+
+.back-to-site:hover {
+  background: white;
+  transform: translateX(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  color: #667eea;
 }
 
 /* Container principal */

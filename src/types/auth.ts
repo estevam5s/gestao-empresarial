@@ -5,6 +5,7 @@ export interface User {
   name: string
   role: string
   avatar_url?: string
+  tenant_id?: string
   created_at?: string
 }
 

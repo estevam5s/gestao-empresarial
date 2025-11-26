@@ -55,17 +55,43 @@ export class AuthService {
         throw new Error('Senha incorreta')
       }
 
+      // Buscar o tenant do usuário
+      const { data: tenantUser } = await supabase
+        .from(DB_TABLES.TENANT_USERS)
+        .select('tenant_id, tenant:tenants(*)')
+        .eq('admin_user_id', data.id)
+        .eq('is_active', true)
+        .single()
+
+      let tenantId = data.tenant_id || tenantUser?.tenant_id
+
+      // Configurar tenant_id na sessão do Supabase
+      if (tenantId) {
+        await supabase.rpc('set_current_tenant', { tenant_uuid: tenantId })
+        localStorage.setItem('currentTenantId', tenantId)
+      }
+
       const userSession: User = {
         id: data.id,
         username: data.username,
         email: data.email,
         name: data.name,
         role: data.role,
-        avatar_url: data.avatar_url // ✅ CORREÇÃO: Incluir avatar_url
+        avatar_url: data.avatar_url,
+        tenant_id: tenantId
       }
 
       localStorage.setItem('userSession', JSON.stringify(userSession))
       this.currentUser = userSession
+
+      // Atualizar último login
+      await supabase
+        .from(DB_TABLES.USERS)
+        .update({
+          last_login: new Date().toISOString(),
+          login_count: (data.login_count || 0) + 1
+        })
+        .eq('id', data.id)
 
       return { success: true, user: userSession }
     } catch (error) {

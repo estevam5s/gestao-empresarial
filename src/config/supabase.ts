@@ -19,6 +19,18 @@ export const DB_TABLES = {
   PERMISSIONS: 'permissions',
   ROLE_PERMISSIONS: 'role_permissions',
 
+  // SaaS Multi-tenant
+  TENANTS: 'tenants',
+  TENANT_USERS: 'tenant_users',
+  TENANT_INVITATIONS: 'tenant_invitations',
+  SUBSCRIPTION_PLANS: 'subscription_plans',
+  SUBSCRIPTION_HISTORY: 'subscription_history',
+  LEADS: 'leads',
+  CONTACT_MESSAGES: 'contact_messages',
+  BLOG_POSTS: 'blog_posts',
+  FAQ_ITEMS: 'faq_items',
+  TESTIMONIALS: 'testimonials',
+
   // Estoque e Produtos
   PRODUCTS: 'produtos',
   CATEGORIES: 'categorias',
