@@ -82,6 +82,36 @@ export class RegistrationService {
     }
   }
 
+    /**
+     * Recebe uma mensagem de contato e persiste em `contact_messages`.
+     * Retorna { success: boolean, error?: string }
+     */
+    async submitContactMessage(msg: { name: string; email: string; phone?: string; company?: string; subject?: string; message: string }): Promise<{ success: boolean; error?: string }> {
+      try {
+        const { data, error } = await supabase
+          .from(DB_TABLES.CONTACT_MESSAGES)
+          .insert([{
+            name: msg.name,
+            email: msg.email,
+            phone: msg.phone || null,
+            company: msg.company || null,
+            subject: msg.subject || null,
+            message: msg.message,
+            created_at: new Date().toISOString()
+          }])
+
+        if (error) {
+          console.error('Erro ao salvar mensagem de contato:', error)
+          return { success: false, error: String(error.message || error) }
+        }
+
+        return { success: true }
+      } catch (err) {
+        console.error('Erro em submitContactMessage:', err)
+        return { success: false, error: 'Erro inesperado ao enviar mensagem' }
+      }
+    }
+
 }
 
 export const registrationService = new RegistrationService()

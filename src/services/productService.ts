@@ -1,6 +1,6 @@
 import { supabase, DB_TABLES } from '@/config/supabase'
 import type { Product } from '@/types/product'
-import { normalizeUUID, formatSupabaseError, requireValidUUID, validateAndNormalizeUUIDs } from '@/utils/validation'
+import { formatSupabaseError, requireValidUUID, validateAndNormalizeUUIDs } from '@/utils/validation'
 
 export class ProductService {
   async getProducts(): Promise<Product[]> {
