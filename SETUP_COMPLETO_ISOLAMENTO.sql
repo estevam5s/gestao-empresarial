@@ -389,7 +389,37 @@ CREATE POLICY menu_items_tenant_policy ON menu_items
   WITH CHECK (tenant_id = current_user_tenant_id());
 
 -- ====================================================================
--- PARTE 8: VALIDAÇÃO E CONFIRMAÇÃO
+-- PARTE 8: CRIAR CATEGORIAS PADRÃO PARA NOVOS USUÁRIOS
+-- ====================================================================
+
+-- Função para criar categorias padrão quando um usuário se registra
+CREATE OR REPLACE FUNCTION create_default_categories_for_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Criar categorias padrão de produtos/menu para o novo usuário
+  INSERT INTO categorias (nome, icone, tenant_id, ativo) VALUES
+    ('Bebidas', '🥤', NEW.id, true),
+    ('Comidas', '🍔', NEW.id, true),
+    ('Sobremesas', '🍰', NEW.id, true),
+    ('Lanches', '🥪', NEW.id, true),
+    ('Pratos Principais', '🍽️', NEW.id, true),
+    ('Entradas', '🥗', NEW.id, true),
+    ('Cafeteria', '☕', NEW.id, true),
+    ('Drinks', '🍹', NEW.id, true);
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger para criar categorias ao registrar novo usuário
+DROP TRIGGER IF EXISTS trg_create_default_categories ON admin_users;
+CREATE TRIGGER trg_create_default_categories
+  AFTER INSERT ON admin_users
+  FOR EACH ROW
+  EXECUTE FUNCTION create_default_categories_for_user();
+
+-- ====================================================================
+-- PARTE 9: VALIDAÇÃO E CONFIRMAÇÃO
 -- ====================================================================
 
 DO $$

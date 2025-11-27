@@ -5,9 +5,20 @@ import { formatSupabaseError, requireValidUUID, validateAndNormalizeUUIDs } from
 export class ProductService {
   async getProducts(): Promise<Product[]> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        console.warn('Usuário não está logado')
+        return []
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       const { data, error } = await supabase
         .from(DB_TABLES.PRODUCTS)
         .select('*')
+        .eq('tenant_id', tenantId) // ⭐ Filtra por tenant_id
         .eq('ativo', true)
         .order('nome')
 
@@ -42,6 +53,15 @@ export class ProductService {
 
   async createProduct(productData: Partial<Product>): Promise<Product> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        throw new Error('Usuário não está logado')
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       // Normaliza UUIDs antes de enviar
       const normalized = validateAndNormalizeUUIDs(productData, ['categoria_id'])
 
@@ -49,6 +69,7 @@ export class ProductService {
         .from(DB_TABLES.PRODUCTS)
         .insert([{
           ...normalized,
+          tenant_id: tenantId, // ⭐ Passa tenant_id explicitamente
           ativo: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -179,9 +200,20 @@ export class ProductService {
 
   async getCategories(): Promise<any[]> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        console.warn('Usuário não está logado')
+        return []
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       const { data, error } = await supabase
         .from(DB_TABLES.CATEGORIES)
         .select('*')
+        .eq('tenant_id', tenantId) // ⭐ Filtra por tenant_id
         .eq('ativo', true)
         .order('nome')
 
@@ -195,10 +227,20 @@ export class ProductService {
 
   async createCategory(categoryData: { nome: string; icone?: string }): Promise<any> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        throw new Error('Usuário não está logado')
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       const { data, error } = await supabase
         .from(DB_TABLES.CATEGORIES)
         .insert([{
           ...categoryData,
+          tenant_id: tenantId, // ⭐ Passa tenant_id explicitamente
           ativo: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()

@@ -319,19 +319,17 @@ class SalesService {
   private generateMockSalesData(days: number): SalesData[] {
     const mockData: SalesData[] = []
 
+    // Retornar dados zerados em vez de dados fictícios
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date()
       date.setDate(date.getDate() - i)
       const dateStr = date.toISOString().split('T')[0]
 
-      const baseSales = 500 + Math.random() * 1000
-      const ordersCount = 10 + Math.floor(Math.random() * 30)
-
       mockData.push({
         date: dateStr,
-        total_sales: Math.round(baseSales * 100) / 100,
-        orders_count: ordersCount,
-        average_order: Math.round((baseSales / ordersCount) * 100) / 100
+        total_sales: 0,
+        orders_count: 0,
+        average_order: 0
       })
     }
 

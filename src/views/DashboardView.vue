@@ -958,7 +958,7 @@ function onSupportLogin() { isSupport.value = true }
 .back-to-site {
   position: fixed;
   top: 20px;
-  left: 20px;
+  right: 180px; /* Posicionado à direita, ao lado do botão de sair */
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -982,7 +982,7 @@ function onSupportLogin() { isSupport.value = true }
 
 .back-to-site:hover {
   background: white;
-  transform: translateX(-3px);
+  transform: translateX(3px); /* Move para direita ao hover */
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
   color: #667eea;
 }

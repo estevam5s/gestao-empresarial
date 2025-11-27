@@ -74,12 +74,23 @@ class MenuService {
   // Menu Items
   async getMenuItems(): Promise<MenuItem[]> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        console.warn('Usuário não está logado')
+        return []
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       const { data, error } = await supabase
         .from('menu_items')
         .select(`
           *,
           categoria:categorias(nome, icone)
         `)
+        .eq('tenant_id', tenantId) // ⭐ Filtra por tenant_id
         .eq('ativo', true)
         .order('nome')
 
@@ -120,10 +131,20 @@ class MenuService {
 
   async createMenuItem(itemData: CreateMenuItemData): Promise<MenuItem | null> {
     try {
+      // Obter tenant_id do usuário logado
+      const userSession = localStorage.getItem('userSession')
+      if (!userSession) {
+        throw new Error('Usuário não está logado')
+      }
+
+      const user = JSON.parse(userSession)
+      const tenantId = user.id
+
       const { data, error } = await supabase
         .from('menu_items')
         .insert([{
           ...itemData,
+          tenant_id: tenantId, // ⭐ Passa tenant_id explicitamente
           custo_ingredientes: itemData.custo_ingredientes || 0,
           tempo_preparo: itemData.tempo_preparo || 0,
           dificuldade: itemData.dificuldade || 'medium',
