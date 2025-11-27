@@ -276,16 +276,23 @@
       </div>
 
       <div class="testimonials-grid">
-        <div v-for="testimonial in testimonials" :key="testimonial.author" class="testimonial-card">
-          <div class="testimonial-rating">
-            <span v-for="i in 5" :key="i" class="star">⭐</span>
+        <div v-for="(testimonial, index) in testimonials" :key="testimonial.author"
+             class="testimonial-card"
+             :style="{ animationDelay: `${index * 0.1}s` }">
+          <div class="testimonial-image-wrapper">
+            <img :src="testimonial.image" :alt="testimonial.author" class="testimonial-image" />
+            <div class="image-overlay"></div>
           </div>
-          <p class="testimonial-text">"{{ testimonial.text }}"</p>
-          <div class="testimonial-author">
-            <div class="author-avatar">{{ testimonial.author[0] }}</div>
-            <div class="author-info">
-              <div class="author-name">{{ testimonial.author }}</div>
-              <div class="author-role">{{ testimonial.role }}</div>
+          <div class="testimonial-content">
+            <div class="testimonial-rating">
+              <span v-for="i in 5" :key="i" class="star">⭐</span>
+            </div>
+            <p class="testimonial-text">"{{ testimonial.text }}"</p>
+            <div class="testimonial-author">
+              <div class="author-info">
+                <div class="author-name">{{ testimonial.author }}</div>
+                <div class="author-role">{{ testimonial.role }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -321,7 +328,7 @@ const highlights = [
   {
     icon: '🚀',
     title: 'Performance Excepcional',
-    description: 'Sistema otimizado para operações em tempo real',
+    description: 'Infraestrutura escalável com alta disponibilidade, garantindo operações em tempo real sem interrupções',
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     stats: [
       { value: '99.9%', label: 'Uptime' },
@@ -330,8 +337,8 @@ const highlights = [
   },
   {
     icon: '💡',
-    title: 'Inteligência Artificial',
-    description: 'IA que aprende com seu negócio e sugere melhorias',
+    title: 'Inteligência Artificial Avançada',
+    description: 'Machine Learning que aprende com padrões do seu negócio, oferecendo insights preditivos e sugestões de otimização',
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
     stats: [
       { value: '85%', label: 'Precisão' },
@@ -340,8 +347,8 @@ const highlights = [
   },
   {
     icon: '🎯',
-    title: 'Redução de Custos',
-    description: 'Economize até 40% com gestão inteligente',
+    title: 'ROI Comprovado',
+    description: 'Empresas reduzem até 40% dos custos operacionais com automação inteligente e gestão otimizada de recursos',
     gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
     stats: [
       { value: '40%', label: 'Economia' },
@@ -350,12 +357,52 @@ const highlights = [
   },
   {
     icon: '🔒',
-    title: 'Segurança Garantida',
-    description: 'Proteção de dados com criptografia de nível bancário',
+    title: 'Segurança de Nível Empresarial',
+    description: 'Criptografia de ponta a ponta, conformidade com LGPD e certificações internacionais de segurança',
     gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
     stats: [
       { value: '256-bit', label: 'Criptografia' },
       { value: 'ISO 27001', label: 'Certificado' }
+    ]
+  },
+  {
+    icon: '⚡',
+    title: 'Automação Inteligente',
+    description: 'Automatize processos repetitivos e foque no crescimento estratégico do seu negócio',
+    gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    stats: [
+      { value: '70%', label: 'Tempo Economizado' },
+      { value: '5h/dia', label: 'Produtividade' }
+    ]
+  },
+  {
+    icon: '🌐',
+    title: 'Acesso Multiplataforma',
+    description: 'Gerencie de qualquer lugar: desktop, tablet ou smartphone com sincronização em tempo real',
+    gradient: 'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+    stats: [
+      { value: '100%', label: 'Mobile Ready' },
+      { value: 'Cloud', label: 'Sync Instantâneo' }
+    ]
+  },
+  {
+    icon: '📊',
+    title: 'Analytics Avançado',
+    description: 'Dashboards personalizáveis com métricas em tempo real e relatórios detalhados para decisões estratégicas',
+    gradient: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+    stats: [
+      { value: '50+', label: 'KPIs' },
+      { value: 'Real-time', label: 'Updates' }
+    ]
+  },
+  {
+    icon: '🤝',
+    title: 'Suporte Premium',
+    description: 'Equipe especializada disponível 24/7 com SLA garantido e tempo de resposta inferior a 2 horas',
+    gradient: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+    stats: [
+      { value: '24/7', label: 'Disponível' },
+      { value: '<2h', label: 'Resposta' }
     ]
   }
 ]
@@ -430,17 +477,38 @@ const testimonials = [
   {
     text: 'O GestaoZe transformou completamente a gestão do meu restaurante. Consigo acompanhar tudo em tempo real e tomar decisões mais assertivas.',
     author: 'Maria Silva',
-    role: 'Proprietária - Restaurante Sabor Caseiro'
+    role: 'Proprietária - Restaurante Sabor Caseiro',
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=400&fit=crop&crop=faces'
   },
   {
     text: 'Reduzimos 30% dos custos com estoque em 6 meses. A ferramenta de previsão de demanda é impressionante!',
     author: 'João Santos',
-    role: 'Gerente - Padaria do Bairro'
+    role: 'Gerente - Padaria do Bairro',
+    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=400&fit=crop&crop=faces'
   },
   {
     text: 'Excelente custo-benefício. O suporte é muito atencioso e a plataforma é super intuitiva.',
     author: 'Ana Costa',
-    role: 'Diretora - Rede FastFood Premium'
+    role: 'Diretora - Rede FastFood Premium',
+    image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=400&fit=crop&crop=faces'
+  },
+  {
+    text: 'A integração com nossos sistemas foi perfeita. Em poucos dias já estávamos operando com 100% de eficiência.',
+    author: 'Carlos Mendes',
+    role: 'CEO - Grupo Alimentar Excellence',
+    image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=faces'
+  },
+  {
+    text: 'A mobilidade que o GestaoZe oferece é incrível. Consigo gerenciar meu negócio de qualquer lugar.',
+    author: 'Patricia Oliveira',
+    role: 'Proprietária - Cafeteria Moderna',
+    image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=400&fit=crop&crop=faces'
+  },
+  {
+    text: 'Depois do GestaoZe, nossa produtividade aumentou 45%. A equipe adora a interface intuitiva!',
+    author: 'Roberto Lima',
+    role: 'Diretor de Operações - Fast Delivery',
+    image: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&h=400&fit=crop&crop=faces'
   }
 ]
 
@@ -1371,30 +1439,91 @@ onUnmounted(() => {
 /* Testimonials */
 .testimonials {
   padding: 80px 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2.5rem;
 }
 
 .testimonial-card {
-  padding: 2rem;
   background: white;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 16px;
+  overflow: hidden;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.testimonial-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border-color: #667eea;
+}
+
+.testimonial-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+}
+
+.testimonial-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testimonial-card:hover .testimonial-image {
+  transform: scale(1.1);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+  transition: background 0.4s ease;
+}
+
+.testimonial-card:hover .image-overlay {
+  background: linear-gradient(180deg, transparent 0%, rgba(102, 126, 234, 0.3) 100%);
+}
+
+.testimonial-content {
+  padding: 2rem;
 }
 
 .testimonial-rating {
   margin-bottom: 1rem;
+  display: flex;
+  gap: 0.25rem;
 }
 
 .star {
   font-size: 1.125rem;
+  filter: drop-shadow(0 2px 4px rgba(255, 193, 7, 0.3));
+  transition: transform 0.2s ease;
+}
+
+.testimonial-card:hover .star {
+  transform: scale(1.1);
 }
 
 .testimonial-text {
@@ -1403,35 +1532,44 @@ onUnmounted(() => {
   line-height: 1.7;
   margin-bottom: 1.5rem;
   font-style: italic;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.testimonial-text::before {
+  content: '"';
+  position: absolute;
+  left: 0;
+  top: -10px;
+  font-size: 3rem;
+  color: #667eea;
+  opacity: 0.3;
+  font-family: Georgia, serif;
 }
 
 .testimonial-author {
   display: flex;
   align-items: center;
   gap: 1rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid #f7fafc;
 }
 
-.author-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.25rem;
+.author-info {
+  flex: 1;
 }
 
 .author-name {
-  font-weight: 600;
+  font-weight: 700;
   color: #1a202c;
+  font-size: 1.1rem;
+  margin-bottom: 0.25rem;
 }
 
 .author-role {
   font-size: 0.9rem;
   color: #718096;
+  line-height: 1.4;
 }
 
 /* CTA Section */
@@ -1597,6 +1735,10 @@ onUnmounted(() => {
 
   .testimonials-grid {
     grid-template-columns: 1fr;
+  }
+
+  .testimonial-image-wrapper {
+    height: 200px;
   }
 
   .footer-content {

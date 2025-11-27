@@ -45,6 +45,21 @@ import CookiesView from '@/views/legal/CookiesView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    // Se houver uma posição salva (ex: botão voltar do navegador), use-a
+    if (savedPosition) {
+      return savedPosition
+    }
+    // Se a rota tem um hash (ex: #features), vá até esse elemento
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: 'smooth'
+      }
+    }
+    // Sempre volte para o topo ao navegar entre rotas
+    return { top: 0, behavior: 'smooth' }
+  },
   routes: [
     // ==========================================
     // ROTAS PÚBLICAS DO SAAS (Landing pages)

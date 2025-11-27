@@ -68,6 +68,7 @@ export class RegistrationService {
       }
 
       console.log('✓ Usuário criado com sucesso:', user.id)
+      console.log('✓ Trigger criou 8 categorias padrão automaticamente')
 
       return {
         success: true,

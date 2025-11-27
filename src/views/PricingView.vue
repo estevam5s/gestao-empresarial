@@ -145,17 +145,6 @@
       </router-link>
     </section>
 
-    <!-- Footer simples -->
-    <footer class="footer">
-      <div class="footer-content">
-        <p>&copy; 2025 GestaoZe. Todos os direitos reservados.</p>
-        <div class="footer-links">
-          <router-link to="/legal/terms">Termos</router-link>
-          <router-link to="/legal/privacy">Privacidade</router-link>
-          <router-link to="/contact">Contato</router-link>
-        </div>
-      </div>
-    </footer>
   </div>
 </template>
 
@@ -253,6 +242,38 @@ const plans: Plan[] = [
     },
     isPopular: false,
     isRecommended: false
+  },
+  {
+    name: 'Enterprise',
+    slug: 'enterprise',
+    description: 'Sistema SaaS profissional ideal para empresas de grande porte',
+    priceMonthly: 89.99,
+    priceYearly: 89.99,
+    maxUsers: -1,
+    maxStorage: -1,
+    features: {
+      dashboard: true,
+      inventory: true,
+      basicReports: true,
+      advancedReports: true,
+      financialModule: true,
+      employeeManagement: true,
+      emailSupport: true,
+      phoneSupport: true,
+      apiAccess: true,
+      aiAnalytics: true,
+      prioritySupport: true,
+      customBranding: true,
+      dedicatedSupport: true,
+      customIntegrations: true,
+      support247: true,
+      personalizedTraining: true,
+      legacyIntegrations: true,
+      slaUptime: true,
+      processConsulting: true
+    },
+    isPopular: false,
+    isRecommended: false
   }
 ]
 
@@ -332,6 +353,31 @@ const comparisonFeatures = [
   {
     name: 'Integrações customizadas',
     key: 'customIntegrations'
+  },
+  {
+    name: 'Suporte dedicado 24/7',
+    key: 'support247',
+    description: 'Equipe especializada disponível 24 horas por dia'
+  },
+  {
+    name: 'Treinamento personalizado',
+    key: 'personalizedTraining',
+    description: 'Capacitação customizada para sua equipe'
+  },
+  {
+    name: 'Integrações com sistemas legados',
+    key: 'legacyIntegrations',
+    description: 'Conecte com ERPs e sistemas antigos'
+  },
+  {
+    name: 'SLA 99,9% de uptime',
+    key: 'slaUptime',
+    description: 'Garantia contratual de disponibilidade'
+  },
+  {
+    name: 'Consultoria de processos',
+    key: 'processConsulting',
+    description: 'Otimização dos processos empresariais'
   }
 ]
 
@@ -384,7 +430,12 @@ function getFeaturesList(features: Record<string, boolean>): string[] {
     prioritySupport: 'Suporte prioritário',
     customBranding: 'Marca personalizada',
     dedicatedSupport: 'Gerente dedicado',
-    customIntegrations: 'Integrações customizadas'
+    customIntegrations: 'Integrações customizadas',
+    support247: 'Suporte dedicado 24/7',
+    personalizedTraining: 'Treinamento personalizado',
+    legacyIntegrations: 'Integrações avançadas',
+    slaUptime: 'SLA 99,9% uptime',
+    processConsulting: 'Consultoria empresarial'
   }
 
   return Object.entries(features)

@@ -195,16 +195,16 @@
               <span class="divider-text">ou</span>
             </div>
 
-            <!-- Botão demo -->
-            <button
-              type="button"
-              @click="fillDemo"
-              class="demo-button"
-              :disabled="loading"
-            >
-              <span class="demo-icon">🎯</span>
-              <span>Usar credenciais de demonstração</span>
-            </button>
+            <!-- Botão criar conta -->
+            <router-link to="/register" class="register-button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="8.5" cy="7" r="4"></circle>
+                <line x1="20" y1="8" x2="20" y2="14"></line>
+                <line x1="23" y1="11" x2="17" y2="11"></line>
+              </svg>
+              <span>Criar nova conta</span>
+            </router-link>
 
             <!-- Modo escuro toggle -->
             <div class="theme-toggle">
@@ -352,24 +352,6 @@ async function handleLogin() {
     loading.value = false
     loadingProgress.value = 0
   }
-}
-
-function fillDemo() {
-  credentials.value = {
-    username: 'rebecaluize@gmail.com',
-    password: 'Restpedacinhodoceu@2025'
-  }
-
-  // Animação de preenchimento
-  setTimeout(() => {
-    const usernameInput = document.getElementById('username') as HTMLInputElement
-    const passwordInput = document.getElementById('password') as HTMLInputElement
-
-    if (usernameInput) usernameInput.focus()
-    setTimeout(() => {
-      if (passwordInput) passwordInput.focus()
-    }, 500)
-  }, 100)
 }
 
 function toggleTheme() {
@@ -1214,33 +1196,35 @@ onMounted(() => {
   position: relative;
 }
 
-/* Botão demo */
-.demo-button {
+/* Botão registro */
+.register-button {
   height: 48px;
   background: var(--bg-light);
   color: var(--text-secondary);
   border: 2px solid var(--border-color);
   border-radius: 12px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  text-decoration: none;
 }
 
-.demo-button:hover:not(:disabled) {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+.register-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.register-button:hover {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   color: white;
-  border-color: #3b82f6;
+  border-color: #48bb78;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.demo-icon {
-  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
 }
 
 /* Toggle de tema */

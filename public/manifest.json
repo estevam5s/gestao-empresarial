@@ -1,12 +1,17 @@
 {
-  "name": "GestaoZe System",
+  "name": "GestaoZe - Sistema de Gestão Empresarial",
   "short_name": "GestaoZe",
-  "description": "Sistema completo de gestão empresarial com estoque, financeiro e IA",
+  "description": "Sistema completo de gestão empresarial com IA, controle de estoque, módulo financeiro e relatórios em tempo real",
   "theme_color": "#667eea",
-  "background_color": "#f8fafc",
+  "background_color": "#ffffff",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "start_url": "/",
   "scope": "/",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "categories": ["business", "productivity", "finance"],
+  "screenshots": [],
   "icons": [
     {
       "src": "/favicon-16x16.png",
@@ -30,5 +35,45 @@
       "type": "image/png",
       "purpose": "maskable any"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Acesse o dashboard rapidamente",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/favicon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Estoque",
+      "short_name": "Estoque",
+      "description": "Gerencie seu estoque",
+      "url": "/inventory",
+      "icons": [
+        {
+          "src": "/favicon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Relatórios",
+      "short_name": "Relatórios",
+      "description": "Visualize relatórios",
+      "url": "/reports",
+      "icons": [
+        {
+          "src": "/favicon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

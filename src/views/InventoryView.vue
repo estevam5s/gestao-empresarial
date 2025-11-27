@@ -509,12 +509,17 @@
             </div>
             <div class="form-group">
               <label>Categoria:</label>
-              <select v-model="productForm.categoria_id">
-                <option value="">Selecione uma categoria</option>
-                <option v-for="category in categories" :key="category.id" :value="category.id">
-                  {{ category.nome }}
-                </option>
-              </select>
+              <div class="category-input-group">
+                <select v-model="productForm.categoria_id" style="flex: 1;">
+                  <option value="">Selecione uma categoria</option>
+                  <option v-for="category in categories" :key="category.id" :value="category.id">
+                    {{ category.nome }}
+                  </option>
+                </select>
+                <button type="button" @click="showCategoryModal = true" class="btn-add-category" title="Adicionar nova categoria">
+                  <Plus :size="16" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -587,6 +592,47 @@
 
     <!-- Chat IA Modal -->
     <ChatInventoryModal v-model:open="showChat" />
+
+    <!-- Modal de Adicionar Categoria -->
+    <div v-if="showCategoryModal" class="modal-overlay" @click="showCategoryModal = false">
+      <div class="modal-content" @click.stop style="max-width: 500px;">
+        <div class="modal-header">
+          <h2>Nova Categoria</h2>
+          <button @click="showCategoryModal = false" class="modal-close">×</button>
+        </div>
+
+        <form @submit.prevent="saveCategory" class="product-form">
+          <div class="form-group">
+            <label>Nome da Categoria:</label>
+            <input
+              v-model="categoryForm.nome"
+              type="text"
+              required
+              placeholder="Ex: Limpeza"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Ícone (emoji):</label>
+            <input
+              v-model="categoryForm.icone"
+              type="text"
+              placeholder="Ex: 🧹"
+              maxlength="10"
+            />
+          </div>
+
+          <div class="form-actions">
+            <button type="button" @click="showCategoryModal = false" class="btn-secondary">
+              Cancelar
+            </button>
+            <button type="submit" :disabled="savingCategory" class="btn-primary">
+              {{ savingCategory ? 'Salvando...' : 'Adicionar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -639,6 +685,13 @@ const compactMode = ref(false)
 const pageSize = ref(12)
 const currentPage = ref(1)
 const showChat = ref(false)
+const showCategoryModal = ref(false)
+const savingCategory = ref(false)
+
+const categoryForm = ref({
+  nome: '',
+  icone: ''
+})
 
 const productForm = ref({
   nome: '',
@@ -841,7 +894,7 @@ async function saveProduct() {
     const productData = {
       nome: productForm.value.nome,
       descricao: productForm.value.descricao,
-      categoria_id: productForm.value.categoria_id,
+      categoria_id: productForm.value.categoria_id || null, // ✅ Converter string vazia em NULL
       codigo_barras: productForm.value.codigo_barras,
       unidade: productForm.value.unidade,
       preco_custo: productForm.value.custo, // ✅ Mapear custo → preco_custo
@@ -1068,6 +1121,54 @@ async function updateProductStock(productId: string, newStock: number) {
   } catch (error) {
     console.error('Erro ao atualizar estoque:', error)
     alert('Erro ao atualizar estoque')
+  }
+}
+
+async function saveCategory() {
+  savingCategory.value = true
+  try {
+    const userSession = localStorage.getItem('userSession')
+    if (!userSession) {
+      throw new Error('Usuário não está logado')
+    }
+
+    const user = JSON.parse(userSession)
+    const tenantId = user.id
+
+    const { data, error } = await supabase
+      .from(DB_TABLES.CATEGORIES)
+      .insert([{
+        nome: categoryForm.value.nome,
+        icone: categoryForm.value.icone || '📁',
+        tenant_id: tenantId,
+        ativo: true,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select()
+
+    if (error) throw error
+
+    // Adicionar a nova categoria à lista local
+    if (data && data.length > 0) {
+      categories.value.push(data[0])
+      // Selecionar automaticamente a nova categoria
+      productForm.value.categoria_id = data[0].id
+    }
+
+    // Limpar form e fechar modal
+    categoryForm.value = { nome: '', icone: '' }
+    showCategoryModal.value = false
+
+    // Recarregar categorias para garantir
+    await loadCategories()
+
+    alert('Categoria criada com sucesso!')
+  } catch (error) {
+    console.error('Erro ao criar categoria:', error)
+    alert('Erro ao criar categoria')
+  } finally {
+    savingCategory.value = false
   }
 }
 
@@ -2391,4 +2492,34 @@ const showViewModal = ref(false)
 .inventory-charts .chart-card { background: var(--theme-surface); border:1px solid var(--theme-border); border-radius: 16px; padding: 16px; box-shadow: 0 4px 20px var(--theme-shadow) }
 .inventory-charts .chart-card h3 { margin: 0 0 10px 0; color: var(--theme-text-primary) }
 .inventory-charts .chart-wrapper { height: 240px }
+
+/* Category input group */
+.category-input-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-add-category {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: var(--theme-primary);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-add-category:hover {
+  background: var(--theme-secondary);
+  transform: scale(1.05);
+}
+
+.btn-add-category:active {
+  transform: scale(0.95);
+}
 </style>

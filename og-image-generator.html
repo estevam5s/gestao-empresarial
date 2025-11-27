@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GestaoZe - OG Image Generator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a202c;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .instructions {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            max-width: 800px;
+            margin-bottom: 20px;
+        }
+
+        .instructions h2 {
+            margin-top: 0;
+            color: #667eea;
+        }
+
+        .instructions ol {
+            line-height: 1.8;
+        }
+
+        .instructions code {
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .canvas-container {
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #ogCanvas {
+            display: block;
+            width: 1200px;
+            height: 630px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h2>📸 Gerador de Imagem OG para GestaoZe</h2>
+        <p>Esta página gera automaticamente a imagem de compartilhamento social (Open Graph) para o GestaoZe.</p>
+
+        <h3>Como usar:</h3>
+        <ol>
+            <li>A imagem já está sendo gerada automaticamente abaixo</li>
+            <li>Clique no botão "Baixar og-image.png"</li>
+            <li>Salve o arquivo como <code>og-image.png</code></li>
+            <li>Mova o arquivo para a pasta <code>/public/og-image.png</code> do projeto</li>
+            <li>Faça o deploy e teste compartilhando o link!</li>
+        </ol>
+
+        <p><strong>Dimensões:</strong> 1200x630px (otimizado para Facebook, LinkedIn, Twitter, WhatsApp)</p>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="ogCanvas" width="1200" height="630"></canvas>
+    </div>
+
+    <button class="download-btn" onclick="downloadImage()">
+        📥 Baixar og-image.png
+    </button>
+
+    <script>
+        const canvas = document.getElementById('ogCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function drawOGImage() {
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
+            gradient.addColorStop(0, '#1e3a8a');
+            gradient.addColorStop(0.3, '#1e40af');
+            gradient.addColorStop(0.5, '#3b82f6');
+            gradient.addColorStop(0.7, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1200, 630);
+
+            // Decorative shapes
+            ctx.globalAlpha = 0.1;
+
+            // Circle 1
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(100, 100, 150, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Circle 2
+            ctx.beginPath();
+            ctx.arc(1100, 500, 200, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Circle 3
+            ctx.beginPath();
+            ctx.arc(600, 50, 100, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.globalAlpha = 1;
+
+            // Logo circle
+            const logoX = 200;
+            const logoY = 315;
+            const logoRadius = 80;
+
+            // Logo background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.beginPath();
+            ctx.arc(logoX, logoY, logoRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Logo inner circle
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(logoX, logoY, 60, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Logo text "GZ"
+            ctx.fillStyle = '#667eea';
+            ctx.font = 'bold 48px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('GZ', logoX, logoY);
+
+            // Main content area
+            const contentX = 350;
+            const contentY = 200;
+
+            // Brand name
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 72px Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('GestaoZe', contentX, contentY);
+
+            // Tagline
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = '32px Arial, sans-serif';
+            ctx.fillText('Sistema Inteligente de', contentX, contentY + 60);
+            ctx.fillText('Gestão Empresarial', contentX, contentY + 100);
+
+            // Features with icons
+            const featuresY = contentY + 180;
+            const featureSpacing = 100;
+
+            // Feature 1
+            drawFeature(contentX, featuresY, '📊', 'Analytics IA');
+
+            // Feature 2
+            drawFeature(contentX + 200, featuresY, '📦', 'Estoque');
+
+            // Feature 3
+            drawFeature(contentX + 380, featuresY, '💰', 'Financeiro');
+
+            // Feature 4
+            drawFeature(contentX + 560, featuresY, '📈', 'Relatórios');
+
+            // Bottom badge
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillRect(0, 560, 1200, 70);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('✨ Teste Grátis por 14 Dias • Sem Cartão de Crédito', 600, 600);
+
+            // URL
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.font = '20px Arial, sans-serif';
+            ctx.fillText('plataforma-universidade.vercel.app', 600, 50);
+        }
+
+        function drawFeature(x, y, emoji, text) {
+            // Icon background
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+            ctx.beginPath();
+            ctx.arc(x + 30, y, 30, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Emoji
+            ctx.font = '32px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(emoji, x + 30, y + 10);
+
+            // Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 18px Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(text, x + 60, y + 5);
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = 'og-image.png';
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+        }
+
+        // Draw on load
+        drawOGImage();
+    </script>
+</body>
+</html>
