@@ -1,13 +1,5 @@
 <template>
   <div class="dashboard-container">
-    <!-- Botão Voltar ao Site -->
-    <router-link to="/" class="back-to-site">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M19 12H5M12 19l-7-7 7-7"/>
-      </svg>
-      <span>Voltar ao site</span>
-    </router-link>
-
     <!-- Header Principal -->
     <header class="dashboard-header">
       <div class="header-main">
@@ -51,8 +43,15 @@
               <ChevronDown :size="16" class="dropdown-icon" />
             </div>
 
+            <!-- Botão Voltar ao Site -->
+            <router-link to="/" class="back-to-site-btn" title="Voltar ao site">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </router-link>
+
             <!-- Logout -->
-            <button @click="handleLogout" class="logout-btn">
+            <button @click="handleLogout" class="logout-btn" title="Sair">
               <LogOut :size="18" />
             </button>
           </div>
@@ -955,40 +954,34 @@ function onSupportLogin() { isSupport.value = true }
 </script>
 
 <style scoped>
-.back-to-site {
-  position: fixed;
-  top: 24px;
-  right: 24px; /* Alinhado com o botão de sair */
-  z-index: 9999;
+/* Botão Voltar ao Site - dentro do header-actions */
+.back-to-site-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 48px;
   height: 48px;
-  padding: 0;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-radius: 12px;
-  color: #ef4444;
+  color: #64748b;
   text-decoration: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.2s ease;
+  border: 2px solid #e2e8f0;
 }
 
-.back-to-site span {
-  display: none;
-}
-
-.back-to-site svg {
+.back-to-site-btn svg {
   width: 20px;
   height: 20px;
 }
 
-.back-to-site:hover {
+.back-to-site-btn:hover {
   background: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  color: #dc2626;
+  color: #667eea;
+  border-color: #667eea;
 }
 
 .dashboard-container {
@@ -1181,9 +1174,6 @@ function onSupportLogin() { isSupport.value = true }
 }
 
 .logout-btn {
-  position: fixed;
-  top: 24px;
-  right: 84px; /* À esquerda do botão voltar ao site */
   background: #fef2f2;
   border: 2px solid #fecaca;
   border-radius: 12px;
@@ -1196,7 +1186,6 @@ function onSupportLogin() { isSupport.value = true }
   color: #dc2626;
   cursor: pointer;
   transition: all 0.3s ease;
-  z-index: 9998;
 }
 
 .logout-btn:hover {
