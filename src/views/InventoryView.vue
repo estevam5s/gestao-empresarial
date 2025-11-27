@@ -829,12 +829,28 @@ async function loadCategories() {
 async function saveProduct() {
   saving.value = true
   try {
+    // Obter tenant_id do usuário logado
+    const userSession = localStorage.getItem('userSession')
+    if (!userSession) {
+      throw new Error('Usuário não está logado')
+    }
+
+    const user = JSON.parse(userSession)
+    const tenantId = user.id
+
     const productData = {
-      ...productForm.value,
-      estoque_atual: productForm.value.current_stock,
-      estoque_minimo: productForm.value.min_stock,
+      nome: productForm.value.nome,
+      descricao: productForm.value.descricao,
+      categoria_id: productForm.value.categoria_id,
+      codigo_barras: productForm.value.codigo_barras,
+      unidade: productForm.value.unidade,
+      preco_custo: productForm.value.custo, // ✅ Mapear custo → preco_custo
+      preco_venda: productForm.value.preco, // ✅ Mapear preco → preco_venda
+      current_stock: productForm.value.current_stock,
+      min_stock: productForm.value.min_stock,
+      max_stock: productForm.value.max_stock,
+      tenant_id: tenantId, // ✅ Adicionar tenant_id
       ativo: true,
-      created_by: authStore.user?.id,
       updated_at: new Date().toISOString()
     }
 

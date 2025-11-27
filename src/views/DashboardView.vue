@@ -957,34 +957,38 @@ function onSupportLogin() { isSupport.value = true }
 <style scoped>
 .back-to-site {
   position: fixed;
-  top: 20px;
-  right: 180px; /* Posicionado à direita, ao lado do botão de sair */
+  top: 24px;
+  right: 24px; /* Alinhado com o botão de sair */
   z-index: 9999;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  border-radius: 50px;
-  color: #4a5568;
+  border-radius: 12px;
+  color: #ef4444;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.back-to-site span {
+  display: none;
 }
 
 .back-to-site svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .back-to-site:hover {
   background: white;
-  transform: translateX(3px); /* Move para direita ao hover */
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-  color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  color: #dc2626;
 }
 
 .dashboard-container {
@@ -1177,19 +1181,29 @@ function onSupportLogin() { isSupport.value = true }
 }
 
 .logout-btn {
+  position: fixed;
+  top: 24px;
+  right: 84px; /* À esquerda do botão voltar ao site */
   background: #fef2f2;
   border: 2px solid #fecaca;
   border-radius: 12px;
-  padding: 12px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
   color: #dc2626;
   cursor: pointer;
   transition: all 0.3s ease;
+  z-index: 9998;
 }
 
 .logout-btn:hover {
   background: #dc2626;
   color: white;
   border-color: #dc2626;
+  transform: translateY(-2px);
 }
 
 /* Estatísticas rápidas */

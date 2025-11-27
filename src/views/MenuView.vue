@@ -646,6 +646,15 @@ async function loadCategories() {
 async function saveMenuItem() {
   saving.value = true
   try {
+    // Obter tenant_id do usuário logado
+    const userSession = localStorage.getItem('userSession')
+    if (!userSession) {
+      throw new Error('Usuário não está logado')
+    }
+
+    const user = JSON.parse(userSession)
+    const tenantId = user.id
+
     const tags = tagsInput.value
       ? tagsInput.value.split(',').map(tag => tag.trim()).filter(tag => tag)
       : []
@@ -653,8 +662,8 @@ async function saveMenuItem() {
     const itemData = {
       ...itemForm.value,
       tags,
+      tenant_id: tenantId, // ✅ Adicionar tenant_id
       ativo: true,
-      criado_por: authStore.user?.id,
       updated_at: new Date().toISOString()
     }
 
