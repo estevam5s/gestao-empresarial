@@ -532,7 +532,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { supabase, DB_TABLES } from '@/config/supabase'
-import { useAuthStore } from '@/stores/auth'
 
 // Icons
 import {

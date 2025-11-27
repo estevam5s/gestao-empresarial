@@ -639,7 +639,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { supabase, DB_TABLES } from '@/config/supabase'
-import { useAuthStore } from '@/stores/auth'
 import type { Product } from '@/types/product'
 import { Doughnut, Bar } from 'vue-chartjs'
 import {
