@@ -73,20 +73,17 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 }
 
 // Detectar quando o app está sendo instalado
-let _deferredPrompt: any
+// Feature temporariamente desabilitada
+/*
+let deferredPrompt: any
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Previne o prompt automático
   e.preventDefault()
-  // Salva o evento para mostrar depois
-  _deferredPrompt = e
+  deferredPrompt = e
   console.log('📱 App pode ser instalado! Use o prompt para instalar.')
-
-  // Opcional: Você pode criar um botão customizado para mostrar o prompt
-  // _deferredPrompt.prompt()
 })
 
-// Detectar quando o app foi instalado
 window.addEventListener('appinstalled', () => {
   console.log('✅ App instalado com sucesso!')
-  _deferredPrompt = null
+  deferredPrompt = null
 })
+*/

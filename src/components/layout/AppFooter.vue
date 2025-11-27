@@ -1,12 +1,5 @@
 <template>
   <footer class="app-footer">
-    <!-- Decorative wave -->
-    <div class="footer-wave">
-      <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-        <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
-      </svg>
-    </div>
-
     <div class="footer-content">
       <div class="footer-grid">
         <!-- Brand & Description -->
@@ -21,24 +14,24 @@
 
           <!-- Social Links -->
           <div class="social-links">
-            <a href="#" class="social-link" aria-label="LinkedIn">
-              <Linkedin :size="18" />
+            <a href="#" class="social-link" aria-label="LinkedIn" title="LinkedIn">
+              <Linkedin :size="20" />
             </a>
-            <a href="#" class="social-link" aria-label="GitHub">
-              <Github :size="18" />
+            <a href="#" class="social-link" aria-label="GitHub" title="GitHub">
+              <Github :size="20" />
             </a>
-            <a href="#" class="social-link" aria-label="Instagram">
-              <Instagram :size="18" />
+            <a href="#" class="social-link" aria-label="Instagram" title="Instagram">
+              <Instagram :size="20" />
             </a>
-            <a href="#" class="social-link" aria-label="YouTube">
-              <Youtube :size="18" />
+            <a href="#" class="social-link" aria-label="YouTube" title="YouTube">
+              <Youtube :size="20" />
             </a>
           </div>
         </div>
 
         <!-- Quick Links -->
         <div class="footer-col links-col">
-          <h4 class="footer-title">Links Rápidos</h4>
+          <h4 class="footer-title">LINKS RÁPIDOS</h4>
           <ul class="footer-links">
             <li><router-link to="/dashboard">Dashboard</router-link></li>
             <li><router-link to="/inventory">Estoque</router-link></li>
@@ -53,11 +46,11 @@
         <div class="footer-col download-col">
           <h4 class="footer-title">
             <Smartphone :size="18" />
-            Baixe o App
+            BAIXE O APP
           </h4>
 
           <button @click="downloadAPK" class="download-btn">
-            <Download :size="20" />
+            <Download :size="22" />
             <div class="download-info">
               <span class="download-label">Android APK</span>
               <span class="download-version">v{{ appVersion }}</span>
@@ -68,7 +61,7 @@
             <button @click="downloadViaQR" class="qr-code" title="Escanear QR Code">
               <img v-if="qrCodeDataUrl" :src="qrCodeDataUrl" alt="QR Code" class="qr-image" />
               <div v-else class="qr-placeholder">
-                <QrCode :size="60" />
+                <QrCode :size="80" />
               </div>
             </button>
             <span class="qr-label">Escanear QR Code</span>
@@ -77,15 +70,15 @@
           <!-- Contact Info -->
           <div class="contact-info">
             <div class="contact-item">
-              <Mail :size="14" />
+              <Mail :size="16" />
               <span>restpedacinhodoceu@gmail.com</span>
             </div>
             <div class="contact-item">
-              <Phone :size="14" />
+              <Phone :size="16" />
               <span>(48) 3237-7280</span>
             </div>
             <div class="contact-item">
-              <MapPin :size="14" />
+              <MapPin :size="16" />
               <span>Florianópolis - SC</span>
             </div>
           </div>
@@ -108,7 +101,7 @@
           <div class="copyright">
             <span>© {{ year }} {{ siteName }}. Todos os direitos reservados.</span>
             <div class="version-badge">
-              <Zap :size="10" />
+              <Zap :size="12" />
               <span>v{{ appVersion }}</span>
             </div>
           </div>
@@ -125,9 +118,9 @@
           </button>
 
           <div class="qr-modal-header">
-            <Smartphone :size="32" class="qr-modal-icon" />
+            <Smartphone :size="40" class="qr-modal-icon" />
             <h3>Escaneie para Baixar</h3>
-            <p>Aponte a câmera do seu celular</p>
+            <p>Aponte a câmera do seu celular para o QR Code</p>
           </div>
 
           <div class="qr-modal-body">
@@ -159,7 +152,7 @@
           </div>
 
           <div class="qr-modal-footer">
-            <p>📱 Android 5.0 ou superior</p>
+            <p>📱 Compatível com Android 5.0 ou superior</p>
           </div>
         </div>
       </div>
@@ -199,7 +192,7 @@ onMounted(async () => {
       width: 300,
       margin: 2,
       color: {
-        dark: '#000000',
+        dark: '#1e293b',
         light: '#FFFFFF'
       }
     })
@@ -210,7 +203,7 @@ onMounted(async () => {
 
 async function downloadAPK() {
   try {
-    showNotification('📥 Download iniciado!', 'O arquivo será baixado...', 'success')
+    showNotification('📥 Download iniciado!', 'O arquivo será baixado em instantes...', 'success')
 
     const link = document.createElement('a')
     link.href = apkDownloadUrl
@@ -222,14 +215,14 @@ async function downloadAPK() {
     setTimeout(() => document.body.removeChild(link), 1000)
   } catch (error) {
     console.error('Erro ao baixar APK:', error)
-    showNotification('⚠️ Erro', 'Abrindo em nova aba...', 'warning')
+    showNotification('⚠️ Atenção', 'Abrindo download em nova aba...', 'warning')
     setTimeout(() => window.open(apkDownloadUrl, '_blank'), 500)
   }
 }
 
 function downloadViaQR() {
   showQRModal.value = true
-  showNotification('📱 QR Code', 'Escaneie para baixar', 'info')
+  showNotification('📱 QR Code', 'Escaneie com seu celular', 'info')
 }
 
 function closeQRModal() {
@@ -248,26 +241,31 @@ function showNotification(title: string, message: string, type: 'success' | 'err
 
   Object.assign(notification.style, {
     position: 'fixed',
-    bottom: '20px',
-    right: '20px',
+    bottom: '24px',
+    right: '24px',
     backgroundColor: type === 'success' ? '#10b981' :
                      type === 'error' ? '#ef4444' :
                      type === 'warning' ? '#f59e0b' : '#3b82f6',
     color: 'white',
     padding: '16px 24px',
     borderRadius: '12px',
-    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
+    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.15)',
     zIndex: '99999',
-    maxWidth: '350px',
-    animation: 'slideInRight 0.3s ease-out',
-    fontSize: '14px'
+    maxWidth: '360px',
+    animation: 'slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    fontSize: '14px',
+    fontFamily: 'system-ui, -apple-system, sans-serif'
   })
 
   document.body.appendChild(notification)
 
   setTimeout(() => {
-    notification.style.animation = 'slideOutRight 0.3s ease-out'
-    setTimeout(() => document.body.removeChild(notification), 300)
+    notification.style.animation = 'slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    setTimeout(() => {
+      if (document.body.contains(notification)) {
+        document.body.removeChild(notification)
+      }
+    }, 300)
   }, 4000)
 }
 
@@ -276,38 +274,15 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 </script>
 
 <style scoped>
-/* Footer Wave */
-.footer-wave {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px;
-  overflow: hidden;
-  line-height: 0;
-}
-
-.footer-wave svg {
-  position: relative;
-  display: block;
-  width: calc(100% + 1.3px);
-  height: 60px;
-}
-
-.footer-wave path {
-  fill: rgba(102, 126, 234, 0.1);
-}
-
 /* Main Footer */
 .app-footer {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-top: 1px solid #e2e8f0;
-  position: relative;
+  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+  border-top: 1px solid #dee2e6;
   margin-top: 80px;
 }
 
 .footer-content {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 60px 40px 0;
 }
@@ -323,16 +298,17 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin-bottom: 20px;
 }
 
 .logo-container {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  background: white;
 }
 
 .brand-logo {
@@ -342,17 +318,19 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 }
 
 .brand-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: 22px;
+  font-weight: 800;
+  color: #212529;
   margin: 0;
+  letter-spacing: -0.5px;
 }
 
 .brand-description {
-  color: #64748b;
-  font-size: 14px;
-  line-height: 1.6;
-  margin: 0 0 20px 0;
+  color: #6c757d;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0 0 24px 0;
+  max-width: 400px;
 }
 
 .social-links {
@@ -361,33 +339,35 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 }
 
 .social-link {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 2px solid #e9ecef;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #64748b;
-  transition: all 0.3s ease;
+  color: #6c757d;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
 }
 
 .social-link:hover {
-  background: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-color: #667eea;
-  transform: translateY(-2px);
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.25);
 }
 
 /* Links Column */
 .footer-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #1e293b;
-  margin: 0 0 16px 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #212529;
+  margin: 0 0 20px 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -399,42 +379,62 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .footer-links a {
-  color: #64748b;
+  color: #6c757d;
   text-decoration: none;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
   transition: all 0.3s ease;
   display: inline-block;
+  position: relative;
+}
+
+.footer-links a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
 }
 
 .footer-links a:hover {
   color: #667eea;
-  transform: translateX(4px);
+}
+
+.footer-links a:hover::before {
+  width: 100%;
 }
 
 /* Download Column */
 .download-btn {
   width: 100%;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 12px;
-  padding: 14px 18px;
+  border-radius: 14px;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 24px;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
 .download-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.download-btn:active {
+  transform: translateY(-1px);
 }
 
 .download-info {
@@ -445,34 +445,41 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 }
 
 .download-label {
-  font-size: 13px;
-  opacity: 0.9;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.95;
 }
 
 .download-version {
-  font-size: 11px;
-  opacity: 0.7;
+  font-size: 12px;
+  opacity: 0.75;
+  font-weight: 500;
 }
 
 .qr-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 16px;
+  gap: 12px;
+  padding: 20px;
   background: white;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  margin-bottom: 20px;
+  border-radius: 14px;
+  border: 2px solid #e9ecef;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.qr-container:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
 }
 
 .qr-code {
-  background: white;
+  background: transparent;
   border: none;
-  padding: 8px;
-  border-radius: 8px;
+  padding: 0;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .qr-code:hover {
@@ -480,15 +487,15 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 }
 
 .qr-image {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   display: block;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .qr-placeholder {
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -496,33 +503,36 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 }
 
 .qr-label {
-  font-size: 12px;
-  color: #64748b;
+  font-size: 13px;
+  color: #6c757d;
+  font-weight: 600;
 }
 
 .contact-info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .contact-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #64748b;
+  gap: 10px;
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
 }
 
 .contact-item svg {
   flex-shrink: 0;
-  color: #94a3b8;
+  color: #667eea;
 }
 
 /* Footer Bottom */
 .footer-bottom {
-  border-top: 1px solid #e2e8f0;
-  padding: 24px 0;
+  border-top: 2px solid #e9ecef;
+  padding: 28px 0;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .footer-bottom-content {
@@ -530,19 +540,20 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 20px;
 }
 
 .legal-links {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 13px;
+  gap: 16px;
+  font-size: 14px;
 }
 
 .legal-links a {
-  color: #64748b;
+  color: #6c757d;
   text-decoration: none;
+  font-weight: 500;
   transition: color 0.3s ease;
 }
 
@@ -551,38 +562,40 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 }
 
 .separator {
-  color: #cbd5e1;
+  color: #dee2e6;
 }
 
 .copyright {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 13px;
-  color: #64748b;
+  gap: 14px;
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
 }
 
 .version-badge {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: rgba(102, 126, 234, 0.1);
+  gap: 6px;
+  background: rgba(102, 126, 234, 0.12);
   color: #667eea;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-/* QR Modal - Compact Version */
+/* QR Modal */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal-fade-enter-from,
 .modal-fade-leave-to {
   opacity: 0;
+  transform: scale(0.95);
 }
 
 .qr-modal-overlay {
@@ -592,7 +605,7 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -602,21 +615,34 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 
 .qr-modal-content {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 24px;
-  max-width: 450px;
+  border-radius: 28px;
+  max-width: 480px;
   width: 100%;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
   overflow: hidden;
+  position: relative;
+  animation: modalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .qr-modal-close {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 20px;
+  right: 20px;
   background: rgba(255, 255, 255, 0.2);
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -624,6 +650,7 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
   cursor: pointer;
   color: white;
   transition: all 0.3s ease;
+  z-index: 1;
 }
 
 .qr-modal-close:hover {
@@ -633,58 +660,64 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 
 .qr-modal-header {
   text-align: center;
-  padding: 32px 24px 20px;
+  padding: 40px 32px 24px;
   color: white;
 }
 
 .qr-modal-icon {
-  margin: 0 auto 12px;
+  margin: 0 auto 16px;
   display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
 }
 
 .qr-modal-header h3 {
-  font-size: 24px;
-  font-weight: 700;
-  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0 0 10px;
+  letter-spacing: -0.5px;
 }
 
 .qr-modal-header p {
-  font-size: 14px;
+  font-size: 15px;
   opacity: 0.9;
   margin: 0;
+  font-weight: 500;
 }
 
 .qr-modal-body {
-  padding: 0 24px 24px;
+  padding: 0 32px 32px;
 }
 
 .qr-code-container {
   background: white;
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 20px;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
   display: flex;
   justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .qr-image-large {
-  width: 250px;
-  height: 250px;
+  width: 260px;
+  height: 260px;
+  border-radius: 12px;
 }
 
 .qr-info {
   display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 14px;
+  margin-bottom: 24px;
 }
 
 .qr-info-item {
   flex: 1;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  padding: 12px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  padding: 14px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   color: white;
 }
@@ -693,11 +726,13 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
   font-size: 11px;
   opacity: 0.8;
   display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .qr-info-item span {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .qr-download-button {
@@ -705,29 +740,32 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
   background: white;
   color: #667eea;
   border: none;
-  padding: 14px 20px;
-  border-radius: 12px;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 16px 24px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .qr-download-button:hover {
   transform: translateY(-2px);
   background: #f8f9ff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
 .qr-modal-footer {
-  background: rgba(0, 0, 0, 0.2);
-  padding: 12px 24px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 16px 32px;
   text-align: center;
   color: white;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .qr-modal-footer p {
@@ -748,12 +786,12 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
 
 @media (max-width: 640px) {
   .footer-content {
-    padding: 40px 20px 0;
+    padding: 40px 24px 0;
   }
 
   .footer-grid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 36px;
   }
 
   .footer-bottom-content {
@@ -764,6 +802,23 @@ const siteDescriptionShort = 'Gestão profissional de estoque e operações para
   .legal-links {
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .qr-modal-content {
+    border-radius: 24px;
+  }
+
+  .qr-modal-header {
+    padding: 36px 24px 20px;
+  }
+
+  .qr-modal-body {
+    padding: 0 24px 24px;
+  }
+
+  .qr-image-large {
+    width: 220px;
+    height: 220px;
   }
 }
 

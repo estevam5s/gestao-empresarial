@@ -667,7 +667,8 @@ import * as XLSX from 'xlsx'
 import ChatInventoryModal from '@/components/ChatInventoryModal.vue'
 import { MessageCircle } from 'lucide-vue-next'
 
-const _authStore = useAuthStore()
+// Auth store disponível se necessário
+// const authStore = useAuthStore()
 
 const products = ref<Product[]>([])
 const categories = ref<any[]>([])
@@ -999,6 +1000,7 @@ function editProduct(product: Product) {
     custo: product.custo || 0,
     current_stock: product.current_stock,
     min_stock: product.min_stock,
+    max_stock: product.max_stock || 0,
     unidade: product.unidade,
     categoria_id: product.categoria_id || '',
     descricao: product.descricao || '',
@@ -1021,6 +1023,7 @@ function closeModal() {
     custo: 0,
     current_stock: 0,
     min_stock: 0,
+    max_stock: 0,
     unidade: 'unidade',
     categoria_id: '',
     descricao: '',
@@ -1086,6 +1089,7 @@ function duplicateProduct(product: Product) {
     custo: product.custo || 0,
     current_stock: 0,
     min_stock: product.min_stock,
+    max_stock: product.max_stock || 0,
     unidade: product.unidade,
     categoria_id: product.categoria_id || '',
     descricao: product.descricao || '',
