@@ -271,6 +271,18 @@ router.beforeEach(async (to) => {
     authStore.user = JSON.parse(stored)
   }
 
+  // ⭐ CRÍTICO: Configurar tenant_id na sessão PostgreSQL
+  // Isso garante isolamento de dados em TODAS as requisições
+  if (authStore.user?.id) {
+    try {
+      const { supabase } = await import('@/config/supabase')
+      await supabase.rpc('set_current_tenant', { tenant_uuid: authStore.user.id })
+      console.log('✓ Tenant configurado:', authStore.user.id)
+    } catch (error) {
+      console.error('⚠️ Erro ao configurar tenant:', error)
+    }
+  }
+
   const isAuthenticated = authStore.isAuthenticated
   const isAdmin = authStore.user?.role === 'admin'
 

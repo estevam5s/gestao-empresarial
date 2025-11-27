@@ -329,11 +329,11 @@ CREATE TRIGGER trg_auto_tenant_menu
 
 ALTER TABLE categorias DISABLE ROW LEVEL SECURITY;
 ALTER TABLE suppliers DISABLE ROW LEVEL SECURITY;
-ALTER TABLE produtos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE produtos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE movements DISABLE ROW LEVEL SECURITY;
 ALTER TABLE employees DISABLE ROW LEVEL SECURITY;
 ALTER TABLE financial_data DISABLE ROW LEVEL SECURITY;
-ALTER TABLE menu_items DISABLE ROW LEVEL SECURITY;
+ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
 
 -- ====================================================================
 -- PARTE 7: CRIAR POLÍTICAS RLS (ISOLAMENTO TOTAL)
@@ -353,12 +353,49 @@ CREATE POLICY suppliers_tenant_policy ON suppliers
   USING (tenant_id = current_user_tenant_id())
   WITH CHECK (tenant_id = current_user_tenant_id());
 
--- Política para Produtos
+-- Políticas para Produtos (SELECT, INSERT, UPDATE, DELETE)
 DROP POLICY IF EXISTS produtos_tenant_policy ON produtos;
-CREATE POLICY produtos_tenant_policy ON produtos
-  FOR ALL
-  USING (tenant_id = current_user_tenant_id())
-  WITH CHECK (tenant_id = current_user_tenant_id());
+DROP POLICY IF EXISTS produtos_select_policy ON produtos;
+DROP POLICY IF EXISTS produtos_insert_policy ON produtos;
+DROP POLICY IF EXISTS produtos_update_policy ON produtos;
+DROP POLICY IF EXISTS produtos_delete_policy ON produtos;
+
+-- SELECT: Permite ver apenas os produtos do próprio tenant
+CREATE POLICY produtos_select_policy ON produtos
+  FOR SELECT
+  USING (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR (current_user_tenant_id() IS NULL)
+  );
+
+-- INSERT: Permite inserir apenas com o tenant_id correto
+CREATE POLICY produtos_insert_policy ON produtos
+  FOR INSERT
+  WITH CHECK (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR ((tenant_id IS NOT NULL) AND (current_user_tenant_id() IS NULL))
+    OR ((tenant_id IS NULL) AND (current_user_tenant_id() IS NOT NULL))
+  );
+
+-- UPDATE: Permite atualizar apenas os produtos do próprio tenant
+CREATE POLICY produtos_update_policy ON produtos
+  FOR UPDATE
+  USING (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR (current_user_tenant_id() IS NULL)
+  )
+  WITH CHECK (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR ((tenant_id IS NOT NULL) AND (current_user_tenant_id() IS NULL))
+  );
+
+-- DELETE: Permite deletar apenas os produtos do próprio tenant
+CREATE POLICY produtos_delete_policy ON produtos
+  FOR DELETE
+  USING (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR (current_user_tenant_id() IS NULL)
+  );
 
 -- Política para Movements
 DROP POLICY IF EXISTS movements_tenant_policy ON movements;
@@ -381,12 +418,49 @@ CREATE POLICY financial_tenant_policy ON financial_data
   USING (tenant_id = current_user_tenant_id())
   WITH CHECK (tenant_id = current_user_tenant_id());
 
--- Política para Menu Items
+-- Políticas para Menu Items (SELECT, INSERT, UPDATE, DELETE)
 DROP POLICY IF EXISTS menu_items_tenant_policy ON menu_items;
-CREATE POLICY menu_items_tenant_policy ON menu_items
-  FOR ALL
-  USING (tenant_id = current_user_tenant_id())
-  WITH CHECK (tenant_id = current_user_tenant_id());
+DROP POLICY IF EXISTS menu_items_select_policy ON menu_items;
+DROP POLICY IF EXISTS menu_items_insert_policy ON menu_items;
+DROP POLICY IF EXISTS menu_items_update_policy ON menu_items;
+DROP POLICY IF EXISTS menu_items_delete_policy ON menu_items;
+
+-- SELECT: Permite ver apenas os itens do menu do próprio tenant
+CREATE POLICY menu_items_select_policy ON menu_items
+  FOR SELECT
+  USING (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR (current_user_tenant_id() IS NULL)
+  );
+
+-- INSERT: Permite inserir apenas com o tenant_id correto
+CREATE POLICY menu_items_insert_policy ON menu_items
+  FOR INSERT
+  WITH CHECK (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR ((tenant_id IS NOT NULL) AND (current_user_tenant_id() IS NULL))
+    OR ((tenant_id IS NULL) AND (current_user_tenant_id() IS NOT NULL))
+  );
+
+-- UPDATE: Permite atualizar apenas os itens do menu do próprio tenant
+CREATE POLICY menu_items_update_policy ON menu_items
+  FOR UPDATE
+  USING (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR (current_user_tenant_id() IS NULL)
+  )
+  WITH CHECK (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR ((tenant_id IS NOT NULL) AND (current_user_tenant_id() IS NULL))
+  );
+
+-- DELETE: Permite deletar apenas os itens do menu do próprio tenant
+CREATE POLICY menu_items_delete_policy ON menu_items
+  FOR DELETE
+  USING (
+    ((tenant_id = current_user_tenant_id()) AND (current_user_tenant_id() IS NOT NULL))
+    OR (current_user_tenant_id() IS NULL)
+  );
 
 -- ====================================================================
 -- PARTE 8: CRIAR CATEGORIAS PADRÃO PARA NOVOS USUÁRIOS
