@@ -540,7 +540,7 @@ import {
   Clock, Users, TrendingUp, Package, Edit, X
 } from 'lucide-vue-next'
 
-const authStore = useAuthStore()
+const _authStore = useAuthStore()
 
 // Types
 interface MenuItem {

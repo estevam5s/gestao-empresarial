@@ -667,7 +667,7 @@ import * as XLSX from 'xlsx'
 import ChatInventoryModal from '@/components/ChatInventoryModal.vue'
 import { MessageCircle } from 'lucide-vue-next'
 
-const authStore = useAuthStore()
+const _authStore = useAuthStore()
 
 const products = ref<Product[]>([])
 const categories = ref<any[]>([])
@@ -699,6 +699,7 @@ const productForm = ref({
   custo: 0,
   current_stock: 0,
   min_stock: 0,
+  max_stock: 0,
   unidade: 'unidade',
   categoria_id: '',
   descricao: '',

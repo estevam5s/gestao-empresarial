@@ -45,7 +45,7 @@ import CookiesView from '@/views/legal/CookiesView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(to, _from, savedPosition) {
     // Se houver uma posição salva (ex: botão voltar do navegador), use-a
     if (savedPosition) {
       return savedPosition
