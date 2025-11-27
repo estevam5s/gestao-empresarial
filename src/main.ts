@@ -7,6 +7,11 @@ import { initializeLogsSystem } from '@/setup/initializeLogsSystem'
 // Import apenas para efeitos colaterais (expor em window)
 import '@/utils/debugAvatar'
 import LogSystemInitializer from '@/utils/initializeLogs'
+// Verificar variáveis de ambiente
+import { logEnvironmentCheck } from '@/utils/checkEnv'
+
+// Verificar variáveis de ambiente antes de iniciar
+logEnvironmentCheck()
 
 const app = createApp(App)
 

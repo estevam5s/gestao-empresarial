@@ -32,9 +32,17 @@ class DatabaseStatsService {
   private tableCategoriesMap: Map<string, string> = new Map()
 
   private getProjectInfo() {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    if (!supabaseUrl) {
+      throw new Error('VITE_SUPABASE_URL não está configurada! Verifique as variáveis de ambiente.')
+    }
+
+    // Extrair project ID da URL (formato: https://PROJECT_ID.supabase.co)
+    const projectId = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/)?.[1] || 'unknown'
+
     return {
-      projectId: import.meta.env.VITE_SUPABASE_PROJECT_ID || 'cxusoclwtixtjwghjlcj',
-      url: import.meta.env.VITE_SUPABASE_URL || 'https://cxusoclwtixtjwghjlcj.supabase.co',
+      projectId,
+      url: supabaseUrl,
       planType: 'free' as const,
       maxDbSize: this.FREE_PLAN_DB_LIMIT,
       maxStorage: this.FREE_PLAN_STORAGE_LIMIT
