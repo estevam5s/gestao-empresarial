@@ -50,6 +50,17 @@
               </svg>
             </router-link>
 
+            <!-- Botão Instalar App Desktop -->
+            <button 
+              v-if="isPWAInstallable" 
+              @click="installPWA" 
+              class="install-pwa-btn" 
+              title="Instalar como aplicativo"
+            >
+              <Download :size="18" />
+              <span class="install-text">Instalar App</span>
+            </button>
+
             <!-- Logout -->
             <button @click="handleLogout" class="logout-btn" title="Sair">
               <LogOut :size="18" />
@@ -413,7 +424,7 @@ import {
   BarChart3, Plus, Minus, ArrowRight, TrendingUp, TrendingDown, AlertTriangle,
   RefreshCw, CheckCircle, X, PieChart, Activity, ExternalLink,
   Loader2, Settings, Sliders, Users, ChefHat, Info, DollarSign, FileText,
-  AlertCircle, XCircle, FolderX
+  AlertCircle, XCircle, FolderX, Download
 } from 'lucide-vue-next'
 
 // Importar configurações do Chart.js
@@ -456,6 +467,36 @@ const showProfile = ref(false)
 // const showAddProduct = ref(false)
 const selectedPeriod = ref('7d')
 const isDevelopment = ref(import.meta.env.DEV)
+
+// PWA Install functionality
+const isPWAInstallable = ref(false)
+let deferredPrompt: any = null
+
+const installPWA = async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
+    if (outcome === 'accepted') {
+      console.log('PWA instalado com sucesso')
+    }
+    deferredPrompt = null
+    isPWAInstallable.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('beforeinstallprompt', (e: any) => {
+    e.preventDefault()
+    deferredPrompt = e
+    isPWAInstallable.value = true
+  })
+  
+  window.addEventListener('appinstalled', () => {
+    console.log('PWA instalado pelo usuário')
+    isPWAInstallable.value = false
+    deferredPrompt = null
+  })
+})
 
 // Dados do dashboard
 const quickStats = ref([
@@ -1193,6 +1234,26 @@ function onSupportLogin() { isSupport.value = true }
   color: white;
   border-color: #dc2626;
   transform: translateY(-2px);
+}
+
+.install-pwa-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.install-pwa-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
 
 /* Estatísticas rápidas */
@@ -2010,6 +2071,10 @@ function onSupportLogin() { isSupport.value = true }
   }
 
   .search-container {
+    display: none;
+  }
+
+  .install-text {
     display: none;
   }
 }
