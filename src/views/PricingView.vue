@@ -3,7 +3,7 @@
     <!-- Navbar -->
     <nav class="navbar">
       <div class="nav-content">
-        <router-link to="/" class="nav-brand"><span class="logo-text">GestãoZe</span></router-link>
+        <BrandLogo to="/" :size="36" :text-size="20" />
         <div class="nav-actions">
           <router-link v-if="!isAuth" to="/login" class="btn btn-ghost">Entrar</router-link>
           <router-link v-if="!isAuth" to="/register" class="btn btn-primary">Criar conta grátis</router-link>
@@ -72,6 +72,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import BrandLogo from '@/components/BrandLogo.vue'
 import { billingService, type Plan } from '@/services/billingService'
 import { authService } from '@/services/authService'
 

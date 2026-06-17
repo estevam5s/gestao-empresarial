@@ -2,7 +2,7 @@
   <div class="admin">
     <!-- Sidebar -->
     <aside class="sidebar">
-      <div class="brand">GestãoZe <span>Admin</span></div>
+      <div class="brand"><img src="/logo-round.png" alt="" class="brand-img" />GestãoZe <span>Admin</span></div>
       <nav>
         <button v-for="t in tabs" :key="t.id" :class="{ active: tab === t.id }" @click="go(t.id)">
           <span class="ic">{{ t.icon }}</span> {{ t.label }}
@@ -315,7 +315,8 @@ onMounted(() => loadTab(tab.value))
 <style scoped>
 .admin { display: flex; min-height: 100vh; background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; }
 .sidebar { width: 230px; background: #111827; border-right: 1px solid #1f2937; padding: 20px 14px; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
-.brand { font-size: 18px; font-weight: 800; margin-bottom: 22px; padding: 0 8px; }
+.brand { font-size: 18px; font-weight: 800; margin-bottom: 22px; padding: 0 8px; display: flex; align-items: center; gap: 8px; }
+.brand-img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
 .brand span { color: #34d399; }
 .sidebar nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
 .sidebar nav button { display: flex; align-items: center; gap: 10px; background: none; border: 0; color: #94a3b8; padding: 10px 12px; border-radius: 9px; font-weight: 600; font-size: 14px; cursor: pointer; text-align: left; }

@@ -171,12 +171,12 @@ import QRCode from 'qrcode'
 const appVersion = (import.meta as any).env?.VITE_APP_VERSION || '1.0.0'
 const year = new Date().getFullYear()
 
-const logoSrc = computed(() => '/images/site-icon.png')
+const logoSrc = computed(() => '/logo-round.png')
 
 function onLogoError(e: Event) {
   const el = e.target as HTMLImageElement
-  if (el && el.src.indexOf('/restaurante.jpeg') === -1) {
-    el.src = '/restaurante.jpeg'
+  if (el && el.src.indexOf('/logo-round.png') === -1) {
+    el.src = '/logo-round.png'
   }
 }
 

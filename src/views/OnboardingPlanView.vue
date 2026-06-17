@@ -1,7 +1,7 @@
 <template>
   <div class="ob">
     <div class="ob-head">
-      <div class="logo-text">GestãoZe</div>
+      <BrandLogo :size="44" :text-size="24" style="justify-content:center;margin-bottom:12px" />
       <h1>Bem-vindo! Escolha como começar 🎉</h1>
       <p>Sua conta foi criada. Comece grátis ou ative um plano com <strong>7 dias de teste</strong> — sem cobrança hoje.</p>
       <div class="cycle-toggle">
@@ -34,6 +34,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { billingService, type Plan } from '@/services/billingService'
+import BrandLogo from '@/components/BrandLogo.vue'
 
 const route = useRoute()
 const router = useRouter()

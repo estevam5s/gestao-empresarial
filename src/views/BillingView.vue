@@ -2,7 +2,8 @@
   <div class="billing">
     <div class="topbar">
       <router-link to="/dashboard" class="back">← Painel</router-link>
-      <div class="logo-text">Assinatura</div>
+      <BrandLogo to="/dashboard" :size="32" :text-size="18" />
+      <div class="logo-text">· Assinatura</div>
     </div>
 
     <div v-if="statusMsg" class="banner" :class="statusType">{{ statusMsg }}</div>
@@ -81,6 +82,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { billingService, type Plan, type Subscription } from '@/services/billingService'
+import BrandLogo from '@/components/BrandLogo.vue'
 
 const route = useRoute()
 const loading = ref(true)
