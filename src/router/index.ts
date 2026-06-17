@@ -13,6 +13,7 @@ import AppsView from '@/views/AppsView.vue'
 import LoginView from '@/views/LoginView.vue'
 import OnboardingPlanView from '@/views/OnboardingPlanView.vue'
 import BillingView from '@/views/BillingView.vue'
+import AdminView from '@/views/AdminView.vue'
 
 // Dashboard (Authenticated)
 import DashboardView from '@/views/DashboardView.vue'
@@ -202,6 +203,13 @@ const router = createRouter({
       name: 'documentation',
       component: DocumentationView,
       meta: { requiresAuth: true }
+    },
+    // Painel administrativo SaaS (novo)
+    {
+      path: '/admin',
+      name: 'admin',
+      component: AdminView,
+      meta: { requiresAuth: true, requiresAdmin: true }
     },
     // Rotas administrativas
     {
