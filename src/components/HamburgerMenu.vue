@@ -20,10 +20,10 @@
         <nav class="sidebar-menu" @click.stop>
           <div class="menu-header">
             <div class="logo-section">
-              <div class="logo-icon">📦</div>
+              <img src="/logo-round.png" alt="GestãoZe" class="logo-icon-img" />
               <div class="logo-text">
                 <h2>GestãoZe</h2>
-                <p>Sistema de Estoque</p>
+                <p>Gestão para alimentação</p>
               </div>
             </div>
             <button class="close-button" @click="closeMenu" aria-label="Fechar menu">
@@ -466,6 +466,15 @@ watch(isMenuOpen, (isOpen) => {
 .logo-icon {
   font-size: 28px;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
+
+.logo-icon-img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .logo-text h2 {

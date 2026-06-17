@@ -4,9 +4,10 @@
     <nav class="navbar" :class="{ 'scrolled': scrolled }">
       <div class="nav-content">
         <div class="nav-brand">
-          <div class="logo">
-            <span class="logo-text">GestaoZe</span>
-          </div>
+          <router-link to="/" class="logo">
+            <img src="/logo-round.png" alt="GestãoZe" class="logo-img" />
+            <span class="logo-text">GestãoZe</span>
+          </router-link>
         </div>
 
         <div class="nav-menu" :class="{ 'mobile-open': mobileMenuOpen }">
@@ -579,6 +580,21 @@ onUnmounted(() => {
 .nav-brand {
   display: flex;
   align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
 }
 
 .logo-text {
