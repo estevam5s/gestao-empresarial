@@ -107,6 +107,15 @@
             <!-- Seção Administração (apenas para admins) -->
             <div v-if="isAdmin" class="menu-section">
               <h3>Administração</h3>
+              <router-link to="/admin" @click="closeMenu" class="menu-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="3" width="7" height="9" rx="1" stroke="currentColor" stroke-width="2"/>
+                  <rect x="14" y="3" width="7" height="5" rx="1" stroke="currentColor" stroke-width="2"/>
+                  <rect x="14" y="12" width="7" height="9" rx="1" stroke="currentColor" stroke-width="2"/>
+                  <rect x="3" y="16" width="7" height="5" rx="1" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                Painel Admin (SaaS)
+              </router-link>
               <router-link to="/admin/users" @click="closeMenu" class="menu-item">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -171,6 +180,13 @@
             <!-- Seção Configurações -->
             <div class="menu-section">
               <h3>Configurações</h3>
+              <router-link to="/dashboard/billing" @click="closeMenu" class="menu-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <rect x="2" y="5" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M2 10H22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Assinatura e plano
+              </router-link>
               <router-link to="/profile" @click="closeMenu" class="menu-item">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                   <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
