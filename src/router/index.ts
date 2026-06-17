@@ -11,6 +11,8 @@ import AppsView from '@/views/AppsView.vue'
 
 // Auth
 import LoginView from '@/views/LoginView.vue'
+import OnboardingPlanView from '@/views/OnboardingPlanView.vue'
+import BillingView from '@/views/BillingView.vue'
 
 // Dashboard (Authenticated)
 import DashboardView from '@/views/DashboardView.vue'
@@ -115,6 +117,18 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/onboarding/plano',
+      name: 'onboarding-plan',
+      component: OnboardingPlanView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/dashboard/billing',
+      name: 'billing',
+      component: BillingView,
       meta: { requiresAuth: true }
     },
     {

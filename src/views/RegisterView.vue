@@ -225,6 +225,17 @@
               </div>
             </div>
 
+            <!-- Termos / privacidade / cookies (LGPD) -->
+            <label class="terms-row">
+              <input type="checkbox" v-model="formData.acceptedTerms" :disabled="loading" />
+              <span>
+                Li e aceito os
+                <router-link to="/legal/terms" target="_blank">Termos</router-link>, o
+                <router-link to="/legal/privacy" target="_blank">Aviso de Privacidade</router-link>
+                e a <router-link to="/legal/cookies" target="_blank">Política de Cookies</router-link>.
+              </span>
+            </label>
+
             <!-- Mensagem de erro -->
             <transition name="error-slide">
               <div v-if="error" class="error-message">
@@ -345,14 +356,15 @@ const isFormValid = computed(() => {
     formData.value.email &&
     formData.value.ownerName &&
     formData.value.password &&
-    formData.value.confirmPassword
+    formData.value.confirmPassword &&
+    formData.value.acceptedTerms
   )
 })
 
 const features = [
   {
     icon: '✓',
-    title: '14 dias grátis',
+    title: '7 dias grátis',
     description: 'Teste completo sem compromisso'
   },
   {
@@ -421,7 +433,7 @@ async function handleRegister() {
     // Importar o serviço de registro
     const { registrationService } = await import('@/services/registrationService')
 
-    // Registrar a empresa e usuário
+    // Registrar a empresa e usuário (Supabase Auth)
     const result = await registrationService.registerTenant({
       companyName: formData.value.companyName,
       email: formData.value.email,
@@ -429,7 +441,7 @@ async function handleRegister() {
       cnpj: formData.value.cnpj,
       ownerName: formData.value.ownerName,
       password: formData.value.password,
-      planSlug: route.query.plan as string || 'profissional'
+      planSlug: (route.query.plan as string) || undefined,
     })
 
     loadingProgress.value = 100
@@ -443,14 +455,15 @@ async function handleRegister() {
         return
       }
 
-      // Redireciona para o login com mensagem de sucesso
-      router.push({
-        path: '/login',
-        query: {
-          registered: 'true',
-          email: formData.value.email
-        }
-      })
+      // Conta criada com sessão ativa → escolher plano. Sem sessão (confirmação por e-mail) → login.
+      if (result.hasSession) {
+        const q: Record<string, string> = {}
+        if (route.query.plan) q.plan = route.query.plan as string
+        if (route.query.cycle) q.cycle = route.query.cycle as string
+        router.push({ path: '/onboarding/plano', query: q })
+      } else {
+        router.push({ path: '/login', query: { registered: 'true', email: formData.value.email } })
+      }
     }, 500)
   } catch (err) {
     console.error('Erro no registro:', err)
@@ -1152,6 +1165,19 @@ onMounted(() => {
 .checkbox-text a:hover {
   text-decoration: underline;
 }
+
+/* Termos / LGPD */
+.terms-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #4a5568;
+  line-height: 1.45;
+}
+.terms-row input { margin-top: 3px; width: 16px; height: 16px; accent-color: #16a34a; }
+.terms-row a { color: #3b82f6; font-weight: 600; text-decoration: none; }
+.terms-row a:hover { text-decoration: underline; }
 
 /* Mensagem de validação */
 .validation-message {

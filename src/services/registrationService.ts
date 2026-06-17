@@ -27,53 +27,32 @@ export class RegistrationService {
   /**
    * ⭐ SIMPLIFICADO: Registra um novo usuário (sem tenant!)
    */
-  async registerTenant(data: RegistrationData): Promise<RegistrationResult> {
+  async registerTenant(data: RegistrationData & { heardAbout?: string }): Promise<RegistrationResult & { hasSession?: boolean }> {
     try {
-      // 1. Verificar se o email já está cadastrado
-      const { data: existingUser } = await supabase
-        .from(DB_TABLES.USERS)
-        .select('id')
-        .eq('email', data.email)
-        .single()
+      // username derivado do e-mail (único garantido por trigger no banco)
+      const username = (data.email.split('@')[0] || 'user').replace(/[^a-zA-Z0-9_]/g, '').toLowerCase()
 
-      if (existingUser) {
-        return {
-          success: false,
-          error: 'Este email já está cadastrado no sistema.'
-        }
+      const res = await authService.signUp({
+        email: data.email,
+        password: data.password,
+        name: data.ownerName,
+        username,
+        heard_about: data.heardAbout,
+      })
+
+      if (!res.success) {
+        return { success: false, error: res.error || 'Erro ao criar conta.' }
       }
 
-      // 2. Criar usuário
-      const hashedPassword = await authService.hashPassword(data.password)
-
-      const { data: user, error: userError } = await supabase
-        .from(DB_TABLES.USERS)
-        .insert({
-          email: data.email,
-          username: data.email, // Usa email como username
-          password_hash: hashedPassword,
-          name: data.ownerName,
-          role: 'user',
-          is_active: true
-        })
-        .select()
-        .single()
-
-      if (userError || !user) {
-        console.error('Erro ao criar usuário:', userError)
-        return {
-          success: false,
-          error: 'Erro ao criar usuário. Tente novamente.'
-        }
+      // Completa o perfil com dados da empresa
+      if (res.user?.id) {
+        await supabase
+          .from('profiles')
+          .update({ company_name: data.companyName || null, phone: data.phone || null })
+          .eq('id', res.user.id)
       }
 
-      console.log('✓ Usuário criado com sucesso:', user.id)
-      console.log('✓ Trigger criou 8 categorias padrão automaticamente')
-
-      return {
-        success: true,
-        userId: user.id
-      }
+      return { success: true, userId: res.user?.id, hasSession: res.hasSession }
     } catch (error) {
       console.error('Erro no registro:', error)
       return {

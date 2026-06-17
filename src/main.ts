@@ -21,6 +21,24 @@ app.use(logInterceptorPlugin)
 
 app.mount('#app')
 
+// Sincroniza a sessão real do Supabase Auth com o estado local.
+// Em logout/expiração do refresh token, limpa a sessão local (segurança).
+import { supabase } from '@/config/supabase'
+import { authService } from '@/services/authService'
+import { useAuthStore } from '@/stores/auth'
+authService.syncFromSupabase().then((u) => { if (u) useAuthStore().user = u })
+supabase.auth.onAuthStateChange((event) => {
+  const store = useAuthStore()
+  if (event === 'SIGNED_OUT') {
+    localStorage.removeItem('userSession')
+    localStorage.removeItem('currentTenantId')
+    store.user = null
+    if (router.currentRoute.value.meta.requiresAuth) router.push('/login')
+  } else if (event === 'TOKEN_REFRESHED' || event === 'SIGNED_IN') {
+    authService.syncFromSupabase().then((u) => { if (u) store.user = u })
+  }
+})
+
 // Initialize logs system after mounting
 initializeLogsSystem({
   enableInterceptors: true,

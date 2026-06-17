@@ -1,117 +1,134 @@
-import { supabase, DB_TABLES } from '@/config/supabase'
+import { supabase } from '@/config/supabase'
 import type { User } from '@/types/auth'
 
+// Autenticação real via Supabase Auth (JWT + refresh token rotacionado).
+// Mantém o mesmo formato de `userSession` no localStorage para compatibilidade
+// com os serviços existentes (que usam userSession.id como tenant_id).
 export class AuthService {
   private currentUser: User | null = null
 
   constructor() {
-    // Inicializar usuário do localStorage ao criar o serviço
     this.loadUserFromStorage()
   }
 
   private loadUserFromStorage() {
     try {
-      const userSession = localStorage.getItem('userSession')
-      if (userSession) {
-        this.currentUser = JSON.parse(userSession)
-        console.log('✅ Usuário carregado do localStorage:', this.currentUser?.username)
-      }
-    } catch (error) {
-      console.error('❌ Erro ao carregar usuário do localStorage:', error)
+      const s = localStorage.getItem('userSession')
+      if (s) this.currentUser = JSON.parse(s)
+    } catch {
       localStorage.removeItem('userSession')
     }
   }
 
-  async hashPassword(password: string): Promise<string> {
-    let hash = 0
-    const saltedPassword = password + 'gestaozesystem_salt_2025'
+  private async buildSession(authUser: any): Promise<User> {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authUser.id)
+      .single()
 
-    for (let i = 0; i < saltedPassword.length; i++) {
-      const char = saltedPassword.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
-      hash = hash & hash
+    const user: User = {
+      id: authUser.id,
+      username: profile?.username || authUser.email?.split('@')[0] || '',
+      email: profile?.email || authUser.email || '',
+      name: profile?.name || authUser.user_metadata?.name || authUser.email?.split('@')[0] || '',
+      role: profile?.role || 'user',
+      avatar_url: profile?.avatar_url,
+      tenant_id: authUser.id,
     }
-
-    return Math.abs(hash).toString(16)
+    localStorage.setItem('userSession', JSON.stringify(user))
+    localStorage.setItem('currentTenantId', authUser.id)
+    this.currentUser = user
+    return user
   }
 
-  async login(username: string, password: string) {
+  // Aceita login por e-mail OU username
+  async login(login: string, password: string) {
     try {
-      const hashedPassword = await this.hashPassword(password)
-
-      const { data, error } = await supabase
-        .from(DB_TABLES.USERS)
-        .select('*')
-        .eq('username', username)
-        .eq('is_active', true)
-        .single()
-
-      if (error || !data) {
-        throw new Error('Usuário não encontrado')
+      let email = login.trim()
+      if (!email.includes('@')) {
+        const { data } = await supabase.rpc('resolve_login_email', { login: email })
+        if (data) email = data as string
       }
 
-      const storedHash = data.password_hash || data.senha
-      if (!storedHash || storedHash !== hashedPassword) {
-        throw new Error('Senha incorreta')
-      }
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error || !data.user) throw new Error(error?.message || 'Credenciais inválidas')
 
-      // ⭐ CRÍTICO: Configurar tenant_id na sessão (tenant_id = id do usuário)
-      if (data.id) {
-        try {
-          // Cada usuário tem tenant_id = seu próprio id
-          await supabase.rpc('set_current_tenant', { tenant_uuid: data.id })
-          console.log('✓ Tenant configurado na sessão:', data.id)
-
-          // Armazenar tenant_id no localStorage também (backup)
-          localStorage.setItem('currentTenantId', data.id)
-        } catch (rpcError) {
-          console.error('⚠️ ERRO CRÍTICO: Não foi possível configurar tenant na sessão!')
-          console.error('Detalhes:', rpcError)
-          throw new Error('Erro ao configurar sessão do usuário. Por favor, tente novamente.')
-        }
-      }
-
-      const userSession: User = {
-        id: data.id,
-        username: data.username,
-        email: data.email,
-        name: data.name,
-        role: data.role,
-        avatar_url: data.avatar_url
-      }
-
-      localStorage.setItem('userSession', JSON.stringify(userSession))
-      this.currentUser = userSession
-
-      // Atualizar último login
-      await supabase
-        .from(DB_TABLES.USERS)
-        .update({
-          last_login: new Date().toISOString(),
-          login_count: (data.login_count || 0) + 1
-        })
-        .eq('id', data.id)
-
-      return { success: true, user: userSession }
+      const user = await this.buildSession(data.user)
+      supabase.from('profiles').update({ last_login: new Date().toISOString() }).eq('id', user.id).then(() => {})
+      return { success: true, user }
     } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      const msg = error instanceof Error ? error.message : 'Erro desconhecido'
+      const friendly = /invalid login credentials/i.test(msg)
+        ? 'E-mail/usuário ou senha incorretos.'
+        : msg
+      return { success: false, error: friendly }
+    }
+  }
+
+  async signUp(params: { email: string; password: string; name: string; username?: string; heard_about?: string }) {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: params.email,
+        password: params.password,
+        options: {
+          data: {
+            name: params.name,
+            full_name: params.name,
+            username: params.username,
+            heard_about: params.heard_about,
+          },
+        },
+      })
+      if (error) throw error
+
+      if (data.session && data.user) {
+        const user = await this.buildSession(data.user)
+        if (params.heard_about) {
+          supabase.from('signup_sources').insert({ user_id: data.user.id, source: params.heard_about }).then(() => {})
+        }
+        return { success: true, user, hasSession: true }
       }
+      return { success: true, hasSession: false }
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Erro ao criar conta'
+      const friendly = /already registered|already been registered/i.test(msg)
+        ? 'Este e-mail já está cadastrado. Faça login.'
+        : msg
+      return { success: false, error: friendly }
     }
   }
 
   async logout() {
+    try {
+      // scope 'global' invalida o refresh token no servidor (todas as sessões)
+      await supabase.auth.signOut({ scope: 'global' })
+    } catch { /* noop */ }
     localStorage.removeItem('userSession')
+    localStorage.removeItem('currentTenantId')
     this.currentUser = null
     return { success: true }
   }
 
-  getCurrentUser(): User | null {
-    // Se não tiver usuário em memória, tenta recarregar do localStorage
-    if (!this.currentUser) {
-      this.loadUserFromStorage()
+  // Re-sincroniza com a sessão real do Supabase (chamado no boot do app)
+  async syncFromSupabase(): Promise<User | null> {
+    const { data } = await supabase.auth.getSession()
+    if (!data.session?.user) {
+      localStorage.removeItem('userSession')
+      localStorage.removeItem('currentTenantId')
+      this.currentUser = null
+      return null
     }
+    return this.buildSession(data.session.user)
+  }
+
+  async getAccessToken(): Promise<string | null> {
+    const { data } = await supabase.auth.getSession()
+    return data.session?.access_token ?? null
+  }
+
+  getCurrentUser(): User | null {
+    if (!this.currentUser) this.loadUserFromStorage()
     return this.currentUser
   }
 

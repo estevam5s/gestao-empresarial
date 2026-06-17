@@ -1,2 +1,1 @@
-Login: kaja522@uorak.com
-Senha: Kaja522@uorak.com
+Conta github do supabase

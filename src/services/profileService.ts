@@ -127,36 +127,17 @@ class ProfileService {
     try {
       const user = this.getCurrentUser()
 
-      // Verificar senha atual
-      const hashedCurrentPassword = await authService.hashPassword(currentPassword)
-
-      const { data, error: verifyError } = await supabase
-        .from(DB_TABLES.USERS)
-        .select('password_hash, senha')
-        .eq('id', user.id)
-        .single()
-
+      // Verifica a senha atual reautenticando no Supabase Auth
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: currentPassword,
+      })
       if (verifyError) {
-        throw new Error('Erro ao verificar senha atual')
-      }
-
-      const storedHash = data.password_hash || data.senha
-      if (!storedHash || storedHash !== hashedCurrentPassword) {
         throw new Error('Senha atual incorreta')
       }
 
-      // Atualizar com nova senha
-      const hashedNewPassword = await authService.hashPassword(newPassword)
-
-      const { error: updateError } = await supabase
-        .from(DB_TABLES.USERS)
-        .update({
-          password_hash: hashedNewPassword,
-          senha: hashedNewPassword, // Compatibilidade
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
-
+      // Atualiza a senha (Supabase Auth)
+      const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
       if (updateError) {
         throw new Error(`Erro ao atualizar senha: ${updateError.message}`)
       }
