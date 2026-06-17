@@ -183,6 +183,112 @@
         </table>
       </section>
 
+      <!-- OFERTAS -->
+      <section v-if="tab === 'offers'">
+        <h1>Ofertas e promoções</h1>
+        <p class="muted">Ofertas ativas aparecem como <strong>anúncio no topo do site</strong>, com contador regressivo.</p>
+        <button class="mini ok" style="margin:12px 0" @click="newOffer">+ Nova oferta</button>
+
+        <div v-if="editingOffer" class="offer-form">
+          <input v-model="editingOffer.title" placeholder="Título (ex: Black Friday)" />
+          <input v-model="editingOffer.discount_label" placeholder="Selo (ex: 30% OFF)" />
+          <input v-model="editingOffer.coupon_code" placeholder="Cupom (ex: BLACKFRIDAY30)" />
+          <input v-model="editingOffer.description" placeholder="Descrição" class="wide" />
+          <label class="inline">Cor <input type="color" v-model="editingOffer.bg_color" /></label>
+          <label class="inline">Termina em <input type="datetime-local" v-model="editingOffer.ends_at" /></label>
+          <label class="inline"><input type="checkbox" v-model="editingOffer.active" /> Ativa</label>
+          <div><button class="mini ok" @click="saveOffer">Salvar</button> <button class="mini" @click="editingOffer = null">Cancelar</button></div>
+        </div>
+
+        <table class="tbl">
+          <thead><tr><th>Título</th><th>Selo</th><th>Cupom</th><th>Termina</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr v-for="o in offers" :key="o.id">
+              <td>{{ o.title }}</td><td><span class="tag">{{ o.discount_label }}</span></td><td>{{ o.coupon_code }}</td>
+              <td>{{ o.ends_at ? fmtDateTime(o.ends_at) : '—' }}</td>
+              <td><span class="badge" :class="o.active ? 'b-ok' : 'b-off'">{{ o.active ? 'Ativa' : 'Inativa' }}</span></td>
+              <td><button class="mini" @click="editingOffer = { ...o, ends_at: o.ends_at ? o.ends_at.slice(0,16) : '' }">Editar</button> <button class="mini danger" @click="removeOffer(o.id)">Excluir</button></td>
+            </tr>
+            <tr v-if="!offers.length"><td colspan="6" class="muted">Nenhuma oferta.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- VISITANTES -->
+      <section v-if="tab === 'visitors'">
+        <h1>Visitantes (global)</h1>
+        <template v-if="visitors">
+          <div class="cards small">
+            <div class="kpi2"><strong>{{ visitors.total }}</strong><span>Visitas (últimas 1000)</span></div>
+            <div class="kpi2"><strong>{{ Object.keys(visitors.byCountry).length }}</strong><span>Países</span></div>
+            <div class="kpi2"><strong>{{ visitors.byDevice.desktop || 0 }}</strong><span>Desktop</span></div>
+            <div class="kpi2"><strong>{{ visitors.byDevice.mobile || 0 }}</strong><span>Mobile</span></div>
+          </div>
+          <div class="panel" style="margin-top:18px">
+            <h3>Por país 🌍</h3>
+            <div v-for="(info, cc) in visitors.byCountry" :key="cc" class="dist-row">
+              <span class="dist-name">{{ flag(String(cc)) }} {{ info.name }}</span>
+              <div class="dist-bar"><div :style="{ width: visitorBarW(info.count) + '%' }"></div></div>
+              <span class="dist-val">{{ info.count }}</span>
+            </div>
+            <p v-if="!Object.keys(visitors.byCountry).length" class="muted">Sem visitas registradas ainda. O rastreamento começa a contar a partir de agora.</p>
+          </div>
+          <p class="muted" style="margin-top:12px">🌐 Mapa/globo 3D interativo planejado como evolução visual; os dados por país já estão sendo coletados.</p>
+        </template>
+      </section>
+
+      <!-- BACKUP -->
+      <section v-if="tab === 'backup'">
+        <h1>Backup e recuperação</h1>
+        <p class="muted">Exporte todos os dados (usuários, assinaturas, planos, ofertas, feedback…) num arquivo. Se o Supabase cair ou a conta for suspensa, reimporte para recuperar a configuração.</p>
+        <div class="backup-actions">
+          <button class="mini ok" @click="exportBackup">⬇️ Exportar backup completo (JSON)</button>
+          <label class="mini upload">⬆️ Importar/restaurar<input type="file" accept="application/json" @change="importBackup" hidden /></label>
+        </div>
+        <p v-if="restoreMsg" class="muted" style="margin-top:12px">{{ restoreMsg }}</p>
+        <p class="muted" style="margin-top:10px;font-size:12px">A importação restaura configuração (planos, ofertas, FAQ). Dados de usuários/assinaturas são exportados para arquivo, mas a restauração de contas de auth deve ser feita com cautela.</p>
+      </section>
+
+      <!-- API EXTERNA -->
+      <section v-if="tab === 'api'">
+        <h1>API externa do admin</h1>
+        <p class="muted">Gere chaves para outro sistema SaaS consumir as métricas (MRR, ARR, clientes, planos…).</p>
+        <p class="endpoint">GET <code>/api/admin-data</code> · header <code>Authorization: Bearer &lt;chave&gt;</code></p>
+        <div class="coupon-form">
+          <input v-model="newKeyLabel" placeholder="Rótulo (ex: Dashboard externo)" />
+          <button class="mini ok" @click="genApiKey">Gerar chave</button>
+        </div>
+        <div v-if="createdKey" class="new-key">🔑 Copie agora: <code>{{ createdKey }}</code></div>
+        <table class="tbl">
+          <thead><tr><th>Rótulo</th><th>Token</th><th>Último uso</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr v-for="k in apiKeys" :key="k.id">
+              <td>{{ k.label }}</td><td><code>{{ k.token.slice(0, 12) }}…</code></td><td>{{ k.last_used_at ? fmtDateTime(k.last_used_at) : 'nunca' }}</td>
+              <td><span class="badge" :class="k.active ? 'b-ok' : 'b-off'">{{ k.active ? 'ativa' : 'inativa' }}</span></td>
+              <td><button class="mini danger" @click="removeApiKey(k.id)">Revogar</button></td>
+            </tr>
+            <tr v-if="!apiKeys.length"><td colspan="5" class="muted">Nenhuma chave.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- SEGURANÇA -->
+      <section v-if="tab === 'security'">
+        <h1>Segurança</h1>
+        <p class="muted">Tentativas de login falhas, suspeitas de bruteforce e erros de JavaScript dos usuários.</p>
+        <table class="tbl">
+          <thead><tr><th>Quando</th><th>Tipo</th><th>E-mail/IP</th><th>Detalhe</th></tr></thead>
+          <tbody>
+            <tr v-for="s in securityEvents" :key="s.id">
+              <td>{{ fmtDateTime(s.created_at) }}</td>
+              <td><span class="badge" :class="s.kind === 'bruteforce' ? 'b-off' : 'b-warn'">{{ s.kind }}</span></td>
+              <td>{{ s.email || s.ip || '—' }}</td><td>{{ (s.detail || '').slice(0, 80) }}</td>
+            </tr>
+            <tr v-if="!securityEvents.length"><td colspan="4" class="muted">Nenhum evento de segurança registrado.</td></tr>
+          </tbody>
+        </table>
+      </section>
+
       <!-- SAÚDE -->
       <section v-if="tab === 'health'">
         <h1>Saúde do SaaS</h1>
@@ -234,7 +340,12 @@ const tabs = [
   { id: 'subs', label: 'Assinaturas', icon: '💳' },
   { id: 'plans', label: 'Planos', icon: '🧩' },
   { id: 'coupons', label: 'Cupons', icon: '🎟️' },
+  { id: 'offers', label: 'Ofertas', icon: '🏷️' },
   { id: 'feedback', label: 'Feedback & Leads', icon: '💬' },
+  { id: 'visitors', label: 'Visitantes', icon: '🌍' },
+  { id: 'backup', label: 'Backup', icon: '💾' },
+  { id: 'api', label: 'API externa', icon: '🔌' },
+  { id: 'security', label: 'Segurança', icon: '🛡️' },
   { id: 'health', label: 'Saúde', icon: '🩺' },
   { id: 'logs', label: 'Logs', icon: '📜' },
 ]
@@ -253,11 +364,20 @@ const logs = ref<any[]>([])
 const healthChecks = ref<any[]>([])
 const deleteTarget = ref<any>(null)
 const newCoupon = ref<any>({ code: '', percent_off: 10, duration: 'once', months: 3 })
+const offers = ref<any[]>([])
+const editingOffer = ref<any>(null)
+const visitors = ref<any>(null)
+const apiKeys = ref<any[]>([])
+const newKeyLabel = ref('')
+const createdKey = ref('')
+const securityEvents = ref<any[]>([])
+const restoreMsg = ref('')
 
 const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString('pt-BR') : '—'
 const fmtDateTime = (d: string | null) => d ? new Date(d).toLocaleString('pt-BR') : '—'
 const flash = (m: string, t = 'ok') => { msg.value = m; msgType.value = t; setTimeout(() => (msg.value = ''), 5000) }
 const sevClass = (s: string) => s === 'error' || s === 'critical' ? 'b-off' : s === 'warning' ? 'b-warn' : 'b-ok'
+const flag = (cc: string) => cc && cc.length === 2 ? String.fromCodePoint(...[...cc.toUpperCase()].map((c) => 127397 + c.charCodeAt(0))) : '🌐'
 
 const filteredUsers = computed(() => {
   const q = userSearch.value.toLowerCase()
@@ -279,7 +399,11 @@ async function loadTab(id: string) {
     else if (id === 'subs' && !subs.value.length) subs.value = await adminService.listSubscriptions()
     else if (id === 'plans' && !plans.value.length) plans.value = await adminService.listPlans()
     else if (id === 'coupons') await loadCoupons()
+    else if (id === 'offers') offers.value = await adminService.listOffers()
     else if (id === 'feedback') { feedback.value = await adminService.listFeedback(); leads.value = await adminService.listLeads(); contacts.value = await adminService.listContacts(); sources.value = await adminService.listSignupSources() }
+    else if (id === 'visitors') visitors.value = await adminService.getVisitors()
+    else if (id === 'api') apiKeys.value = await adminService.listApiKeys()
+    else if (id === 'security') securityEvents.value = await adminService.listSecurityEvents()
     else if (id === 'health') await loadHealth()
     else if (id === 'logs' && !logs.value.length) logs.value = await adminService.listLogs()
   } catch (e: any) { flash(e.message || 'Erro ao carregar', 'err') } finally { loading.value = false }
@@ -308,6 +432,50 @@ function quickCoupon(code: string, pct: number) { newCoupon.value = { code, perc
 async function removeCoupon(id: string) {
   try { await adminService.deleteCoupon(id); flash('Cupom excluído.'); await loadCoupons() } catch (e: any) { flash(e.message, 'err') }
 }
+
+// Ofertas
+function newOffer() { editingOffer.value = { title: '', description: '', coupon_code: '', discount_label: '', bg_color: '#16a34a', active: true, ends_at: '' } }
+async function saveOffer() {
+  try {
+    const o = { ...editingOffer.value }
+    if (o.ends_at === '') o.ends_at = null
+    await adminService.saveOffer(o); flash('Oferta salva — já aparece no site.'); editingOffer.value = null; offers.value = await adminService.listOffers()
+  } catch (e: any) { flash(e.message, 'err') }
+}
+async function removeOffer(id: string) { try { await adminService.deleteOffer(id); offers.value = await adminService.listOffers(); flash('Oferta removida.') } catch (e: any) { flash(e.message, 'err') } }
+
+// API keys
+async function genApiKey() {
+  try { createdKey.value = await adminService.createApiKey(newKeyLabel.value || 'Integração'); newKeyLabel.value = ''; apiKeys.value = await adminService.listApiKeys(); flash('Chave criada — copie agora, não será exibida de novo.') }
+  catch (e: any) { flash(e.message, 'err') }
+}
+async function removeApiKey(id: string) { await adminService.deleteApiKey(id); apiKeys.value = await adminService.listApiKeys() }
+
+// Backup
+async function exportBackup() {
+  try {
+    const data = await adminService.exportBackup()
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob)
+    a.download = `gestaoze-backup-${new Date().toISOString().slice(0, 10)}.json`; a.click()
+    flash('Backup exportado.')
+  } catch (e: any) { flash(e.message, 'err') }
+}
+function importBackup(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]; if (!file) return
+  const reader = new FileReader()
+  reader.onload = async () => {
+    try {
+      const data = JSON.parse(reader.result as string)
+      const r: any = await adminService.restoreConfig(data)
+      restoreMsg.value = 'Restaurado: ' + JSON.stringify(r.restored)
+      flash('Configuração restaurada do backup.')
+    } catch (err: any) { flash('Arquivo inválido: ' + err.message, 'err') }
+  }
+  reader.readAsText(file)
+}
+
+const visitorBarW = (c: number) => { const max = Math.max(1, ...Object.values(visitors.value?.byCountry || {}).map((x: any) => x.count)); return (c / max) * 100 }
 
 onMounted(() => loadTab(tab.value))
 </script>
@@ -379,5 +547,14 @@ h3 { font-size: 15px; font-weight: 700; margin: 26px 0 10px; color: #cbd5e1; }
 .modal { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 26px; max-width: 420px; }
 .modal h3 { margin: 0 0 8px; color: #fff; }
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
-@media (max-width: 860px) { .panel-row { grid-template-columns: 1fr; } .sidebar { width: 64px; } .sidebar .brand, .sidebar nav button span:not(.ic), .exit { display: none; } }
+.offer-form { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+.offer-form input:not([type=color]):not([type=checkbox]), .offer-form input[type=datetime-local] { padding: 9px 12px; border-radius: 9px; border: 1px solid #334155; background: #0f172a; color: #e2e8f0; }
+.offer-form .wide { grid-column: 1 / -1; }
+.offer-form .inline { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8; }
+.backup-actions { display: flex; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+.upload { cursor: pointer; }
+.endpoint { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #94a3b8; margin: 12px 0; }
+.endpoint code, .new-key code { background: #0f172a; padding: 2px 7px; border-radius: 6px; color: #34d399; }
+.new-key { background: #064e3b; color: #6ee7b7; padding: 12px 16px; border-radius: 10px; margin: 12px 0; word-break: break-all; }
+@media (max-width: 860px) { .panel-row { grid-template-columns: 1fr; } .offer-form { grid-template-columns: 1fr; } .sidebar { width: 64px; } .sidebar .brand, .sidebar nav button span:not(.ic), .exit { display: none; } }
 </style>

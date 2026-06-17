@@ -63,15 +63,12 @@
         Uso conforme limites do plano (política de uso justo).
       </p>
     </section>
-
-    <AppFooter />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import AppFooter from '@/components/layout/AppFooter.vue'
 import BrandLogo from '@/components/BrandLogo.vue'
 import { billingService, type Plan } from '@/services/billingService'
 import { authService } from '@/services/authService'

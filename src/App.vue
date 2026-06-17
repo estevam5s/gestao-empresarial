@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <OfferBanner v-if="isPublic" />
     <HamburgerMenu :show="shouldShowMenu" />
     <main class="app-content">
       <router-view />
@@ -14,9 +15,12 @@ import { useRoute } from 'vue-router'
 import { useThemeStore } from '@/stores/theme'
 import HamburgerMenu from '@/components/HamburgerMenu.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
+import OfferBanner from '@/components/OfferBanner.vue'
 
 const route = useRoute()
 const themeStore = useThemeStore()
+
+const isPublic = computed(() => ['/', '/pricing', '/faq', '/contact', '/apps'].includes(route.path))
 
 const shouldShowMenu = computed((): boolean => {
   // Mostrar o menu em todas as rotas exceto login

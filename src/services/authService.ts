@@ -52,7 +52,11 @@ export class AuthService {
       }
 
       const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error || !data.user) throw new Error(error?.message || 'Credenciais inválidas')
+      if (error || !data.user) {
+        // registra tentativa falha (visível no painel admin → Segurança)
+        supabase.from('security_events').insert({ kind: 'failed_login', email, detail: error?.message || 'invalid' }).then(() => {})
+        throw new Error(error?.message || 'Credenciais inválidas')
+      }
 
       const user = await this.buildSession(data.user)
       supabase.from('profiles').update({ last_login: new Date().toISOString() }).eq('id', user.id).then(() => {})

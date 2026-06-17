@@ -105,6 +105,53 @@ export const adminService = {
   createCoupon: (payload: Record<string, any>) => adminPost('create_coupon', payload),
   deleteCoupon: (coupon_id: string) => adminPost('delete_coupon', { coupon_id }),
 
+  // ---- Ofertas / Promoções ----
+  async listOffers() { const { data } = await supabase.from('offers').select('*').order('created_at', { ascending: false }); return data || [] },
+  async saveOffer(offer: any) {
+    const { error } = offer.id
+      ? await supabase.from('offers').update(offer).eq('id', offer.id)
+      : await supabase.from('offers').insert(offer)
+    if (error) throw new Error(error.message)
+  },
+  async deleteOffer(id: string) { const { error } = await supabase.from('offers').delete().eq('id', id); if (error) throw new Error(error.message) },
+
+  // ---- Visitantes ----
+  async getVisitors() {
+    const { data } = await supabase.from('visitors').select('country,country_code,city,device,created_at').order('created_at', { ascending: false }).limit(1000)
+    const rows = data || []
+    const byCountry: Record<string, { name: string; count: number }> = {}
+    const byDevice: Record<string, number> = {}
+    rows.forEach((v: any) => {
+      const cc = v.country_code || '??'
+      byCountry[cc] = byCountry[cc] || { name: v.country || cc, count: 0 }
+      byCountry[cc].count++
+      byDevice[v.device || 'desktop'] = (byDevice[v.device || 'desktop'] || 0) + 1
+    })
+    return { total: rows.length, byCountry, byDevice, recent: rows.slice(0, 50) }
+  },
+
+  // ---- Chaves de API do admin ----
+  async listApiKeys() { const { data } = await supabase.from('admin_api_keys').select('*').order('created_at', { ascending: false }); return data || [] },
+  async createApiKey(label: string) {
+    const token = 'gat_' + Array.from(crypto.getRandomValues(new Uint8Array(24))).map((b) => b.toString(16).padStart(2, '0')).join('')
+    const { error } = await supabase.from('admin_api_keys').insert({ label, token })
+    if (error) throw new Error(error.message)
+    return token
+  },
+  async deleteApiKey(id: string) { await supabase.from('admin_api_keys').delete().eq('id', id) },
+
+  // ---- Segurança ----
+  async listSecurityEvents() { const { data } = await supabase.from('security_events').select('*').order('created_at', { ascending: false }).limit(200); return data || [] },
+
+  // ---- Backup ----
+  async exportBackup() {
+    const tables = ['profiles', 'subscriptions', 'plans', 'offers', 'faq_items', 'cancellation_feedback', 'leads', 'contact_messages', 'signup_sources']
+    const out: Record<string, any> = { _meta: { app: 'gestaoze', exported_at: new Date().toISOString() } }
+    for (const t of tables) { const { data } = await supabase.from(t).select('*'); out[t] = data || [] }
+    return out
+  },
+  async restoreConfig(data: any) { return adminPost('restore_config', { data }) },
+
   async health() {
     const checks: { name: string; ok: boolean; detail: string }[] = []
     const t0 = performance.now()

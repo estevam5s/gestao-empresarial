@@ -70,6 +70,25 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true })
     }
 
+    // ---- Restaurar configuração a partir de um backup (upsert) ----
+    if (action === 'restore_config') {
+      const data = body.data || {}
+      const result = {}
+      if (Array.isArray(data.plans) && data.plans.length) {
+        const { error } = await admin.from('plans').upsert(data.plans, { onConflict: 'slug' })
+        result.plans = error ? error.message : data.plans.length
+      }
+      if (Array.isArray(data.offers) && data.offers.length) {
+        const { error } = await admin.from('offers').upsert(data.offers, { onConflict: 'id' })
+        result.offers = error ? error.message : data.offers.length
+      }
+      if (Array.isArray(data.faq_items) && data.faq_items.length) {
+        const { error } = await admin.from('faq_items').upsert(data.faq_items, { onConflict: 'id' })
+        result.faq_items = error ? error.message : data.faq_items.length
+      }
+      return res.status(200).json({ ok: true, restored: result })
+    }
+
     return res.status(400).json({ error: 'unknown_action' })
   } catch (e) {
     return res.status(500).json({ error: 'server_error', message: e.message })

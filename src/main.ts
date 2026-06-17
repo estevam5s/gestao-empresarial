@@ -27,6 +27,17 @@ import { supabase } from '@/config/supabase'
 import { authService } from '@/services/authService'
 import { useAuthStore } from '@/stores/auth'
 authService.syncFromSupabase().then((u) => { if (u) useAuthStore().user = u })
+// Rastreamento de visita (país via headers de geo da Vercel) — uma vez por sessão
+try {
+  if (!sessionStorage.getItem('visit_tracked')) {
+    sessionStorage.setItem('visit_tracked', '1')
+    fetch('/api/track', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: location.pathname, referrer: document.referrer }),
+    }).catch(() => {})
+  }
+} catch { /* noop */ }
+
 supabase.auth.onAuthStateChange((event) => {
   const store = useAuthStore()
   if (event === 'SIGNED_OUT') {
